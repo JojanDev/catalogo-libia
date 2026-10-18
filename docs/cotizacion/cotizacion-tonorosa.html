@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Propuesta Tonorosa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Dancing+Script:wght@600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Páginas del ancho de un celular: secciones apiladas, tarjetas por opción, paleta del borrador */
+  :root {
+    --fondo: #fbeff1;
+    --papel: #fffafb;
+    --rosa: #d9708f;
+    --rosa-suave: #f6d9e1;
+    --cafe: #6b4e3d;
+    --texto: #4d3b33;
+    --tenue: #8c7569;
+    --salvia: #8ea383;
+    --linea: #ecd3da;
+    --display: "Marcellus", Georgia, "Times New Roman", serif;
+    --script: "Dancing Script", "Brush Script MT", cursive;
+    --cuerpo: "Nunito", "Segoe UI", Arial, sans-serif;
+  }
+  @page { size: 108mm 228mm; margin: 11mm 8mm 11mm 8mm; }
+  * { box-sizing: border-box; }
+  html { background: var(--fondo); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: var(--cuerpo); color: var(--texto); font-size: 9.6pt; line-height: 1.5; }
+  h1, h2, h3 { font-family: var(--display); color: var(--cafe); font-weight: 400; margin: 0; text-wrap: balance; }
+  h2 { font-size: 15pt; letter-spacing: .04em; text-align: center; }
+  h3 { font-size: 12.5pt; }
+  p { margin: 0; }
+  .salto { break-before: page; }
+  .seccion { display: flex; flex-direction: column; gap: 3.2mm; }
+  .divisor { display: flex; align-items: center; justify-content: center; gap: 2mm; color: var(--rosa); }
+  .divisor::before, .divisor::after { content: ""; width: 14mm; height: .3mm; background: var(--cafe); opacity: .45; }
+  .divisor svg { width: 3mm; height: 3mm; fill: var(--rosa); }
+  .script { font-family: var(--script); color: var(--rosa); font-weight: 600; }
+
+  .portada { min-height: 200mm; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4mm; }
+  .portada .logo { width: 58mm; height: auto; }
+  .portada .lema { font-size: 21pt; line-height: 1.15; margin-top: 2mm; }
+  .portada .tipo { font-size: 10.5pt; color: var(--texto); margin-top: 4mm; }
+  .portada .meta { font-size: 8.5pt; color: var(--tenue); }
+
+  .intro { background: var(--papel); border-radius: 4mm; padding: 5mm; display: flex; flex-direction: column; gap: 2.4mm; }
+  .intro .saludo { font-size: 15pt; }
+
+  .tabla-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 7.6pt; line-height: 1.3; background: var(--papel); border-radius: 3mm; overflow: hidden; }
+  th, td { padding: 1.5mm 1.2mm; border-bottom: .25mm solid var(--linea); text-align: center; vertical-align: middle; }
+  th { font-family: var(--cuerpo); font-weight: 800; color: var(--cafe); background: var(--rosa-suave); font-size: 7.4pt; }
+  td:first-child, th:first-child { text-align: left; width: 44%; }
+  tr:last-child td { border-bottom: 0; }
+  .si { display: inline-block; width: 3.2mm; height: 3.2mm; border-radius: 50%; background: var(--rosa); position: relative; }
+  .si::after { content: ""; position: absolute; left: 1.1mm; top: .55mm; width: .8mm; height: 1.5mm; border: solid #fff; border-width: 0 .4mm .4mm 0; transform: rotate(45deg); }
+  .no { color: var(--linea); font-weight: 800; }
+  .fila-precio td { font-weight: 800; color: var(--cafe); font-variant-numeric: tabular-nums; }
+
+  .opcion { background: var(--papel); border-radius: 4mm; padding: 4mm 4.5mm; display: flex; flex-direction: column; gap: 2.1mm; break-inside: avoid; }
+  .opcion.acordada { background: transparent; border: .35mm dashed var(--cafe); }
+  .etiqueta { align-self: flex-start; font-size: 7pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding: .8mm 2.4mm; border-radius: 10mm; background: var(--rosa); color: #fff; }
+  .acordada .etiqueta { background: var(--cafe); }
+  .etiqueta.alterna { background: var(--rosa-suave); color: var(--cafe); }
+  .opcion .numero { font-size: 8pt; color: var(--tenue); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .opcion .idea { font-family: var(--cuerpo); color: var(--rosa); font-weight: 700; font-size: 10pt; line-height: 1.3; }
+  .opcion .entrega { font-size: 9pt; color: var(--texto); }
+  .precios { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm; }
+  .precio { background: var(--fondo); border-radius: 2.5mm; padding: 2.2mm 2.6mm; display: flex; flex-direction: column; gap: .4mm; }
+  .acordada .precio { background: var(--papel); }
+  .precio .rotulo { font-size: 6.8pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--tenue); }
+  .precio .valor { font-family: var(--display); font-size: 14pt; color: var(--cafe); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .precio .nota { font-size: 7pt; color: var(--tenue); line-height: 1.3; }
+  .lista-titulo { font-size: 7.4pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--cafe); }
+  ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 1mm; }
+  li { position: relative; padding-left: 4.2mm; }
+  ul.incluye li::before { content: ""; position: absolute; left: 0; top: 1.5mm; width: 2.2mm; height: 2.2mm; border-radius: 50%; background: var(--rosa); }
+  ul.excluye li { color: var(--tenue); }
+  ul.excluye li::before { content: ""; position: absolute; left: .3mm; top: 2.4mm; width: 1.8mm; height: .35mm; background: var(--tenue); }
+  ul.punto li::before { content: ""; position: absolute; left: .4mm; top: 1.8mm; width: 1.5mm; height: 1.5mm; border-radius: 50%; background: var(--salvia); }
+  .entrega { font-size: 8pt; color: var(--tenue); }
+  .entrega b { color: var(--cafe); }
+
+  .caja { background: var(--papel); border-radius: 4mm; padding: 4.5mm; display: flex; flex-direction: column; gap: 2.2mm; break-inside: avoid; }
+  .caja h3 { font-size: 11.5pt; }
+  .destacado { background: var(--rosa-suave); border-radius: 3mm; padding: 3mm 3.5mm; font-size: 8.6pt; }
+
+  ol.pasos { margin: 0; padding: 0; list-style: none; counter-reset: paso; display: flex; flex-direction: column; gap: 2.4mm; }
+  ol.pasos li { counter-increment: paso; padding-left: 8mm; }
+  ol.pasos li::before { content: counter(paso); position: absolute; left: 0; top: 0; width: 5.6mm; height: 5.6mm; border-radius: 50%; background: var(--rosa); color: #fff; font-weight: 800; font-size: 8pt; display: flex; align-items: center; justify-content: center; }
+  ol.pasos b { color: var(--cafe); }
+
+  .cierre { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.6mm; padding-top: 1mm; }
+  .cierre .script { font-size: 16pt; line-height: 1.15; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="corazon" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.6 2.2 4.5 6 4.1c2.2-.2 3.9 1 6 3.2 2.1-2.2 3.8-3.4 6-3.2 3.8.4 5.6 4.5 4 7.6C19.5 16.4 12 21 12 21z"/></symbol>
+  </defs>
+</svg>
+
+<section class="portada">
+  <img class="logo" src="../Logo_Tonorosa.svg" alt="Tonorosa by Leyar">
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <div class="lema script">Propuesta para tu<br>página web</div>
+  <p class="tipo">Opciones, precios y cómo trabajaremos</p>
+  <p class="meta">Preparada por Johan Delgado · Octubre de 2026</p>
+</section>
+
+<section class="seccion salto">
+  <div class="intro">
+    <p class="saludo script">Hola, tía</p>
+    <p>Aquí está la propuesta de la tienda que me pediste: con carrito, descuentos y pagos en la página. Es la opción 1.</p>
+    <p>También te dejo otras tres opciones para que compares. La opción 4 es el catálogo sencillo de la primera propuesta que te mandé con el video, con el mismo precio y la misma forma de trabajo.</p>
+    <p>Todas siguen tu borrador: los colores, el estilo y la marca Tonorosa. La página se diseña primero para el celular, que es donde la van a ver la mayoría de tus clientas.</p>
+  </div>
+
+  <h2>Todas las opciones incluyen</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <ul class="incluye">
+    <li>Diseño basado en tu borrador, pensado primero para celular.</li>
+    <li>Inicio con carrusel de fotos y videos de tu marca.</li>
+    <li>Catálogo con buscador y detalle de cada prenda (fotos, precio, tallas y descripción).</li>
+    <li>Colecciones: una destacada y filtro por colección.</li>
+    <li>Guía de tallas general.</li>
+    <li>Páginas de Nosotros y Contacto.</li>
+    <li>Página preparada para aparecer en Google.</li>
+    <li>Al compartir el enlace por WhatsApp o redes, se ve con tu logo y una descripción.</li>
+    <li>Contador de visitas para saber cuánta gente entra.</li>
+  </ul>
+</section>
+
+<section class="seccion salto">
+  <h2>Comparación rápida</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <p>Cada columna es una opción. El círculo rosa significa que la opción lo incluye.</p>
+  <div class="tabla-wrap">
+    <table>
+      <thead>
+        <tr><th>Opción</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Catálogo, colecciones, carrusel y guía de tallas</td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="si"></span></td></tr>
+        <tr><td>Tú o Laura manejan productos y colecciones</td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="no">—</span></td></tr>
+        <tr><td>Descuentos en prendas</td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="no">—</span></td></tr>
+        <tr><td>Carrito de compras</td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="no">—</span></td><td><span class="no">—</span></td></tr>
+        <tr><td>Códigos de descuento</td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="no">—</span></td><td><span class="no">—</span></td></tr>
+        <tr><td>Pago en línea</td><td><span class="si"></span></td><td><span class="no">—</span></td><td><span class="no">—</span></td><td><span class="no">—</span></td></tr>
+        <tr><td>Registro de pedidos y ventas</td><td><span class="si"></span></td><td><span class="no">—</span></td><td><span class="no">—</span></td><td><span class="no">—</span></td></tr>
+        <tr><td>Consultar cada prenda por WhatsApp</td><td><span class="no">—</span></td><td><span class="si"></span></td><td><span class="si"></span></td><td><span class="si"></span></td></tr>
+        <tr class="fila-precio"><td>Valor (una vez)</td><td>4,3 M</td><td>2,5 M</td><td>1,8 M</td><td>500 mil</td></tr>
+        <tr class="fila-precio"><td>Mensualidad</td><td>100 mil</td><td>70 mil</td><td>60 mil</td><td>80 mil*</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="entrega">* Solo los meses en que pidas cambios.</p>
+</section>
+
+<section class="seccion salto">
+  <article class="opcion">
+    <span class="etiqueta">Lo que me pediste</span>
+    <span class="numero">Opción 1</span>
+    <h3>Tienda completa</h3>
+    <p class="idea">Tus clientas pagan directamente en la página</p>
+    <div class="precios">
+      <div class="precio"><span class="rotulo">Valor</span><span class="valor">$4.300.000</span><span class="nota">Una sola vez</span></div>
+      <div class="precio"><span class="rotulo">Mensualidad</span><span class="valor">$100.000</span><span class="nota">Soporte y mantenimiento</span></div>
+    </div>
+    <span class="lista-titulo">Incluye</span>
+    <ul class="incluye">
+      <li>Todo lo de la lista "Todas las opciones incluyen".</li>
+      <li>Panel para que tú o Laura manejen productos, colecciones, tallas, carrusel y guía de tallas, y oculten o vuelvan a mostrar prendas.</li>
+      <li>Descuentos por prenda o colección y códigos de descuento.</li>
+      <li>Carrito de compras: la clienta elige prendas, tallas y cantidades, y paga ahí mismo con Wompi (tarjeta, PSE, Nequi y otros).</li>
+      <li>La clienta recibe su número de pedido y un comprobante por correo.</li>
+      <li>Registro de pedidos con su estado (pagado, enviado, entregado). A ti te llega un correo automático cada vez que entra un pedido.</li>
+      <li>Cantidades por prenda o venta sobre pedido, como prefieras.</li>
+      <li>Plantillas de políticas para vender en línea, contacto por WhatsApp y capacitación.</li>
+    </ul>
+    <span class="lista-titulo">No incluye</span>
+    <ul class="excluye">
+      <li>Conexión automática con transportadoras.</li>
+      <li>Factura electrónica de la DIAN (se hace aparte, con tu contador o un programa de facturación).</li>
+      <li>Estadísticas de ventas.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="seccion salto">
+  <article class="opcion">
+    <span class="etiqueta alterna">Otra opción</span>
+    <span class="numero">Opción 2</span>
+    <h3>Catálogo con carrito por WhatsApp</h3>
+    <p class="idea">Tus clientas arman su pedido y te llega listo</p>
+    <div class="precios">
+      <div class="precio"><span class="rotulo">Valor</span><span class="valor">$2.500.000</span><span class="nota">Una sola vez</span></div>
+      <div class="precio"><span class="rotulo">Mensualidad</span><span class="valor">$70.000</span><span class="nota">Soporte y mantenimiento</span></div>
+    </div>
+    <span class="lista-titulo">Incluye</span>
+    <ul class="incluye">
+      <li>Todo lo de la lista "Todas las opciones incluyen".</li>
+      <li>Botón para consultar cada prenda por WhatsApp.</li>
+      <li>Panel con usuario y contraseña para que tú o Laura manejen productos, colecciones, tallas, carrusel y guía de tallas.</li>
+      <li>Ocultar prendas o colecciones y volver a mostrarlas sin crearlas de nuevo.</li>
+      <li>Descuentos por prenda o colección, con fecha de fin.</li>
+      <li>Carrito de compras: la clienta elige prendas, tallas y cantidades.</li>
+      <li>Al terminar, el pedido te llega a WhatsApp con cada prenda, talla y el total.</li>
+      <li>Códigos de descuento para tus clientas (por ejemplo, BIENVENIDA10).</li>
+      <li>Capacitación y guía de uso.</li>
+    </ul>
+    <span class="lista-titulo">No incluye</span>
+    <ul class="excluye">
+      <li>Pago en línea: el pago lo acuerdas con la clienta por WhatsApp.</li>
+      <li>Registro de pedidos en la página: quedan en tu WhatsApp.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="seccion salto">
+  <article class="opcion">
+    <span class="etiqueta alterna">Otra opción</span>
+    <span class="numero">Opción 3</span>
+    <h3>Catálogo autogestionable</h3>
+    <p class="idea">Tú o Laura manejan la página sin depender de mí</p>
+    <div class="precios">
+      <div class="precio"><span class="rotulo">Valor</span><span class="valor">$1.800.000</span><span class="nota">Una sola vez</span></div>
+      <div class="precio"><span class="rotulo">Mensualidad</span><span class="valor">$60.000</span><span class="nota">Soporte y mantenimiento</span></div>
+    </div>
+    <span class="lista-titulo">Incluye</span>
+    <ul class="incluye">
+      <li>Todo lo de la lista "Todas las opciones incluyen".</li>
+      <li>Botón para consultar cada prenda por WhatsApp.</li>
+      <li>Panel de administración con usuario y contraseña.</li>
+      <li>Crear y editar productos y colecciones.</li>
+      <li>Ocultar una prenda o colección y volver a mostrarla cuando quieras, sin crearla de nuevo.</li>
+      <li>Manejar las tallas y marcar prendas agotadas.</li>
+      <li>Cambiar las fotos y videos del carrusel y la guía de tallas.</li>
+      <li>Descuentos por prenda o colección, con precio tachado y fecha de fin.</li>
+      <li>Las fotos se suben desde el panel y se ajustan solas para que la página cargue rápido.</li>
+      <li>Capacitación y guía de uso.</li>
+    </ul>
+    <span class="lista-titulo">No incluye</span>
+    <ul class="excluye">
+      <li>Carrito de compras.</li>
+      <li>Códigos de descuento.</li>
+      <li>Pago en línea ni registro de pedidos.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="seccion salto">
+  <article class="opcion acordada">
+    <span class="etiqueta">Lo que ya habíamos hablado</span>
+    <span class="numero">Opción 4</span>
+    <h3>Catálogo</h3>
+    <p class="idea">Tú me mandas la ropa nueva y yo la subo</p>
+    <p>Mismo precio y misma forma de trabajo que habíamos hablado. Cuando tengas ropa nueva me mandas los datos y las fotos, y yo la subo el mismo día. Cuando una prenda se acaba la marco como agotada, y cuando ya no la vas a vender la quito de la página.</p>
+    <div class="precios">
+      <div class="precio"><span class="rotulo">Valor</span><span class="valor">$500.000</span><span class="nota">Una sola vez</span></div>
+      <div class="precio"><span class="rotulo">Mensualidad</span><span class="valor">$80.000</span><span class="nota">Solo los meses con cambios</span></div>
+    </div>
+    <p>Ese mes te actualizo hasta 20 productos: agregar nuevos, quitar los vendidos, marcar agotados y cambiar precios. Si un mes no hay cambios, no pagas. Cada producto adicional a los 20 vale $4.000.</p>
+    <span class="lista-titulo">Incluye</span>
+    <ul class="incluye">
+      <li>Todo lo de la lista "Todas las opciones incluyen".</li>
+      <li>Botón para consultar cada prenda por WhatsApp.</li>
+      <li>Cambios en el carrusel cuando me los pidas, dentro de los cambios del mes.</li>
+    </ul>
+    <span class="lista-titulo">No incluye</span>
+    <ul class="excluye">
+      <li>Panel para que tú hagas los cambios.</li>
+      <li>Carrito de compras.</li>
+      <li>Descuentos ni códigos de descuento.</li>
+      <li>Pago en línea ni registro de pedidos.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="seccion salto">
+  <h2>Qué cubre la mensualidad</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <p>En las opciones 1, 2 y 3, como tú o Laura manejan los productos, la mensualidad es para que la página siga funcionando bien:</p>
+  <ul class="punto">
+    <li><b>Página siempre en línea:</b> reviso que todo cargue bien y que los servicios gratuitos que usa la página sigan activos. Si algún día hace falta pagar algo, te aviso antes.</li>
+    <li><b>Copia de seguridad cada mes</b> de tus productos y colecciones (y pedidos en la opción 1), por si algo se borra por error.</li>
+    <li><b>Arreglo de cualquier error</b> si algo deja de funcionar.</li>
+    <li><b>Ayuda con el panel</b> cuando tú o Laura tengan dudas.</li>
+    <li><b>Ajustes pequeños,</b> como cambiar un texto o un color.</li>
+    <li><b>Recordatorio</b> de la renovación del dominio.</li>
+    <li><b>Solo en la opción 1:</b> revisar que cada venta pagada quede registrada en su pedido y ayudarte si una clienta dice que pagó y no le aparece.</li>
+  </ul>
+  <div class="destacado">Las funciones nuevas o los cambios de diseño después de entregada la página se cotizan aparte.</div>
+</section>
+
+<section class="seccion salto">
+  <h2>Costos aparte</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <p>Estos costos no son míos. Los pagas directamente y quedan a tu nombre.</p>
+  <div class="caja">
+    <h3>Dominio tonorosa.com</h3>
+    <p>Es la dirección de tu página. Cuesta aproximadamente <b>10 a 15 dólares al año</b> (unos $40.000 a $60.000). Se compra a tu nombre y te ayudo a dejarlo con renovación automática para no perderlo.</p>
+  </div>
+  <div class="caja">
+    <h3>Comisión de pagos (solo opción 1)</h3>
+    <p>Wompi cobra <b>2,65 % + $700 + IVA</b> por cada venta pagada. Por ejemplo, en una venta de $100.000 la comisión es de unos $4.000. No hay pago mensual. La cuenta de Wompi se abre a tu nombre con tu RUT y tu cuenta bancaria.</p>
+  </div>
+  <div class="caja">
+    <h3>Servicios de la página</h3>
+    <p>Para empezar, la página funciona con planes gratuitos. Si con el tiempo crece mucho el número de visitas o de fotos y videos, podría hacer falta un plan pago (desde unos 25 dólares al mes). Si eso pasa, te aviso con tiempo.</p>
+  </div>
+</section>
+
+<section class="seccion salto">
+  <h2>Fotos y videos</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <ul class="punto">
+    <li><b>Fotos:</b> verticales, como las fotos verticales de Instagram, y con buena luz. Si trabajas con fotógrafa, dile que las necesitas en proporción 4:5.</li>
+    <li>Todas las fotos con la misma proporción, para que el catálogo se vea parejo.</li>
+    <li><b>Videos para el carrusel:</b> MP4, de menos de 30 segundos y menos de 50 MB.</li>
+    <li>Pocos videos cortos funcionan mejor que muchos largos, porque la página carga más rápido.</li>
+  </ul>
+</section>
+
+<section class="seccion salto">
+  <h2>Cómo trabajaremos</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <ol class="pasos">
+    <li><b>Eliges la opción</b> y pagas el 50 % para empezar.</li>
+    <li><b>Me envías el material:</b> logo, textos, fotos y la información de las prendas.</li>
+    <li><b>Diseño:</b> te muestro cómo se verá en el celular el inicio, el catálogo y una prenda, y lo ajustamos hasta que te guste.</li>
+    <li><b>Construcción</b> de la página con el diseño aprobado.</li>
+    <li><b>Revisión:</b> la pruebas completa y me dices qué quieres ajustar.</li>
+    <li><b>Entrega:</b> la página queda publicada y pagas el 50 % restante. En las opciones 1, 2 y 3 hacemos la capacitación.</li>
+  </ol>
+  <div class="destacado">Lo ideal es que los cambios me los digas en el diseño y en la revisión, porque cambiar cosas cuando la página ya está terminada toma bastante más trabajo. Si algo no funciona bien, lo arreglo: el primer mes después de la entrega y luego dentro de la mensualidad.</div>
+  <ul class="punto">
+    <li>La mensualidad empieza el mes siguiente a la entrega.</li>
+    <li>El dominio, la marca y todo el contenido son tuyos.</li>
+  </ul>
+</section>
+
+<section class="seccion salto">
+  <h2>Qué necesito de ti</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <div class="caja">
+    <h3>Para todas las opciones</h3>
+    <ul class="incluye">
+      <li>Logo en buena calidad, idealmente con fondo transparente.</li>
+      <li>Textos de Nosotros, del carrusel y de bienvenida.</li>
+      <li>Fotos y videos para el carrusel.</li>
+      <li>La guía de tallas con las medidas de cada talla.</li>
+      <li>Tus colecciones y cuál quieres destacar.</li>
+      <li>De cada prenda: nombre, precio, descripción, tallas, colección y fotos.</li>
+      <li>Número de WhatsApp y redes sociales.</li>
+    </ul>
+  </div>
+  <div class="caja">
+    <h3>Opciones 1, 2 y 3</h3>
+    <ul class="incluye">
+      <li>Correo para el usuario del panel.</li>
+    </ul>
+    <h3>Solo opción 1</h3>
+    <ul class="incluye">
+      <li>Cuenta de Wompi a tu nombre.</li>
+      <li>Si manejas cantidades de cada prenda o vendes sobre pedido.</li>
+      <li>Cómo cobras el envío y cuánto tarda en llegar el pedido.</li>
+      <li>Tu política de cambios y devoluciones.</li>
+      <li>Correo donde quieres recibir los pedidos.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="seccion salto">
+  <h2>La página crece contigo</h2>
+  <div class="divisor"><svg><use href="#corazon"/></svg></div>
+  <p>No hay que hacer todo de una vez ni empezar de nuevo. Cuando quieras algo más en tu página, me lo pides, lo cotizamos y se lo agrego a lo que ya tienes.</p>
+
+  <div class="cierre">
+    <div class="divisor"><svg><use href="#corazon"/></svg></div>
+    <p class="script">Con mucho cariño para Tonorosa</p>
+    <p>Cuando decidas, escríbeme por WhatsApp qué opción eliges y cualquier duda que tengas.</p>
+    <p class="meta" style="color:var(--tenue);font-size:8pt">Johan Delgado</p>
+  </div>
+</section>
+
+</body>
+</html>
