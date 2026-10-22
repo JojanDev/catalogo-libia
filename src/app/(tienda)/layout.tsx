@@ -1,16 +1,23 @@
+import { BotonCarrito } from "@/components/carrito/BotonCarrito";
+import { CajonCarrito } from "@/components/carrito/CajonCarrito";
 import { BarraAnuncio } from "@/components/tienda/BarraAnuncio";
 import { BotonWhatsApp } from "@/components/tienda/BotonWhatsApp";
 import { Encabezado } from "@/components/tienda/Encabezado";
 import { PiePagina } from "@/components/tienda/PiePagina";
+import { CartProvider } from "@/context/CartContext";
+import { obtenerConfiguracion } from "@/lib/datos/tienda";
 
-export default function TiendaLayout({ children }: { children: React.ReactNode }) {
+export default async function TiendaLayout({ children }: { children: React.ReactNode }) {
+  const configuracion = await obtenerConfiguracion();
+
   return (
-    <>
-      <BarraAnuncio texto="Moda infantil que hace florecer sonrisas" />
-      <Encabezado />
+    <CartProvider>
+      <BarraAnuncio texto={configuracion.textoAnuncio} />
+      <Encabezado carrito={<BotonCarrito />} />
       <main>{children}</main>
-      <PiePagina />
-      <BotonWhatsApp numero="573006569633" />
-    </>
+      <PiePagina whatsapp={configuracion.whatsapp} />
+      <BotonWhatsApp numero={configuracion.whatsapp} />
+      <CajonCarrito />
+    </CartProvider>
   );
 }

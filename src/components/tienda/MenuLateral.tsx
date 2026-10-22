@@ -85,7 +85,7 @@ export function MenuLateral({ abierto, onCerrar }: MenuLateralProps) {
                 href={enlace.href}
                 onClick={onCerrar}
                 aria-current={activo ? "page" : undefined}
-                className={`flex min-h-12 items-center rounded-sm px-3 text-base font-semibold ${activo ? "bg-rosa-suave text-rosa-accion" : "text-cafe hover:bg-rosa-suave"}`}
+                className={`flex min-h-12 items-center rounded-sm border-l-4 px-3 text-base text-cafe ${activo ? "border-rosa-deco bg-rosa-suave font-bold" : "border-transparent font-semibold hover:bg-rosa-suave"}`}
               >
                 {enlace.etiqueta}
               </Link>

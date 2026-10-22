@@ -5,7 +5,7 @@ import { ENLACES_TIENDA } from "@/components/tienda/enlaces";
 import { Contenedor } from "@/components/ui/Contenedor";
 import { Logo } from "@/components/ui/Logo";
 
-export function PiePagina() {
+export function PiePagina({ whatsapp }: { whatsapp: string }) {
   return (
     <footer className="mt-12 bg-canvas lg:mt-20">
       <Decor variant="ola" className="h-8 lg:h-14" />
@@ -27,7 +27,7 @@ export function PiePagina() {
           </nav>
           <div className="flex flex-col items-center gap-1 text-sm text-cafe sm:flex-row sm:gap-6">
             <a
-              href="https://wa.me/573006569633"
+              href={`https://wa.me/${whatsapp}`}
               className="flex min-h-11 items-center gap-2 font-semibold hover:text-rosa-accion"
             >
               <MessageCircle className="size-5 text-rosa-deco" aria-hidden="true" />
