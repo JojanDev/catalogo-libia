@@ -23,18 +23,17 @@ Una captura de pantalla en contexto pesa más que varios archivos de código, y 
 
 - **Prohibido escanear el repositorio.** Nada de `Glob '**/*'` ni `Grep` sin `path`.
 - Revisa como máximo **3 componentes o pantallas existentes** equivalentes a la del requerimiento, en las rutas que indicó el Orquestador.
-- Localiza con `Grep -n` antes de abrir; lee solo el rango relevante con `offset`/`limit`. No leas `node_modules/` ni `dist/`.
+- Localiza con `Grep -n` antes de abrir; lee solo el rango relevante con `offset`/`limit`. No leas `node_modules/` ni `.next/`.
 - Mantén el razonamiento **bajo**: extraes un patrón vigente y lo enuncias. No es una tarea de deliberación.
 
 ## Sistema visual real del proyecto
 
-- **Tailwind 3** con tokens propios en `tailwind.config.js`:
-  - Colores: `canvas` (#FAF8F5, fondo), `card-bg`, `text-primary`, `text-muted`, `border-soft`, `warm-accent` / `warm-accent-hover` (acción principal), `pastel-blue`, `pastel-green`, `pastel-pink`.
-  - Tipografía: `font-heading` (Comfortaa) para títulos, `font-body` (Nunito) para texto.
-  - Radios: `rounded-soft` (16px), `rounded-softer` (24px).
-- Iconos de `lucide-react`. No hay librería de componentes.
-- Componentes reutilizables en `src/components/shared/` (`ProductCard`, `ProductModal`, `FilterTabs`, `SearchBar`, `PriceSlider`, `CategoryCarousel`, `CollectionCard`, `HeroSection`, `WhatsAppButton`), carrito en `src/components/cart/`, layouts en `src/components/layouts/MainLayout.tsx` y `src/features/prototipo-3/AdminLayout.tsx`.
-- Dos públicos: el catálogo (cliente final, mobile-first, cálido) y el panel admin en `src/features/prototipo-3/Admin*.tsx` (densidad mayor, formularios y listas).
+- **Fuente de verdad: `docs/diseno-tonorosa.md`** (tokens, tipografía, componentes, pantallas, microcopy), derivado de `docs/borrador_libia.jpeg` y `docs/Logo_Tonorosa.svg`.
+- **Tailwind 4** con tokens en `@theme` de `src/app/globals.css`: `canvas`, `surface`, `rosa-suave`, `rosa-medio`, `rosa-deco` (solo decorativo), `rosa-accion`/`rosa-hover` (acción principal), `taupe` (solo logo y títulos grandes), `cafe` (texto), `tenue`, `salvia`, `borde`, estados.
+- Tipografía: `font-display` Marcellus, `font-script` Dancing Script (solo frases cortas grandes), `font-body` Nunito.
+- Iconos de `lucide-react`. No hay librería de componentes. Componentes en `src/components/{tienda,carrito,admin,decor,ui}/`.
+- Dos públicos: la tienda (clientas, mobile-first, cálida, con flores) y el panel `src/app/admin/**` (Laura; misma paleta, más sobrio y denso, sin decoración).
+- `_referencia/` es el prototipo anterior: su estilo visual está descartado.
 
 ## Cómo derivar los lineamientos
 
