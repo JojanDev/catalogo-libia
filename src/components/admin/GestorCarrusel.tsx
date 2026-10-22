@@ -97,10 +97,19 @@ function FormularioSlide({ slide, siguienteOrden, colecciones, onCerrar, onAviso
     <form onSubmit={guardar} noValidate className="space-y-5">
       <TarjetaPanel titulo={slide ? "Editar slide" : "Nuevo slide"}>
         <div className="grid gap-5 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <p className="mb-1.5 text-sm font-semibold text-cafe">Archivo principal (imagen o video)</p>
+          <div
+            role="group"
+            aria-labelledby="carrusel-principal-titulo"
+            aria-describedby={errores.principal ? "carrusel-principal-error" : undefined}
+            className="sm:col-span-2"
+          >
+            <p id="carrusel-principal-titulo" className="mb-1.5 text-sm font-semibold text-cafe">Archivo principal (imagen o video)</p>
             <SubidorMedios medios={principal} onCambio={setPrincipal} unico ratio="aspect-video" />
-            {errores.principal && <p className="mt-1.5 text-sm font-semibold text-error">{errores.principal}</p>}
+            {errores.principal && (
+              <p id="carrusel-principal-error" role="alert" className="mt-1.5 text-sm font-semibold text-error">
+                {errores.principal}
+              </p>
+            )}
           </div>
           <div className="sm:col-span-2">
             <p className="mb-1.5 text-sm font-semibold text-cafe">Imagen para móvil (opcional)</p>

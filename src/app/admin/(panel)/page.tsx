@@ -1,21 +1,12 @@
 import Link from "next/link";
 import { AlertTriangle, ClipboardList, Package, Plus, Wallet } from "lucide-react";
 import { EncabezadoPagina } from "@/components/admin/EncabezadoPagina";
+import { InsigniaEstado } from "@/components/admin/InsigniaEstado";
 import { ListaResponsive } from "@/components/admin/ListaResponsive";
 import { TarjetaPanel } from "@/components/admin/TarjetaPanel";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
-import { Insignia } from "@/components/ui/Insignia";
 import { resumenPanel } from "@/lib/datos/admin";
 import { formatearFecha, formatearPrecio } from "@/lib/formato";
-import type { EstadoPedido } from "@/types";
-
-const ESTADOS: Record<EstadoPedido, { variante: "aviso" | "exito" | "info" | "error"; texto: string }> = {
-  pendiente_pago: { variante: "aviso", texto: "Pendiente" },
-  pagado: { variante: "exito", texto: "Pagado" },
-  enviado: { variante: "info", texto: "Enviado" },
-  entregado: { variante: "exito", texto: "Entregado" },
-  cancelado: { variante: "error", texto: "Cancelado" },
-};
 
 export default async function PaginaResumen() {
   const r = await resumenPanel();
@@ -82,7 +73,7 @@ export default async function PaginaResumen() {
             {
               clave: "estado",
               titulo: "Estado",
-              celda: (p) => <Insignia variante={ESTADOS[p.estado].variante}>{ESTADOS[p.estado].texto}</Insignia>,
+              celda: (p) => <InsigniaEstado estado={p.estado} />,
             },
           ]}
         />

@@ -14,6 +14,7 @@ import { Boton } from "@/components/ui/Boton";
 import { Campo, Entrada } from "@/components/ui/Campo";
 import { Insignia } from "@/components/ui/Insignia";
 import { formatearFecha } from "@/lib/formato";
+import { fechaHoyBogota } from "@/lib/pricing";
 import type { Coleccion, Descuento, Producto } from "@/types";
 
 type FormularioDescuentoProps = {
@@ -188,7 +189,7 @@ type GestorDescuentosProps = { descuentos: Descuento[]; productos: Producto[]; c
 export function GestorDescuentos({ descuentos, productos, colecciones }: GestorDescuentosProps) {
   const [aviso, setAviso] = useState<DatosAviso | null>(null);
   const [editando, setEditando] = useState<Descuento | "nuevo" | null>(null);
-  const [hoy] = useState(() => new Date().toISOString().slice(0, 10));
+  const [hoy] = useState(() => fechaHoyBogota());
 
   if (editando) {
     return (
