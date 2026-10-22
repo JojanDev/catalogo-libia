@@ -7,7 +7,6 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -18,6 +17,7 @@ type Estado = {
   items: ItemCarrito[];
   codigo: string | null;
   porcentajeCodigo: number;
+  hidratado: boolean;
 };
 
 type Accion =
@@ -32,7 +32,7 @@ type Accion =
 const CLAVE = "tonorosa_carrito";
 const MAX_CANTIDAD = 10;
 
-const estadoInicial: Estado = { items: [], codigo: null, porcentajeCodigo: 0 };
+const estadoInicial: Estado = { items: [], codigo: null, porcentajeCodigo: 0, hidratado: false };
 
 function limitar(n: number): number {
   return Math.min(MAX_CANTIDAD, Math.max(1, Math.floor(n)));
@@ -41,7 +41,7 @@ function limitar(n: number): number {
 function reducir(estado: Estado, accion: Accion): Estado {
   switch (accion.tipo) {
     case "hidratar":
-      return accion.estado;
+      return { ...accion.estado, hidratado: true };
     case "agregar": {
       const { item } = accion;
       const existe = estado.items.some(
@@ -76,7 +76,7 @@ function reducir(estado: Estado, accion: Accion): Estado {
         ),
       };
     case "vaciar":
-      return estadoInicial;
+      return { ...estadoInicial, hidratado: estado.hidratado };
     case "aplicarCodigo":
       return { ...estado, codigo: accion.codigo, porcentajeCodigo: accion.porcentaje };
     case "quitarCodigo":
@@ -94,6 +94,7 @@ type ValorCarrito = {
   total: number;
   codigo: string | null;
   porcentajeCodigo: number;
+  hidratado: boolean;
   agregar: (item: ItemCarrito) => void;
   quitar: (productoId: number, talla: string) => void;
   cambiarCantidad: (productoId: number, talla: string, cantidad: number) => void;
@@ -110,32 +111,33 @@ const CartContext = createContext<ValorCarrito | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [estado, despachar] = useReducer(reducir, estadoInicial);
   const [abierto, setAbierto] = useState(false);
-  const hidratado = useRef(false);
 
   useEffect(() => {
+    let guardado: Estado = { ...estadoInicial };
     try {
       const crudo = window.localStorage.getItem(CLAVE);
       if (crudo) {
         const datos = JSON.parse(crudo) as Partial<Estado>;
         if (Array.isArray(datos.items)) {
-          despachar({
-            tipo: "hidratar",
-            estado: {
-              items: datos.items,
-              codigo: datos.codigo ?? null,
-              porcentajeCodigo: datos.porcentajeCodigo ?? 0,
-            },
-          });
+          guardado = {
+            items: datos.items,
+            codigo: datos.codigo ?? null,
+            porcentajeCodigo: datos.porcentajeCodigo ?? 0,
+            hidratado: true,
+          };
         }
       }
     } catch {
       window.localStorage.removeItem(CLAVE);
     }
-    hidratado.current = true;
+    despachar({ tipo: "hidratar", estado: guardado });
   }, []);
 
   useEffect(() => {
-    if (hidratado.current) window.localStorage.setItem(CLAVE, JSON.stringify(estado));
+    if (estado.hidratado) {
+      const { items, codigo, porcentajeCodigo } = estado;
+      window.localStorage.setItem(CLAVE, JSON.stringify({ items, codigo, porcentajeCodigo }));
+    }
   }, [estado]);
 
   const cantidadTotal = useMemo(
@@ -167,6 +169,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     total: subtotal - descuentoCodigo,
     codigo: estado.codigo,
     porcentajeCodigo: estado.porcentajeCodigo,
+    hidratado: estado.hidratado,
     agregar: (item) => despachar({ tipo: "agregar", item }),
     quitar: (productoId, talla) => despachar({ tipo: "quitar", productoId, talla }),
     cambiarCantidad: (productoId, talla, cantidad) =>

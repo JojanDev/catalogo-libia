@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, ChevronDown, ShoppingBag } from "lucide-react";
 import { Boton } from "@/components/ui/Boton";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
@@ -86,12 +86,7 @@ const tituloSeccion = "mb-4 font-display text-xl text-cafe";
 
 export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) {
   const router = useRouter();
-  const { items, codigo, vaciar } = useCart();
-  const listo = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+  const { items, codigo, vaciar, hidratado: listo } = useCart();
   const [cot, setCot] = useState<Cotizacion | null>(null);
   const [resumenAbierto, setResumenAbierto] = useState(false);
   const [valores, setValores] = useState<Valores>(inicial);

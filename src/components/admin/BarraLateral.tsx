@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -84,12 +84,40 @@ function ContenidoMenu({ alNavegar }: { alNavegar?: () => void }) {
 
 export function BarraLateral() {
   const [abierto, setAbierto] = useState(false);
+  const panel = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!abierto) return;
-    const alTecla = (e: KeyboardEvent) => e.key === "Escape" && setAbierto(false);
-    window.addEventListener("keydown", alTecla);
-    return () => window.removeEventListener("keydown", alTecla);
+    const previo = document.activeElement as HTMLElement | null;
+    const enfocables = () =>
+      Array.from(
+        panel.current?.querySelectorAll<HTMLElement>("a, button:not(:disabled)") ?? [],
+      );
+    enfocables()[0]?.focus();
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAbierto(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const lista = enfocables();
+      const primero = lista[0];
+      const ultimo = lista[lista.length - 1];
+      if (e.shiftKey && document.activeElement === primero) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primero.focus();
+      }
+    };
+    document.addEventListener("keydown", alTeclear);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", alTeclear);
+      document.body.style.overflow = "";
+      previo?.focus();
+    };
   }, [abierto]);
 
   return (
@@ -109,13 +137,14 @@ export function BarraLateral() {
 
       {abierto && (
         <div className="fixed inset-0 z-40 md:hidden">
-          <button
-            type="button"
-            aria-label="Cerrar menú"
-            onClick={() => setAbierto(false)}
-            className="absolute inset-0 bg-cafe/40"
-          />
-          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col bg-surface">
+          <div onClick={() => setAbierto(false)} className="absolute inset-0 bg-cafe/40" />
+          <aside
+            ref={panel}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menú del panel"
+            className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col bg-surface"
+          >
             <div className="flex h-14 items-center justify-between border-b border-borde px-4">
               <Logo alto={36} />
               <button

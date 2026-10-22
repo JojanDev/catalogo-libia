@@ -121,6 +121,13 @@ export async function crearPedidoAccion(
 }
 
 export async function confirmarPagoAccion(referencia: string, aprobado: boolean): Promise<void> {
+  if (
+    typeof referencia !== "string" ||
+    !/^TNR-[A-Z0-9]{8}$/.test(referencia) ||
+    typeof aprobado !== "boolean"
+  ) {
+    redirect("/");
+  }
   await confirmarPagoSimulado(referencia, aprobado);
-  redirect(`/pedido/${referencia}`);
+  redirect(`/pedido/${encodeURIComponent(referencia)}`);
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Boton } from "@/components/ui/Boton";
 import { Entrada, Etiqueta, Selector } from "@/components/ui/Campo";
@@ -38,17 +38,42 @@ export default function FiltrosCatalogo({
 }: FiltrosCatalogoProps) {
   const router = useRouter();
   const [abierta, setAbierta] = useState(false);
+  const panel = useRef<HTMLDivElement>(null);
   const [borrador, setBorrador] = useState<Filtros>(actuales);
   const [texto, setTexto] = useState(actuales.q);
 
   useEffect(() => {
     if (!abierta) return;
-    const alTecla = (e: KeyboardEvent) => e.key === "Escape" && setAbierta(false);
-    document.addEventListener("keydown", alTecla);
+    const previo = document.activeElement as HTMLElement | null;
+    const enfocables = () =>
+      Array.from(
+        panel.current?.querySelectorAll<HTMLElement>("a, button:not(:disabled), input, select") ??
+          [],
+      );
+    enfocables()[0]?.focus();
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAbierta(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const lista = enfocables();
+      const primero = lista[0];
+      const ultimo = lista[lista.length - 1];
+      if (e.shiftKey && document.activeElement === primero) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primero.focus();
+      }
+    };
+    document.addEventListener("keydown", alTeclear);
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", alTecla);
+      document.removeEventListener("keydown", alTeclear);
       document.body.style.overflow = "";
+      previo?.focus();
     };
   }, [abierta]);
 
@@ -138,20 +163,16 @@ export default function FiltrosCatalogo({
 
       {abierta && (
         <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
-          <button
-            type="button"
-            aria-label="Cerrar filtros"
-            className="absolute inset-0 bg-cafe/50"
-            onClick={() => setAbierta(false)}
-          />
+          <div className="absolute inset-0 bg-cafe/50" onClick={() => setAbierta(false)} />
           <div
+            ref={panel}
             role="dialog"
             aria-modal="true"
-            aria-label="Filtros"
+            aria-labelledby="titulo-filtros"
             className="relative max-h-[90dvh] w-full overflow-y-auto rounded-t-lg bg-surface p-6 shadow-elevada md:max-w-md md:rounded-lg"
           >
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-display text-2xl text-cafe">Filtros</h2>
+              <h2 id="titulo-filtros" className="font-display text-2xl text-cafe">Filtros</h2>
               <button
                 type="button"
                 onClick={() => setAbierta(false)}
