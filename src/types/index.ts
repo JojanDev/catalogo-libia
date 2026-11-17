@@ -149,6 +149,7 @@ export type Pedido = {
 export type ProductoVista = Producto & {
   precioFinal: number;
   descuentoPorcentaje: number | null;
+  descuentoHasta: string | null;
   coleccion: Coleccion | null;
 };
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AtSign, MessageCircle } from "lucide-react";
 import { Decor } from "@/components/decor/Decor";
-import { ENLACES_TIENDA } from "@/components/tienda/enlaces";
+import { ENLACES_POLITICAS, ENLACES_TIENDA } from "@/components/tienda/enlaces";
 import { Contenedor } from "@/components/ui/Contenedor";
 import { Logo } from "@/components/ui/Logo";
 
@@ -28,6 +28,8 @@ export function PiePagina({ whatsapp }: { whatsapp: string }) {
           <div className="flex flex-col items-center gap-1 text-sm text-cafe sm:flex-row sm:gap-6">
             <a
               href={`https://wa.me/${whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex min-h-11 items-center gap-2 font-semibold hover:text-rosa-accion"
             >
               <MessageCircle className="size-5 text-rosa-deco" aria-hidden="true" />
@@ -38,7 +40,19 @@ export function PiePagina({ whatsapp }: { whatsapp: string }) {
               @tonorosa
             </span>
           </div>
-          <p className="text-sm text-tenue">© Tonorosa by Leyar</p>
+          <nav aria-label="Políticas" className="flex flex-wrap justify-center gap-x-5">
+            {ENLACES_POLITICAS.map((enlace) => (
+              <Link
+                key={enlace.href}
+                href={enlace.href}
+                className="flex min-h-11 items-center text-sm text-cafe underline-offset-4 hover:text-rosa-accion hover:underline"
+              >
+                {enlace.etiqueta}
+              </Link>
+            ))}
+          </nav>
+          <p className="text-sm text-cafe">Envíos a toda Colombia. Pago seguro en línea con Wompi.</p>
+          <p className="text-sm text-cafe">© Tonorosa by Leyar</p>
         </Contenedor>
       </div>
     </footer>

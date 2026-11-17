@@ -18,6 +18,7 @@ type EntradaPedido = {
   cliente: DatosCliente;
   envio: DatosEnvio;
   metodoPago: MetodoPago;
+  aceptaPoliticas: boolean;
 };
 
 export async function validarCodigoAccion(codigo: string, subtotal: number) {
@@ -59,8 +60,14 @@ export async function cotizarAccion(
 
 export async function crearPedidoAccion(
   entrada: EntradaPedido,
-): Promise<{ ok: true; siguiente: string } | { ok: false; error: string }> {
+): Promise<{ ok: true; siguiente: string; referencia: string } | { ok: false; error: string }> {
   if (!esObjeto(entrada)) return { ok: false, error: "Faltan datos del pedido" };
+  if (entrada.aceptaPoliticas !== true) {
+    return {
+      ok: false,
+      error: "Para continuar, acepta los términos y la política de tratamiento de datos.",
+    };
+  }
   if (!itemsValidos(entrada.items)) return { ok: false, error: "El carrito no es válido" };
   if (entrada.codigo !== null && typeof entrada.codigo !== "string") {
     return { ok: false, error: "El código no es válido" };
@@ -114,7 +121,7 @@ export async function crearPedidoAccion(
         notas: (e.notas ?? "").trim(),
       },
     });
-    return { ok: true, siguiente: r.siguiente };
+    return { ok: true, siguiente: r.siguiente, referencia: r.referencia };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "No se pudo crear el pedido" };
   }

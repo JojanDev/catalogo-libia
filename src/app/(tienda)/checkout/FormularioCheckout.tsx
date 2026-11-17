@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AlertCircle, ChevronDown, ShoppingBag } from "lucide-react";
+import { AlertCircle, ChevronDown, ShieldCheck, ShoppingBag } from "lucide-react";
+import { CLAVE_PEDIDO_POR_PAGAR } from "@/components/carrito/VaciarCarritoAlConfirmar";
 import { Boton } from "@/components/ui/Boton";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import { AreaTexto, Campo, Entrada, Selector } from "@/components/ui/Campo";
@@ -83,10 +85,13 @@ function validar(v: Valores): Partial<Record<keyof Valores, string>> {
 
 const seccion = "rounded-lg border border-borde bg-surface p-5 shadow-card";
 const tituloSeccion = "mb-4 font-display text-xl text-cafe";
+const opcionPago =
+  "flex min-h-14 cursor-pointer items-start gap-3 rounded-sm border border-borde px-4 py-3 has-checked:border-rosa-accion has-checked:bg-rosa-suave has-focus-visible:ring-2 has-focus-visible:ring-rosa-accion has-focus-visible:ring-offset-2";
+const enlacePolitica = "font-semibold text-rosa-accion underline";
 
 export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) {
   const router = useRouter();
-  const { items, codigo, vaciar, hidratado: listo } = useCart();
+  const { items, codigo, vaciar, abrir, hidratado: listo } = useCart();
   const [cot, setCot] = useState<Cotizacion | null>(null);
   const [resumenAbierto, setResumenAbierto] = useState(false);
   const [valores, setValores] = useState<Valores>(inicial);
@@ -94,6 +99,8 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
   const [metodo, setMetodo] = useState<MetodoPago>(pagosEnLinea ? "wompi" : "whatsapp");
   const [enviando, setEnviando] = useState(false);
   const [errorGeneral, setErrorGeneral] = useState("");
+  const [acepta, setAcepta] = useState(false);
+  const [errorAcepta, setErrorAcepta] = useState(false);
 
   useEffect(() => {
     if (!listo || items.length === 0) return;
@@ -120,8 +127,13 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
     e.preventDefault();
     const er = validar(valores);
     setErrores(er);
+    setErrorAcepta(!acepta);
     if (Object.keys(er).length > 0) {
       document.getElementById(`co-${Object.keys(er)[0]}`)?.focus();
+      return;
+    }
+    if (!acepta) {
+      document.getElementById("co-acepta")?.focus();
       return;
     }
     setErrorGeneral("");
@@ -139,13 +151,15 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
           notas: valores.notas,
         },
         metodoPago: metodo,
+        aceptaPoliticas: acepta,
       });
       if (!r.ok) {
         setErrorGeneral(r.error);
         setEnviando(false);
         return;
       }
-      vaciar();
+      if (metodo === "whatsapp") vaciar();
+      else sessionStorage.setItem(CLAVE_PEDIDO_POR_PAGAR, r.referencia);
       if (r.siguiente.startsWith("https")) window.location.href = r.siguiente;
       else router.push(r.siguiente);
     } catch {
@@ -181,7 +195,7 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
         >
           <span className="font-display text-xl text-cafe">Resumen del pedido</span>
           <span className="flex items-center gap-2 text-base font-bold text-cafe">
-            {cot ? formatearPrecio(cot.total) : ""}
+            {cot ? formatearPrecio(cot.total) : <span className="text-sm font-normal text-tenue">Calculando…</span>}
             <ChevronDown
               className={`size-5 text-rosa-accion transition-transform ${resumenAbierto ? "rotate-180" : ""}`}
               aria-hidden="true"
@@ -236,16 +250,6 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
             )}
           </div>
         )}
-        {cot && cot.errores.length > 0 && (
-          <ul className="space-y-1 rounded-b-lg bg-aviso-fondo px-5 py-3 text-sm font-semibold text-aviso">
-            {cot.errores.map((m) => (
-              <li key={m} className="flex items-start gap-1.5">
-                <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                {m}
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
 
       <section className={seccion}>
@@ -279,7 +283,12 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
         <div className="space-y-4">
           <Campo id="co-departamento" etiqueta="Departamento" error={errores.departamento}>
             {(p) => (
-              <Selector {...p} value={valores.departamento} onChange={cambiar("departamento")}>
+              <Selector
+                {...p}
+                value={valores.departamento}
+                onChange={cambiar("departamento")}
+                autoComplete="address-level1"
+              >
                 <option value="">Selecciona un departamento</option>
                 {DEPARTAMENTOS.map((d) => (
                   <option key={d} value={d}>
@@ -294,13 +303,18 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
               <Entrada {...p} value={valores.ciudad} onChange={cambiar("ciudad")} autoComplete="address-level2" />
             )}
           </Campo>
-          <Campo id="co-direccion" etiqueta="Dirección" error={errores.direccion}>
+          <Campo
+            id="co-direccion"
+            etiqueta="Dirección"
+            ayuda="Ejemplo: Calle 10 # 5-20, apto 301"
+            error={errores.direccion}
+          >
             {(p) => (
               <Entrada {...p} value={valores.direccion} onChange={cambiar("direccion")} autoComplete="street-address" />
             )}
           </Campo>
           <Campo id="co-barrio" etiqueta="Barrio (opcional)">
-            {(p) => <Entrada {...p} value={valores.barrio} onChange={cambiar("barrio")} />}
+            {(p) => <Entrada {...p} value={valores.barrio} onChange={cambiar("barrio")} autoComplete="address-line2" />}
           </Campo>
           <Campo id="co-notas" etiqueta="Indicaciones de entrega (opcional)">
             {(p) => <AreaTexto {...p} value={valores.notas} onChange={cambiar("notas")} />}
@@ -310,31 +324,99 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
 
       <section className={seccion}>
         <h2 className={tituloSeccion}>Método de pago</h2>
-        <div className="space-y-3">
+        <fieldset className="space-y-3">
+          <legend className="sr-only">Método de pago</legend>
           {pagosEnLinea && (
-            <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-sm border border-borde px-4 has-checked:border-rosa-accion has-checked:bg-rosa-suave">
+            <label className={opcionPago}>
               <input
                 type="radio"
                 name="metodo"
                 checked={metodo === "wompi"}
                 onChange={() => setMetodo("wompi")}
-                className="size-5 accent-rosa-accion"
+                className="mt-0.5 size-5 accent-rosa-accion"
               />
-              <span className="text-base font-semibold text-cafe">Pagar en línea (tarjeta, PSE, Nequi)</span>
+              <span>
+                <span className="block text-base font-semibold text-cafe">Pagar en línea</span>
+                <span className="block text-sm text-tenue">
+                  Te llevamos a la pasarela de pago para completar tu compra
+                </span>
+              </span>
             </label>
           )}
-          <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-sm border border-borde px-4 has-checked:border-rosa-accion has-checked:bg-rosa-suave">
+          <label className={opcionPago}>
             <input
               type="radio"
               name="metodo"
               checked={metodo === "whatsapp"}
               onChange={() => setMetodo("whatsapp")}
-              className="size-5 accent-rosa-accion"
+              className="mt-0.5 size-5 accent-rosa-accion"
             />
-            <span className="text-base font-semibold text-cafe">Enviar pedido por WhatsApp</span>
+            <span>
+              <span className="block text-base font-semibold text-cafe">Enviar pedido por WhatsApp</span>
+              <span className="block text-sm text-tenue">Te escribimos para coordinar el pago y el envío</span>
+            </span>
           </label>
-        </div>
+        </fieldset>
       </section>
+
+      <div>
+        <label htmlFor="co-acepta" className="flex min-h-11 cursor-pointer items-start gap-3 text-sm text-cafe">
+          <input
+            id="co-acepta"
+            type="checkbox"
+            checked={acepta}
+            onChange={(e) => {
+              setAcepta(e.target.checked);
+              setErrorAcepta(false);
+            }}
+            aria-invalid={errorAcepta || undefined}
+            aria-describedby={errorAcepta ? "co-acepta-error" : undefined}
+            className="mt-0.5 size-5 shrink-0 accent-rosa-accion"
+          />
+          <span>
+            He leído y acepto los{" "}
+            <Link href="/politicas/terminos" target="_blank" rel="noopener noreferrer" className={enlacePolitica}>
+              Términos y condiciones
+            </Link>
+            , la{" "}
+            <Link href="/politicas/privacidad" target="_blank" rel="noopener noreferrer" className={enlacePolitica}>
+              Política de tratamiento de datos personales
+            </Link>{" "}
+            y la{" "}
+            <Link
+              href="/politicas/envios-y-devoluciones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={enlacePolitica}
+            >
+              Política de envíos y devoluciones
+            </Link>
+            .
+          </span>
+        </label>
+        {errorAcepta && (
+          <p id="co-acepta-error" className="mt-1.5 flex items-start gap-1.5 text-sm font-semibold text-error">
+            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            Para continuar, acepta los términos y la política de tratamiento de datos.
+          </p>
+        )}
+      </div>
+
+      {cot && cot.errores.length > 0 && (
+        <div role="alert" className="rounded-sm bg-aviso-fondo px-4 py-3 text-sm font-semibold text-aviso">
+          <ul className="space-y-1">
+            {cot.errores.map((m) => (
+              <li key={m} className="flex items-start gap-1.5">
+                <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                {m}
+              </li>
+            ))}
+          </ul>
+          <button type="button" onClick={abrir} className="mt-1 inline-flex min-h-11 items-center underline">
+            Revisar mi carrito
+          </button>
+        </div>
+      )}
 
       {errorGeneral && (
         <p role="alert" className="flex items-start gap-2 rounded-sm bg-error-fondo px-4 py-3 text-sm font-semibold text-error">
@@ -343,9 +425,21 @@ export function FormularioCheckout({ pagosEnLinea }: { pagosEnLinea: boolean }) 
         </p>
       )}
 
-      <Boton type="submit" cargando={enviando} className="w-full">
-        Confirmar pedido
-      </Boton>
+      <div className="sticky bottom-0 z-30 -mx-4 space-y-2 border-t border-borde bg-surface px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-elevada sm:mx-0 lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+        {cot && (
+          <p className="flex items-baseline justify-between text-cafe">
+            <span className="text-base font-semibold">Total a pagar</span>
+            <span className="font-display text-2xl">{formatearPrecio(cot.total)}</span>
+          </p>
+        )}
+        <Boton type="submit" cargando={enviando} disabled={!!cot && cot.errores.length > 0} className="w-full">
+          Confirmar pedido
+        </Boton>
+        <p className="flex items-center justify-center gap-1.5 text-sm text-tenue">
+          <ShieldCheck className="size-4 shrink-0 text-salvia-oscuro" aria-hidden="true" />
+          {metodo === "wompi" ? "Pago seguro con Wompi" : "Te escribimos por WhatsApp para coordinar el pago"}
+        </p>
+      </div>
     </form>
   );
 }

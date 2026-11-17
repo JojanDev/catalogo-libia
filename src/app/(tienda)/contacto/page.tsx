@@ -5,14 +5,17 @@ import { Separador } from "@/components/ui/Separador";
 import { estilosBoton } from "@/components/ui/estilosBoton";
 import { obtenerConfiguracion } from "@/lib/datos/tienda";
 
-export const metadata: Metadata = { title: "Contacto" };
+export const metadata: Metadata = {
+  title: "Contacto",
+  description: "Escríbenos por WhatsApp para pedidos, tallas y cualquier duda. Te ayudamos con gusto.",
+};
 
 export default async function ContactoPage() {
   const config = await obtenerConfiguracion();
   const enlace = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent("Hola Tonorosa, quisiera más información.")}`;
 
-  const datos = [
-    { Icono: Mail, titulo: "Correo", texto: config.correoNotificaciones },
+  const datos: { Icono: typeof Mail; titulo: string; texto: string; href?: string }[] = [
+    { Icono: Mail, titulo: "Correo", texto: config.correoNotificaciones, href: `mailto:${config.correoNotificaciones}` },
     { Icono: Clock, titulo: "Horario", texto: "Lunes a sábado, 9:00 a. m. a 6:00 p. m." },
     { Icono: AtSign, titulo: "Redes", texto: "@tonorosa" },
   ];
@@ -39,17 +42,30 @@ export default async function ContactoPage() {
         </a>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-3">
-          {datos.map(({ Icono, titulo, texto }) => (
-            <li key={titulo} className="rounded-md bg-surface p-5 text-center shadow-card">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-rosa-medio">
-                <Icono className="size-6 text-rosa-deco" aria-hidden="true" />
-              </span>
-              <h2 className="mt-3 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
-                {titulo}
-              </h2>
-              <p className="mt-1 select-text wrap-break-word text-base text-cafe">{texto}</p>
-            </li>
-          ))}
+          {datos.map(({ Icono, titulo, texto, href }) => {
+            const contenido = (
+              <>
+                <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-rosa-medio">
+                  <Icono className="size-6 text-rosa-deco" aria-hidden="true" />
+                </span>
+                <h2 className="mt-3 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
+                  {titulo}
+                </h2>
+                <p className="mt-1 select-text wrap-break-word text-base text-cafe">{texto}</p>
+              </>
+            );
+            return (
+              <li key={titulo} className={`rounded-md bg-surface text-center shadow-card ${href ? "" : "p-5"}`}>
+                {href ? (
+                  <a href={href} className="block rounded-md p-5 transition-shadow hover:shadow-elevada">
+                    {contenido}
+                  </a>
+                ) : (
+                  contenido
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </Contenedor>

@@ -1,19 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  MessageCircle,
+  RefreshCw,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
 import CompraProducto from "@/components/tienda/CompraProducto";
 import GaleriaProducto from "@/components/tienda/GaleriaProducto";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { Contenedor } from "@/components/ui/Contenedor";
 import { Insignia } from "@/components/ui/Insignia";
 import { TituloSeccion } from "@/components/ui/TituloSeccion";
+import { estilosBoton } from "@/components/ui/estilosBoton";
 import {
   obtenerConfiguracion,
   obtenerProductoPorSlug,
   obtenerRelacionados,
 } from "@/lib/datos/tienda";
-import { formatearPrecio } from "@/lib/formato";
+import { formatearDia, formatearPrecio } from "@/lib/formato";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -21,11 +29,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const producto = await obtenerProductoPorSlug(slug);
   if (!producto) return { title: "Producto no encontrado" };
+  const descripcion = descripcionDe(producto);
   return {
     title: producto.nombre,
-    description: producto.descripcion,
-    openGraph: { images: [producto.imagen] },
+    description: descripcion,
+    openGraph: {
+      title: producto.nombre,
+      description: descripcion,
+      images: [{ url: producto.imagen, alt: producto.nombre }],
+    },
+    twitter: { card: "summary_large_image" },
   };
+}
+
+function descripcionDe(producto: { nombre: string; descripcion: string }) {
+  return (
+    producto.descripcion ||
+    `${producto.nombre} de Tonorosa by Leyar, ropa infantil con envíos a toda Colombia.`
+  );
 }
 
 function Acordeon({ titulo, children }: { titulo: string; children: React.ReactNode }) {
@@ -52,27 +73,47 @@ export default async function ProductoPage({ params }: Props) {
     obtenerRelacionados(producto),
   ]);
   const conDescuento = producto.descuentoPorcentaje !== null;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: producto.nombre,
+    image: [producto.imagen],
+    description: descripcionDe(producto),
+    offers: {
+      "@type": "Offer",
+      price: producto.precioFinal,
+      priceCurrency: "COP",
+      availability: producto.agotado
+        ? "https://schema.org/OutOfStock"
+        : "https://schema.org/InStock",
+    },
+  };
+  const enlaceMiga = "inline-flex min-h-11 items-center hover:text-rosa-accion hover:underline";
 
   return (
     <Contenedor className="pb-32 pt-6 lg:pb-16 lg:pt-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
       <nav aria-label="Migas de pan" className="mb-5 text-sm text-tenue">
         <ol className="flex flex-wrap items-center gap-1">
-          <li>
-            <Link href="/" className="hover:text-rosa-accion hover:underline">
+          <li className="flex items-center gap-1">
+            <Link href="/" className={enlaceMiga}>
               Inicio
             </Link>
+            <ChevronRight className="size-4" aria-hidden="true" />
           </li>
-          <ChevronRight className="size-4" aria-hidden="true" />
-          <li>
+          <li className="flex items-center gap-1">
             <Link
               href={producto.coleccion ? `/colecciones/${producto.coleccion.slug}` : "/catalogo"}
-              className="hover:text-rosa-accion hover:underline"
+              className={enlaceMiga}
             >
-              {producto.coleccion?.nombre ?? "Colección"}
+              {producto.coleccion?.nombre ?? "Catálogo"}
             </Link>
+            <ChevronRight className="size-4" aria-hidden="true" />
           </li>
-          <ChevronRight className="size-4" aria-hidden="true" />
-          <li aria-current="page" className="text-cafe">
+          <li aria-current="page" className="max-w-48 truncate text-cafe sm:max-w-none">
             {producto.nombre}
           </li>
         </ol>
@@ -100,12 +141,50 @@ export default async function ProductoPage({ params }: Props) {
               </>
             )}
           </p>
+          {conDescuento && producto.descuentoHasta && (
+            <p className="mt-1 text-sm font-semibold text-rosa-accion">
+              Oferta hasta el {formatearDia(producto.descuentoHasta)}
+            </p>
+          )}
           <p className="mt-4 text-base leading-relaxed text-cafe lg:text-[17px]">
             {producto.descripcion}
           </p>
 
           <div className="mt-8">
             <CompraProducto producto={producto} />
+            <a
+              href={`https://wa.me/${config.whatsapp}?text=${encodeURIComponent(`Hola Tonorosa, me interesa la prenda "${producto.nombre}".`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={estilosBoton(producto.agotado ? "primario" : "secundario", "normal", "mt-3 w-full")}
+            >
+              <MessageCircle
+                className={`size-5 ${producto.agotado ? "" : "text-[#25D366]"}`}
+                aria-hidden="true"
+              />
+              {producto.agotado ? "Consultar disponibilidad por WhatsApp" : "Preguntar por WhatsApp"}
+            </a>
+            <ul className="mt-4 space-y-2 text-sm text-cafe">
+              <li className="flex items-center gap-2">
+                <Truck className="size-4 text-salvia-oscuro" aria-hidden="true" />
+                Envíos a toda Colombia
+              </li>
+              {config.pagosEnLinea && (
+                <li className="flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-salvia-oscuro" aria-hidden="true" />
+                  Pago seguro en línea con Wompi
+                </li>
+              )}
+              <li className="flex items-center gap-2">
+                <RefreshCw className="size-4 text-salvia-oscuro" aria-hidden="true" />
+                <Link
+                  href="/politicas/envios-y-devoluciones"
+                  className="inline-flex min-h-11 items-center font-semibold text-rosa-accion underline"
+                >
+                  Cambios y devoluciones
+                </Link>
+              </li>
+            </ul>
           </div>
 
           <div className="mt-10 border-t border-borde">

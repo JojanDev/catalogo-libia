@@ -17,3 +17,11 @@ export function formatearFecha(iso: string): string {
     year: "numeric",
   }).format(new Date(iso));
 }
+
+export function formatearDia(fecha: string): string {
+  return new Intl.DateTimeFormat("es-CO", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "long",
+  }).format(new Date(`${fecha}T00:00:00Z`));
+}

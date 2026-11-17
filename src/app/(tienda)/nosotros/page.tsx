@@ -5,7 +5,10 @@ import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import { Contenedor } from "@/components/ui/Contenedor";
 import { Separador } from "@/components/ui/Separador";
 
-export const metadata: Metadata = { title: "Nosotros" };
+export const metadata: Metadata = {
+  title: "Nosotros",
+  description: "Conoce la historia de Tonorosa by Leyar, moda infantil hecha con amor para las más pequeñas.",
+};
 
 const VALORES = [
   {

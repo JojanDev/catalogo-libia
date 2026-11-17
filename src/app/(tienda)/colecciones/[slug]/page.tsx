@@ -11,7 +11,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const coleccion = await obtenerColeccionPorSlug(slug);
   if (!coleccion) return { title: "Colección" };
-  return { title: coleccion.nombre, description: coleccion.descripcion };
+  const description =
+    coleccion.descripcion ||
+    `Colección ${coleccion.nombre} de Tonorosa by Leyar, ropa infantil con envíos a toda Colombia.`;
+  return {
+    title: coleccion.nombre,
+    description,
+    openGraph: {
+      title: coleccion.nombre,
+      description,
+      ...(coleccion.imagen ? { images: [{ url: coleccion.imagen, alt: coleccion.nombre }] } : {}),
+    },
+    twitter: { card: "summary_large_image" },
+  };
 }
 
 export default async function ColeccionPage({ params }: Props) {
@@ -42,7 +54,14 @@ export default async function ColeccionPage({ params }: Props) {
         <p className="mb-4 text-sm text-tenue">
           {productos.length} {productos.length === 1 ? "prenda" : "prendas"}
         </p>
-        <GrillaProductos productos={productos} />
+        <GrillaProductos
+          productos={productos}
+          vacio={{
+            mensaje: "Pronto llegan prendas nuevas a esta colección.",
+            etiqueta: "Ver todo el catálogo",
+            href: "/catalogo",
+          }}
+        />
       </Contenedor>
     </>
   );

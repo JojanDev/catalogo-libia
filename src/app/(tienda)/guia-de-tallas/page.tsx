@@ -5,7 +5,10 @@ import { Separador } from "@/components/ui/Separador";
 import { estilosBoton } from "@/components/ui/estilosBoton";
 import { obtenerConfiguracion, obtenerGuiaTallas } from "@/lib/datos/tienda";
 
-export const metadata: Metadata = { title: "Guía de tallas" };
+export const metadata: Metadata = {
+  title: "Guía de tallas",
+  description: "Tabla de tallas y cómo medir a tu peque para elegir la talla ideal.",
+};
 
 const PASOS = [
   { titulo: "Pecho", texto: "Rodea el pecho por la parte más ancha, pasando la cinta bajo las axilas." },
@@ -26,15 +29,22 @@ export default async function GuiaTallasPage() {
         <Separador className="mt-4" />
       </div>
 
-      <div className="mt-10 overflow-x-auto rounded-md border border-borde bg-surface shadow-card">
+      <p className="mt-10 text-sm text-tenue sm:hidden">Desliza la tabla hacia los lados para ver todas las medidas.</p>
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Tabla de tallas"
+        className="mt-3 overflow-x-auto rounded-md border border-borde bg-surface shadow-card sm:mt-10"
+      >
         <table className="w-full min-w-[520px] border-collapse text-left text-base">
+          <caption className="sr-only">{guia.titulo}</caption>
           <thead>
             <tr>
-              {guia.columnas.map((c) => (
+              {guia.columnas.map((c, i) => (
                 <th
                   key={c}
                   scope="col"
-                  className="sticky top-0 bg-rosa-suave px-4 py-3 text-xs font-bold uppercase tracking-[0.08em] text-cafe"
+                  className={`bg-rosa-suave px-4 py-3 text-xs font-bold uppercase tracking-[0.08em] text-cafe ${i === 0 ? "sticky left-0 z-10 border-r border-borde" : ""}`}
                 >
                   {c}
                 </th>
@@ -45,7 +55,7 @@ export default async function GuiaTallasPage() {
             {guia.filas.map((fila, i) => (
               <tr key={i} className="border-t border-borde">
                 {fila.map((celda, j) => (
-                  <td key={j} className={`px-4 py-3 text-cafe ${j === 0 ? "font-bold" : ""}`}>
+                  <td key={j} className={`px-4 py-3 text-cafe ${j === 0 ? "sticky left-0 border-r border-borde bg-surface font-bold" : ""}`}>
                     {celda}
                   </td>
                 ))}
@@ -54,7 +64,7 @@ export default async function GuiaTallasPage() {
           </tbody>
         </table>
       </div>
-      {guia.notas && <p className="mt-4 text-sm text-tenue">{guia.notas}</p>}
+      {guia.notas && <p className="mt-4 text-sm text-cafe">{guia.notas}</p>}
 
       <section className="mt-14">
         <h2 className="text-center font-display text-[26px] text-cafe md:text-4xl">Cómo medir</h2>

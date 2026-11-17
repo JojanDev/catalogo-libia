@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import type { SlideCarrusel } from "@/types";
 
@@ -12,17 +12,28 @@ const flecha =
 export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
   const [indice, setIndice] = useState(0);
   const [pausado, setPausado] = useState(false);
+  const [pausadoManual, setPausadoManual] = useState(false);
+  const videos = useRef<(HTMLVideoElement | null)[]>([]);
   const inicioX = useRef<number | null>(null);
   const total = slides.length;
 
   const ir = (n: number) => setIndice((n + total) % total);
 
   useEffect(() => {
-    if (total < 2 || pausado) return;
+    if (total < 2 || pausado || pausadoManual) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setTimeout(() => setIndice((i) => (i + 1) % total), 6000);
     return () => window.clearTimeout(id);
-  }, [indice, pausado, total]);
+  }, [indice, pausado, pausadoManual, total]);
+
+  useEffect(() => {
+    const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    videos.current.forEach((v, i) => {
+      if (!v) return;
+      if (i === indice && !pausadoManual && !reducido) v.play().catch(() => {});
+      else v.pause();
+    });
+  }, [indice, pausadoManual]);
 
   return (
     <section
@@ -62,7 +73,10 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
                 <video
                   src={slide.url}
                   poster={slide.urlMovil ?? undefined}
-                  autoPlay
+                  ref={(el) => {
+                    videos.current[i] = el;
+                  }}
+                  preload="metadata"
                   muted
                   loop
                   playsInline
@@ -107,6 +121,17 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
             </div>
           );
         })}
+
+        {(total > 1 || slides.some((s) => s.tipo === "video")) && (
+          <button
+            type="button"
+            onClick={() => setPausadoManual((p) => !p)}
+            aria-label={pausadoManual ? "Reanudar carrusel" : "Pausar carrusel"}
+            className="absolute right-3 top-3 z-10 flex size-11 items-center justify-center rounded-full bg-surface/90 text-cafe shadow-card hover:bg-surface"
+          >
+            {pausadoManual ? <Play className="size-5" aria-hidden="true" /> : <Pause className="size-5" aria-hidden="true" />}
+          </button>
+        )}
 
         {total > 1 && (
           <>

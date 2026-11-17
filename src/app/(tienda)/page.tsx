@@ -1,12 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Ruler } from "lucide-react";
 import { Decor } from "@/components/decor/Decor";
 import { Beneficios } from "@/components/tienda/Beneficios";
 import { CarruselInicio } from "@/components/tienda/CarruselInicio";
-import TarjetaProducto from "@/components/tienda/TarjetaProducto";
+import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import { Contenedor } from "@/components/ui/Contenedor";
+import { Insignia } from "@/components/ui/Insignia";
 import { Logo } from "@/components/ui/Logo";
 import { Separador } from "@/components/ui/Separador";
 import { TituloSeccion } from "@/components/ui/TituloSeccion";
@@ -17,18 +19,31 @@ import {
   obtenerNovedades,
 } from "@/lib/datos/tienda";
 
+export const metadata: Metadata = {
+  title: { absolute: "Tonorosa by Leyar | Ropa infantil con ternura y estilo" },
+  description:
+    "Ropa para las más pequeñas con diseños únicos, calidad y confort. Envíos a toda Colombia. Compra en línea o por WhatsApp.",
+};
+
 export default async function InicioPage() {
   const [slides, destacada, colecciones, novedades] = await Promise.all([
     obtenerCarrusel(),
     obtenerColeccionDestacada(),
     obtenerColecciones(),
-    obtenerNovedades(6),
+    obtenerNovedades(8),
   ]);
+
+  const lista = destacada
+    ? [destacada, ...colecciones.filter((c) => c.id !== destacada.id)]
+    : colecciones;
 
   return (
     <>
       {slides.length > 0 ? (
-        <CarruselInicio slides={slides} />
+        <div className="bg-rosa-suave pb-8 lg:pb-12">
+          <h1 className="sr-only">Tonorosa by Leyar, ropa infantil en Colombia</h1>
+          <CarruselInicio slides={slides} />
+        </div>
       ) : (
         <section className="relative overflow-hidden bg-rosa-suave py-12 lg:py-20">
           <Decor variant="flor" className="absolute -left-6 bottom-4 size-24 sm:left-4 sm:size-32 lg:size-44" />
@@ -45,16 +60,18 @@ export default async function InicioPage() {
 
       <Beneficios />
 
-      <section className="relative overflow-hidden py-12 lg:py-20">
+      <section className="relative overflow-hidden py-8 lg:py-16">
         <Decor variant="rama" className="absolute -left-6 bottom-0 hidden h-40 w-24 sm:block lg:left-4 lg:h-56 lg:w-36" />
         <Decor variant="flor" className="absolute bottom-4 left-10 hidden size-16 lg:block" />
         <Decor variant="rama" className="absolute -right-6 bottom-0 hidden h-40 w-24 -scale-x-100 sm:block lg:right-4 lg:h-56 lg:w-36" />
         <Decor variant="flor" className="absolute bottom-4 right-10 hidden size-16 lg:block" />
         <Contenedor className="relative flex flex-col items-center text-center">
-          <p className="text-xl text-cafe lg:text-2xl">Bienvenidas a</p>
-          <p className="font-script text-[56px] font-semibold leading-tight text-rosa-accion lg:text-[72px]">
-            Tonorosa
-          </p>
+          <h2 className="flex flex-col items-center">
+            <span className="text-xl text-cafe lg:text-2xl">Bienvenidas a</span>
+            <span className="font-script text-[56px] font-semibold leading-tight text-rosa-accion lg:text-[72px]">
+              Tonorosa
+            </span>
+          </h2>
           <Separador className="mt-2" />
           <p className="mt-6 max-w-md text-base leading-relaxed text-cafe lg:text-[17px]">
             Aquí encontrarás mucho más que ropa, encontrarás un mundo de ternura, estilo y felicidad
@@ -67,83 +84,62 @@ export default async function InicioPage() {
         </Contenedor>
       </section>
 
-      {destacada && (
-        <section className="pb-12 lg:pb-20">
-          <Contenedor>
-            <div className="relative overflow-hidden rounded-lg bg-rosa-suave">
-              <div className="relative aspect-[4/3] lg:aspect-[16/6]">
-                {destacada.imagen && (
-                  <Image
-                    src={destacada.imagen}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1200px) 1136px, 100vw"
-                    unoptimized
-                    className="object-cover"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-cafe/70 via-cafe/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 p-6 text-white lg:p-12">
-                  <p className="text-xs font-bold uppercase tracking-[0.08em]">Colección destacada</p>
-                  <h2 className="font-display text-[26px] leading-tight lg:text-4xl">{destacada.nombre}</h2>
-                  {destacada.descripcion && (
-                    <p className="line-clamp-2 max-w-md text-base">{destacada.descripcion}</p>
-                  )}
-                  <BotonEnlace href={`/colecciones/${destacada.slug}`}>
-                    Ver colección
-                    <ArrowRight className="size-5" aria-hidden="true" />
-                  </BotonEnlace>
-                </div>
-              </div>
-            </div>
-          </Contenedor>
-        </section>
-      )}
-
       {colecciones.length > 0 && (
         <section className="bg-rosa-suave py-12 lg:py-20">
           <Contenedor>
             <TituloSeccion titulo="Nuestras colecciones" />
           </Contenedor>
-          <ul className="mx-auto mt-8 flex max-w-[1200px] snap-x gap-4 overflow-x-auto px-4 pb-4 sm:px-6 lg:justify-center lg:px-8">
-            {colecciones.map((c) => (
-              <li key={c.id} className="w-40 shrink-0 snap-start sm:w-52">
-                <Link href={`/colecciones/${c.slug}`} className="group block">
-                  <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-rosa-medio shadow-card">
-                    {c.imagen && (
-                      <Image
-                        src={c.imagen}
-                        alt=""
-                        fill
-                        sizes="208px"
-                        unoptimized
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    )}
-                  </div>
-                  <p className="mt-3 text-center font-display text-lg text-cafe group-hover:text-rosa-accion">
-                    {c.nombre}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <Contenedor>
+            <ul className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+              {lista.map((c) => {
+                const grande = c.id === destacada?.id;
+                return (
+                  <li key={c.id} className={grande ? "col-span-2" : undefined}>
+                    <Link href={`/colecciones/${c.slug}`} className="group block">
+                      <div
+                        className={`relative overflow-hidden rounded-lg bg-rosa-medio shadow-card ${grande ? "aspect-[16/9] lg:aspect-[8/5]" : "aspect-[4/5]"}`}
+                      >
+                        {c.imagen && (
+                          <Image
+                            src={c.imagen}
+                            alt=""
+                            fill
+                            sizes={grande ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 50vw"}
+                            unoptimized
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        )}
+                        {grande && <Insignia className="absolute left-3 top-3">Destacada</Insignia>}
+                      </div>
+                      <p
+                        className={`mt-3 text-center font-display text-cafe group-hover:text-rosa-accion ${grande ? "text-xl lg:text-2xl" : "text-lg"}`}
+                      >
+                        {c.nombre}
+                      </p>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </Contenedor>
         </section>
       )}
 
       {novedades.length > 0 && (
         <section className="py-12 lg:py-20">
           <Contenedor>
-            <TituloSeccion titulo="Novedades" />
-            <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-6">
-              {novedades.map((p, i) => (
-                <TarjetaProducto key={p.id} producto={p} prioridad={i < 2} />
-              ))}
+            <div className="flex flex-col items-center gap-1 lg:flex-row lg:justify-between">
+              <TituloSeccion titulo="Recién llegado" />
+              <Link
+                href="/catalogo"
+                className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-rosa-accion hover:text-rosa-hover"
+              >
+                Ver todo
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
             </div>
-            <div className="mt-10 flex justify-center">
-              <BotonEnlace href="/catalogo" variante="secundario">
-                Ver toda la colección
-              </BotonEnlace>
+            <div className="mt-8">
+              <GrillaProductos productos={novedades} conPrioridad={false} />
             </div>
           </Contenedor>
         </section>

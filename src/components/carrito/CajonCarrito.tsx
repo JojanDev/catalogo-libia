@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Minus, Plus, ShoppingBag, Tag, Trash2, X } from "lucide-react";
+import { Lock, Minus, Plus, ShoppingBag, Tag, Trash2, X } from "lucide-react";
 import { Boton } from "@/components/ui/Boton";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import { Entrada } from "@/components/ui/Campo";
@@ -33,6 +33,8 @@ export function CajonCarrito() {
   const [texto, setTexto] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [validando, setValidando] = useState(false);
+  const [mostrarCodigo, setMostrarCodigo] = useState(false);
+  const ahorro = items.reduce((s, i) => s + (i.precioUnitario - i.precioFinal) * i.cantidad, 0);
 
   useEffect(() => {
     if (!abierto) return;
@@ -196,7 +198,7 @@ export function CajonCarrito() {
               ))}
             </ul>
 
-            <div className="space-y-4 border-t border-borde bg-surface p-4">
+            <div className="space-y-4 border-t border-borde bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
               {codigo ? (
                 <div className="flex items-center justify-between rounded-sm bg-exito-fondo px-3 py-2 text-sm font-semibold text-exito">
                   <span className="flex items-center gap-2">
@@ -214,6 +216,16 @@ export function CajonCarrito() {
                     Quitar
                   </button>
                 </div>
+              ) : !mostrarCodigo ? (
+                <button
+                  type="button"
+                  onClick={() => setMostrarCodigo(true)}
+                  aria-expanded={false}
+                  className="flex min-h-11 items-center gap-2 text-sm font-semibold text-rosa-accion hover:underline"
+                >
+                  <Tag className="size-4" aria-hidden="true" />
+                  Tengo un código de descuento
+                </button>
               ) : (
                 <form onSubmit={aplicar}>
                   <label htmlFor="codigo-carrito" className="mb-1.5 block text-sm font-semibold text-cafe">
@@ -225,6 +237,7 @@ export function CajonCarrito() {
                       value={texto}
                       onChange={(e) => setTexto(e.target.value)}
                       autoComplete="off"
+                      autoFocus
                       aria-invalid={mensaje ? true : undefined}
                       aria-describedby={mensaje ? "codigo-carrito-msg" : undefined}
                       className="uppercase"
@@ -252,12 +265,20 @@ export function CajonCarrito() {
                     <dd>-{formatearPrecio(descuentoCodigo)}</dd>
                   </div>
                 )}
-                <div className="flex justify-between text-lg font-bold">
-                  <dt>Total</dt>
-                  <dd>{formatearPrecio(total)}</dd>
+                <div className="flex items-baseline justify-between">
+                  <dt className="text-lg font-bold">Total</dt>
+                  <dd className="font-display text-2xl">{formatearPrecio(total)}</dd>
                 </div>
               </dl>
-              <p className="text-sm text-tenue">El envío se calcula al finalizar</p>
+              {ahorro > 0 && (
+                <p className="text-sm font-semibold text-exito">
+                  Ya ahorras {formatearPrecio(ahorro)} con los descuentos de tus prendas
+                </p>
+              )}
+              <p className="flex items-center gap-2 text-sm text-tenue">
+                <Lock className="size-4 shrink-0 text-salvia-oscuro" aria-hidden="true" />
+                Envío calculado al finalizar. Pago seguro con Wompi.
+              </p>
 
               <div className="flex flex-col gap-2">
                 <BotonEnlace href="/checkout" onClick={cerrar}>
