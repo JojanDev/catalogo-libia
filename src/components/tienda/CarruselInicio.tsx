@@ -110,13 +110,13 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
                 </>
               )}
               {(slide.titulo || slide.subtitulo || (slide.textoBoton && slide.enlace)) && (
-                <div className="absolute inset-x-4 bottom-14 flex flex-col items-start gap-2 rounded-xl bg-canvas/85 p-4 shadow-card backdrop-blur-sm sm:inset-x-auto sm:left-16 sm:max-w-md sm:p-5 lg:bottom-16 lg:left-16 lg:max-w-lg lg:p-8">
+                <div className="absolute inset-x-4 bottom-14 flex flex-col items-start gap-2 rounded-xl bg-canvas/90 p-4 shadow-card backdrop-blur-md sm:inset-x-auto sm:left-16 sm:max-w-md sm:bg-canvas/85 sm:p-5 sm:backdrop-blur-sm lg:bottom-16 lg:left-16 lg:max-w-lg lg:p-8">
                   {slide.titulo && (
                     <h2 className="font-display text-2xl leading-tight text-cafe-oscuro lg:text-4xl">{slide.titulo}</h2>
                   )}
                   {slide.subtitulo && <p className="text-sm text-cafe lg:text-base">{slide.subtitulo}</p>}
                   {slide.textoBoton && slide.enlace && (
-                    <BotonEnlace href={slide.enlace} className="mt-1">
+                    <BotonEnlace href={slide.enlace} tamano="compacto" className="mt-1 sm:h-12 sm:px-6 sm:text-base">
                       {slide.textoBoton}
                     </BotonEnlace>
                   )}
@@ -145,7 +145,7 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
             <button type="button" onClick={() => ir(indice + 1)} aria-label="Siguiente" className={`${flecha} right-2 sm:right-3`}>
               <ChevronRight className="size-6" aria-hidden="true" />
             </button>
-            <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 rounded-full bg-surface/80 px-1">
+            <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 rounded-full bg-surface/95 px-1">
               {slides.map((slide, i) => (
                 <button
                   key={slide.id}
