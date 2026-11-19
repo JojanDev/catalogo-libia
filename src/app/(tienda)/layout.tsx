@@ -2,15 +2,18 @@ import { BarraAnuncio } from "@/components/tienda/BarraAnuncio";
 import { BotonWhatsApp } from "@/components/tienda/BotonWhatsApp";
 import { Encabezado } from "@/components/tienda/Encabezado";
 import { PiePagina } from "@/components/tienda/PiePagina";
-import { obtenerConfiguracion } from "@/lib/datos/tienda";
+import { obtenerColecciones, obtenerConfiguracion } from "@/lib/datos/tienda";
 
 export default async function TiendaLayout({ children }: { children: React.ReactNode }) {
-  const configuracion = await obtenerConfiguracion();
+  const [configuracion, colecciones] = await Promise.all([
+    obtenerConfiguracion(),
+    obtenerColecciones(),
+  ]);
 
   return (
     <>
       <BarraAnuncio texto={configuracion.textoAnuncio} />
-      <Encabezado />
+      <Encabezado colecciones={colecciones} whatsapp={configuracion.whatsapp} />
       <main>{children}</main>
       <PiePagina whatsapp={configuracion.whatsapp} />
       <BotonWhatsApp numero={configuracion.whatsapp} />
