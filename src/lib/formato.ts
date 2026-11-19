@@ -1,10 +1,8 @@
-const monedaCO = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
+const numeroCO = new Intl.NumberFormat("es-CO", {
   maximumFractionDigits: 0,
-  minimumFractionDigits: 0,
+  useGrouping: "always",
 });
 
 export function formatearPrecio(n: number): string {
-  return monedaCO.format(n).replace(/ /g, " ").replace(/^\$\s?/, "$ ");
+  return "$ " + numeroCO.format(n);
 }
