@@ -77,17 +77,17 @@ function FiltrosActivos({
           <Link
             href={i.href}
             aria-label={`Quitar filtro: ${i.texto}`}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-rosa-suave px-3.5 text-sm font-semibold text-cafe hover:bg-rosa-medio"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-rosa-suave px-3 py-1 text-xs font-semibold text-cafe hover:bg-rosa-medio sm:min-h-11 sm:px-3.5 sm:text-sm"
           >
-            {i.texto}
-            <X className="size-4" aria-hidden="true" />
+            <span className="max-w-[16rem] truncate">{i.texto}</span>
+            <X className="size-3.5 shrink-0 sm:size-4" aria-hidden="true" />
           </Link>
         </li>
       ))}
       <li>
         <Link
           href="/catalogo"
-          className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-rosa-accion underline underline-offset-2 hover:text-rosa-hover"
+          className="inline-flex min-h-9 items-center px-2 py-1 text-xs font-semibold text-rosa-accion sm:min-h-11 sm:text-sm underline underline-offset-2 hover:text-rosa-hover"
         >
           Limpiar todo
         </Link>
