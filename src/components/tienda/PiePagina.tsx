@@ -7,7 +7,7 @@ import { Logo } from "@/components/ui/Logo";
 import type { Coleccion } from "@/types";
 
 const CLASE_ENLACE =
-  "flex min-h-11 items-center text-[15px] font-semibold text-cafe hover:text-rosa-accion focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion";
+  "flex min-h-11 items-center text-[15px] font-semibold leading-snug text-cafe hover:text-rosa-accion focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion";
 
 export function PiePagina({ whatsapp, colecciones }: { whatsapp: string; colecciones: Coleccion[] }) {
   return (
@@ -28,7 +28,7 @@ export function PiePagina({ whatsapp, colecciones }: { whatsapp: string; colecci
               <div className="md:col-span-3">
                 <h2 className="font-display text-lg text-cafe">Explorar</h2>
                 <nav aria-label="Explorar">
-                  <ul className="mt-1 flex flex-wrap justify-center gap-x-5 md:flex-col md:gap-x-0">
+                  <ul className="mt-1 flex flex-wrap justify-center gap-x-5 md:flex-col md:gap-x-0 md:gap-y-2.5">
                     {ENLACES_TIENDA.slice(0, 2).map((enlace) => (
                       <li key={enlace.href}>
                         <Link href={enlace.href} className={CLASE_ENLACE}>
