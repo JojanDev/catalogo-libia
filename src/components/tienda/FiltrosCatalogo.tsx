@@ -33,11 +33,8 @@ const chip =
 const chipOff = "bg-rosa-medio text-cafe hover:bg-rosa-deco/40";
 const chipOn = "bg-rosa-boton text-cafe-oscuro";
 const etiquetaFila =
-  "mb-1.5 text-xs font-bold uppercase tracking-[0.08em] text-tenue sm:mb-0 sm:w-28 sm:shrink-0";
-const filaChips =
-  "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 pr-10 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:pr-0";
-const degradado =
-  "pointer-events-none absolute inset-y-0 -right-4 w-14 bg-gradient-to-l from-canvas to-transparent sm:hidden";
+  "w-28 shrink-0 text-xs font-bold uppercase tracking-[0.08em] text-tenue";
+const filaChips = "flex min-w-0 flex-1 flex-wrap gap-2 pb-1";
 const opcion =
   "inline-flex min-h-11 items-center rounded-full border border-borde bg-surface px-4 text-sm font-semibold text-cafe transition-colors hover:bg-rosa-suave peer-checked:border-rosa-boton peer-checked:bg-rosa-boton peer-checked:text-cafe-oscuro peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-rosa-accion";
 
@@ -182,9 +179,8 @@ export default function FiltrosCatalogo({
         </Boton>
       </div>
 
-      <div className="sm:flex sm:items-center sm:gap-3">
+      <div className="hidden md:flex md:items-center md:gap-3">
         <p id="lbl-coleccion" className={etiquetaFila}>Colección</p>
-        <div className="relative sm:min-w-0 sm:flex-1">
         <nav aria-labelledby="lbl-coleccion" className={filaChips}>
           <Link
             href={construirUrl({ ...actuales, coleccion: "" })}
@@ -196,7 +192,7 @@ export default function FiltrosCatalogo({
           {colecciones.map((c) => (
             <Link
               key={c.slug}
-              href={construirUrl({ ...actuales, coleccion: c.slug })}
+              href={construirUrl({ ...actuales, coleccion: actuales.coleccion === c.slug ? "" : c.slug })}
               aria-current={actuales.coleccion === c.slug ? "true" : undefined}
               className={`${chip} ${actuales.coleccion === c.slug ? chipOn : chipOff}`}
             >
@@ -204,13 +200,10 @@ export default function FiltrosCatalogo({
             </Link>
           ))}
         </nav>
-        <span aria-hidden="true" className={degradado} />
-        </div>
       </div>
 
-      <div className="sm:flex sm:items-center sm:gap-3">
+      <div className="hidden md:flex md:items-center md:gap-3">
         <p id="lbl-tipo" className={etiquetaFila}>Tipo de prenda</p>
-        <div className="relative sm:min-w-0 sm:flex-1">
         <nav aria-labelledby="lbl-tipo" className={filaChips}>
           {categorias.map((c) => (
             <Link
@@ -223,8 +216,6 @@ export default function FiltrosCatalogo({
             </Link>
           ))}
         </nav>
-        <span aria-hidden="true" className={degradado} />
-        </div>
       </div>
 
       {abierta && (

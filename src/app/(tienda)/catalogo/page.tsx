@@ -48,17 +48,19 @@ function FiltrosActivos({
   colecciones: { slug: string; nombre: string }[];
 }) {
   const nombreColeccion = colecciones.find((c) => c.slug === actuales.coleccion)?.nombre;
-  const items: { texto: string; href: string }[] = [];
+  const items: { texto: string; href: string; soloMovil?: boolean }[] = [];
   if (actuales.q) items.push({ texto: `“${actuales.q}”`, href: construirUrl({ ...actuales, q: "" }) });
   if (nombreColeccion)
     items.push({
       texto: `Colección: ${nombreColeccion}`,
       href: construirUrl({ ...actuales, coleccion: "" }),
+      soloMovil: true,
     });
   if (actuales.categoria)
     items.push({
       texto: `Tipo: ${actuales.categoria}`,
       href: construirUrl({ ...actuales, categoria: "" }),
+      soloMovil: true,
     });
   if (actuales.min || actuales.max) {
     const texto =
@@ -70,10 +72,11 @@ function FiltrosActivos({
     items.push({ texto, href: construirUrl({ ...actuales, min: "", max: "" }) });
   }
   if (items.length === 0) return null;
+  const hayVisibles = items.some((i) => !i.soloMovil);
   return (
-    <ul className="mt-4 flex flex-wrap items-center gap-2">
+    <ul className={`mt-4 flex flex-wrap items-center gap-2 ${hayVisibles ? "" : "md:hidden"}`}>
       {items.map((i) => (
-        <li key={i.texto}>
+        <li key={i.texto} className={i.soloMovil ? "md:hidden" : undefined}>
           <Link
             href={i.href}
             aria-label={`Quitar filtro: ${i.texto}`}
@@ -84,14 +87,6 @@ function FiltrosActivos({
           </Link>
         </li>
       ))}
-      <li>
-        <Link
-          href="/catalogo"
-          className="inline-flex min-h-9 items-center px-2 py-1 text-xs font-semibold text-rosa-accion sm:min-h-11 sm:text-sm underline underline-offset-2 hover:text-rosa-hover"
-        >
-          Limpiar todo
-        </Link>
-      </li>
     </ul>
   );
 }
@@ -108,6 +103,7 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
     min: min === undefined ? "" : String(min),
     max: max === undefined ? "" : String(max),
   };
+  const hayFiltros = Boolean(actuales.q || actuales.coleccion || actuales.categoria || actuales.min || actuales.max);
   const [productos, colecciones, categorias, rango] = await Promise.all([
     obtenerProductos({
       q: actuales.q || undefined,
@@ -135,9 +131,19 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
         />
       </div>
       <FiltrosActivos actuales={actuales} colecciones={colecciones} />
-      <p className="mb-4 mt-6 text-sm text-tenue" aria-live="polite">
-        {productos.length} {productos.length === 1 ? "prenda" : "prendas"}
-      </p>
+      <div className="mb-4 mt-6 flex items-center justify-between gap-3">
+        <p className="text-sm text-tenue" aria-live="polite">
+          {productos.length} {productos.length === 1 ? "prenda" : "prendas"}
+        </p>
+        {hayFiltros && (
+          <Link
+            href="/catalogo"
+            className="-mr-2 inline-flex min-h-11 items-center px-2 text-sm font-semibold text-rosa-accion underline underline-offset-2 hover:text-rosa-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion"
+          >
+            Limpiar filtros
+          </Link>
+        )}
+      </div>
       <GrillaProductos
         productos={productos}
         vacio={
