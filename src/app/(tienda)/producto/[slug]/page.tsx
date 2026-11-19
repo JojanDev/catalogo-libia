@@ -42,15 +42,15 @@ function descripcionDe(producto: { nombre: string; descripcion: string }) {
 
 function Acordeon({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
-    <details className="group border-b border-borde py-4">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-display text-xl text-cafe [&::-webkit-details-marker]:hidden">
+    <details className="group border-b border-borde">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 font-display text-xl text-cafe focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion [&::-webkit-details-marker]:hidden">
         {titulo}
         <ChevronDown
-          className="size-5 text-rosa-deco transition-transform group-open:rotate-180"
+          className="size-5 shrink-0 text-rosa-accion transition-transform duration-200 group-open:rotate-180"
           aria-hidden="true"
         />
       </summary>
-      <div className="pt-2 text-base leading-relaxed text-tenue">{children}</div>
+      <div className="pb-5 text-base leading-relaxed text-cafe">{children}</div>
     </details>
   );
 }
@@ -110,7 +110,10 @@ export default async function ProductoPage({ params }: Props) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <GaleriaProducto medios={producto.medios} agotado={producto.agotado} />
+        <GaleriaProducto medios={producto.medios}
+          imagen={producto.imagen}
+          nombre={producto.nombre}
+          agotado={producto.agotado} />
 
         <div>
           <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">
@@ -123,14 +126,18 @@ export default async function ProductoPage({ params }: Props) {
 
           <div className="mt-8">
             <ConsultaWhatsApp producto={producto} whatsapp={config.whatsapp} />
-            <ul className="mt-4 space-y-2 text-sm text-cafe">
-              <li className="flex items-center gap-2">
-                <Truck className="size-4 text-salvia-oscuro" aria-hidden="true" />
+            <ul className="mt-6 grid gap-3 text-sm text-cafe sm:grid-cols-2">
+              <li className="flex items-center gap-3 rounded-md bg-surface px-3 py-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rosa-suave">
+                  <Truck className="size-5 text-salvia-oscuro" aria-hidden="true" />
+                </span>
                 Envíos a toda Colombia
               </li>
-              <li className="flex items-center gap-2">
-                <MessageCircle className="size-4 text-salvia-oscuro" aria-hidden="true" />
-                Te atendemos por WhatsApp
+              <li className="flex items-center gap-3 rounded-md bg-surface px-3 py-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rosa-suave">
+                  <MessageCircle className="size-5 text-salvia-oscuro" aria-hidden="true" />
+                </span>
+                Atención por WhatsApp
               </li>
             </ul>
           </div>
