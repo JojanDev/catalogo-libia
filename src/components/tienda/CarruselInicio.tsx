@@ -7,7 +7,7 @@ import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import type { SlideCarrusel } from "@/types";
 
 const flecha =
-  "absolute top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-surface/90 text-cafe shadow-card hover:bg-surface lg:flex";
+  "absolute top-1/3 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface/90 text-cafe-oscuro shadow-card hover:bg-surface sm:top-1/2 lg:size-12";
 
 export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
   const [indice, setIndice] = useState(0);
@@ -39,10 +39,10 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
     <section
       aria-roledescription="carrusel"
       aria-label="Destacados"
-      className="relative bg-rosa-suave lg:px-8 lg:pt-6"
+      className="relative bg-rosa-suave px-4 pt-4 sm:px-6 lg:px-8 lg:pt-6"
     >
       <div
-        className="relative mx-auto aspect-[4/5] max-w-[1200px] touch-pan-y overflow-hidden bg-rosa-medio sm:aspect-[16/10] lg:aspect-[16/7] lg:rounded-lg"
+        className="relative mx-auto aspect-[4/5] max-w-[1200px] touch-pan-y overflow-hidden rounded-2xl bg-rosa-medio shadow-card sm:aspect-[16/10] lg:aspect-[16/7]"
         onTouchStart={(e) => {
           setPausado(true);
           inicioX.current = e.touches[0].clientX;
@@ -52,6 +52,11 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
             const dx = e.changedTouches[0].clientX - inicioX.current;
             if (Math.abs(dx) > 50) ir(indice + (dx < 0 ? 1 : -1));
           }
+          inicioX.current = null;
+          setPausado(false);
+        }}
+        onTouchCancel={() => {
+          setPausado(false);
           inicioX.current = null;
         }}
         onMouseEnter={() => setPausado(true)}
@@ -104,20 +109,19 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
                   />
                 </>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-cafe/70 via-cafe/20 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 px-6 pb-12 text-white lg:px-14 lg:pb-14">
-                {slide.titulo && (
-                  <h2 className="max-w-xl font-display text-[32px] leading-tight lg:text-5xl">
-                    {slide.titulo}
-                  </h2>
-                )}
-                {slide.subtitulo && <p className="max-w-md text-base lg:text-lg">{slide.subtitulo}</p>}
-                {slide.textoBoton && slide.enlace && (
-                  <BotonEnlace href={slide.enlace} className="mt-1">
-                    {slide.textoBoton}
-                  </BotonEnlace>
-                )}
-              </div>
+              {(slide.titulo || slide.subtitulo || (slide.textoBoton && slide.enlace)) && (
+                <div className="absolute inset-x-4 bottom-14 flex flex-col items-start gap-2 rounded-xl bg-canvas/85 p-4 shadow-card backdrop-blur-sm sm:inset-x-auto sm:left-16 sm:max-w-md sm:p-5 lg:bottom-16 lg:left-16 lg:max-w-lg lg:p-8">
+                  {slide.titulo && (
+                    <h2 className="font-display text-2xl leading-tight text-cafe-oscuro lg:text-4xl">{slide.titulo}</h2>
+                  )}
+                  {slide.subtitulo && <p className="text-sm text-cafe lg:text-base">{slide.subtitulo}</p>}
+                  {slide.textoBoton && slide.enlace && (
+                    <BotonEnlace href={slide.enlace} className="mt-1">
+                      {slide.textoBoton}
+                    </BotonEnlace>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
@@ -127,7 +131,7 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
             type="button"
             onClick={() => setPausadoManual((p) => !p)}
             aria-label={pausadoManual ? "Reanudar carrusel" : "Pausar carrusel"}
-            className="absolute right-3 top-3 z-10 flex size-11 items-center justify-center rounded-full bg-surface/90 text-cafe shadow-card hover:bg-surface"
+            className="absolute right-3 top-3 z-10 flex size-11 items-center justify-center rounded-full bg-surface/90 text-cafe-oscuro shadow-card hover:bg-surface"
           >
             {pausadoManual ? <Play className="size-5" aria-hidden="true" /> : <Pause className="size-5" aria-hidden="true" />}
           </button>
@@ -135,13 +139,13 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
 
         {total > 1 && (
           <>
-            <button type="button" onClick={() => ir(indice - 1)} aria-label="Anterior" className={`${flecha} left-4`}>
+            <button type="button" onClick={() => ir(indice - 1)} aria-label="Anterior" className={`${flecha} left-2 sm:left-3`}>
               <ChevronLeft className="size-6" aria-hidden="true" />
             </button>
-            <button type="button" onClick={() => ir(indice + 1)} aria-label="Siguiente" className={`${flecha} right-4`}>
+            <button type="button" onClick={() => ir(indice + 1)} aria-label="Siguiente" className={`${flecha} right-2 sm:right-3`}>
               <ChevronRight className="size-6" aria-hidden="true" />
             </button>
-            <div className="absolute inset-x-0 bottom-2 z-10 flex justify-center">
+            <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 rounded-full bg-surface/80 px-1">
               {slides.map((slide, i) => (
                 <button
                   key={slide.id}
@@ -152,7 +156,7 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
                   className="flex size-11 items-center justify-center"
                 >
                   <span
-                    className={`block h-2.5 rounded-full transition-all ${i === indice ? "w-6 bg-white" : "w-2.5 bg-white/60"}`}
+                    className={`block h-2.5 rounded-full transition-all ${i === indice ? "w-6 bg-rosa-accion" : "w-2.5 bg-cafe/40"}`}
                   />
                 </button>
               ))}

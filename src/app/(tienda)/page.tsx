@@ -89,26 +89,26 @@ export default async function InicioPage() {
             <TituloSeccion titulo="Nuestras colecciones" />
           </Contenedor>
           <Contenedor>
-            <ul className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+            <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-12 lg:gap-6">
               {lista.map((c) => {
                 const grande = c.id === destacada?.id;
                 return (
-                  <li key={c.id} className={grande ? "col-span-2" : undefined}>
-                    <Link href={`/colecciones/${c.slug}`} className="group block">
+                  <li key={c.id} className={`flex ${grande ? "col-span-2 lg:col-span-6" : "lg:col-span-3"}`}>
+                    <Link href={`/colecciones/${c.slug}`} className="group flex w-full flex-col">
                       <div
-                        className={`relative overflow-hidden rounded-lg bg-rosa-medio shadow-card ${grande ? "aspect-[16/9] lg:aspect-[8/5]" : "aspect-[4/5]"}`}
+                        className={`relative overflow-hidden rounded-lg bg-rosa-medio shadow-card ${grande ? "aspect-[8/5] lg:aspect-auto lg:min-h-80 lg:flex-1" : "aspect-[4/5]"}`}
                       >
                         {c.imagen && (
                           <Image
                             src={c.imagen}
                             alt=""
                             fill
-                            sizes={grande ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 50vw"}
+                            sizes={grande ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"}
                             unoptimized
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
                           />
                         )}
-                        {grande && <Insignia className="absolute left-3 top-3">Destacada</Insignia>}
+                        {grande && <Insignia className="absolute left-3 top-3 shadow-card">Destacada</Insignia>}
                       </div>
                       <p
                         className={`mt-3 text-center font-display text-cafe group-hover:text-rosa-accion ${grande ? "text-xl lg:text-2xl" : "text-lg"}`}
