@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Boton } from "@/components/ui/Boton";
-import { Entrada, Etiqueta, Selector } from "@/components/ui/Campo";
+import { Entrada, Etiqueta } from "@/components/ui/Campo";
 
 type Filtros = { q: string; coleccion: string; categoria: string; min: string; max: string };
 
@@ -35,7 +35,48 @@ const chipOn = "bg-rosa-boton text-cafe-oscuro";
 const etiquetaFila =
   "mb-1.5 text-xs font-bold uppercase tracking-[0.08em] text-tenue sm:mb-0 sm:w-28 sm:shrink-0";
 const filaChips =
-  "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:min-w-0 sm:flex-1 sm:flex-wrap sm:px-0";
+  "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 pr-10 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:pr-0";
+const degradado =
+  "pointer-events-none absolute inset-y-0 -right-4 w-14 bg-gradient-to-l from-canvas to-transparent sm:hidden";
+const opcion =
+  "inline-flex min-h-11 items-center rounded-full border border-borde bg-surface px-4 text-sm font-semibold text-cafe transition-colors hover:bg-rosa-suave peer-checked:border-rosa-boton peer-checked:bg-rosa-boton peer-checked:text-cafe-oscuro peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-rosa-accion";
+
+function GrupoRadio({
+  id,
+  titulo,
+  nombre,
+  valor,
+  opciones,
+  alCambiar,
+}: {
+  id: string;
+  titulo: string;
+  nombre: string;
+  valor: string;
+  opciones: { valor: string; texto: string }[];
+  alCambiar: (v: string) => void;
+}) {
+  return (
+    <div>
+      <p id={id} className="mb-2 text-sm font-semibold text-cafe">{titulo}</p>
+      <div role="radiogroup" aria-labelledby={id} className="flex flex-wrap gap-2">
+        {opciones.map((o) => (
+          <label key={o.valor}>
+            <input
+              type="radio"
+              name={nombre}
+              value={o.valor}
+              checked={valor === o.valor}
+              onChange={() => alCambiar(o.valor)}
+              className="peer sr-only"
+            />
+            <span className={opcion}>{o.texto}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function FiltrosCatalogo({
   actuales,
@@ -54,7 +95,7 @@ export default function FiltrosCatalogo({
     const previo = document.activeElement as HTMLElement | null;
     const enfocables = () =>
       Array.from(
-        panel.current?.querySelectorAll<HTMLElement>("a, button:not(:disabled), input, select") ??
+        panel.current?.querySelectorAll<HTMLElement>("a, button:not(:disabled), input") ??
           [],
       );
     enfocables()[0]?.focus();
@@ -84,7 +125,7 @@ export default function FiltrosCatalogo({
     };
   }, [abierta]);
 
-  const cantidadActivos = [actuales.coleccion, actuales.categoria, actuales.min, actuales.max].filter(
+  const cantidadActivos = [actuales.coleccion, actuales.categoria, actuales.min || actuales.max].filter(
     Boolean,
   ).length;
 
@@ -95,7 +136,9 @@ export default function FiltrosCatalogo({
 
   const aplicar = () => {
     setAbierta(false);
-    router.push(construirUrl({ ...borrador, q: actuales.q }));
+    let { min, max } = borrador;
+    if (min && max && Number(min) > Number(max)) [min, max] = [max, min];
+    router.push(construirUrl({ ...borrador, min, max, q: actuales.q }));
   };
 
   const limpiar = () => {
@@ -141,6 +184,7 @@ export default function FiltrosCatalogo({
 
       <div className="sm:flex sm:items-center sm:gap-3">
         <p id="lbl-coleccion" className={etiquetaFila}>Colección</p>
+        <div className="relative sm:min-w-0 sm:flex-1">
         <nav aria-labelledby="lbl-coleccion" className={filaChips}>
           <Link
             href={construirUrl({ ...actuales, coleccion: "" })}
@@ -160,10 +204,13 @@ export default function FiltrosCatalogo({
             </Link>
           ))}
         </nav>
+        <span aria-hidden="true" className={degradado} />
+        </div>
       </div>
 
       <div className="sm:flex sm:items-center sm:gap-3">
         <p id="lbl-tipo" className={etiquetaFila}>Tipo de prenda</p>
+        <div className="relative sm:min-w-0 sm:flex-1">
         <nav aria-labelledby="lbl-tipo" className={filaChips}>
           {categorias.map((c) => (
             <Link
@@ -176,6 +223,8 @@ export default function FiltrosCatalogo({
             </Link>
           ))}
         </nav>
+        <span aria-hidden="true" className={degradado} />
+        </div>
       </div>
 
       {abierta && (
@@ -225,36 +274,22 @@ export default function FiltrosCatalogo({
                   </div>
                 ))}
               </div>
-              <div>
-                <Etiqueta htmlFor="f-coleccion">Colección</Etiqueta>
-                <Selector
-                  id="f-coleccion"
-                  value={borrador.coleccion}
-                  onChange={(e) => setBorrador({ ...borrador, coleccion: e.target.value })}
-                >
-                  <option value="">Todas</option>
-                  {colecciones.map((c) => (
-                    <option key={c.slug} value={c.slug}>
-                      {c.nombre}
-                    </option>
-                  ))}
-                </Selector>
-              </div>
-              <div>
-                <Etiqueta htmlFor="f-categoria">Tipo de prenda</Etiqueta>
-                <Selector
-                  id="f-categoria"
-                  value={borrador.categoria}
-                  onChange={(e) => setBorrador({ ...borrador, categoria: e.target.value })}
-                >
-                  <option value="">Todas</option>
-                  {categorias.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </Selector>
-              </div>
+              <GrupoRadio
+                id="lbl-f-col"
+                titulo="Colección"
+                nombre="f-coleccion"
+                valor={borrador.coleccion}
+                opciones={[{ valor: "", texto: "Todas" }, ...colecciones.map((c) => ({ valor: c.slug, texto: c.nombre }))]}
+                alCambiar={(v) => setBorrador({ ...borrador, coleccion: v })}
+              />
+              <GrupoRadio
+                id="lbl-f-tipo"
+                titulo="Tipo de prenda"
+                nombre="f-categoria"
+                valor={borrador.categoria}
+                opciones={[{ valor: "", texto: "Todas" }, ...categorias.map((c) => ({ valor: c, texto: c }))]}
+                alCambiar={(v) => setBorrador({ ...borrador, categoria: v })}
+              />
             </div>
             <div className="mt-6 flex gap-3">
               <Boton variante="secundario" onClick={limpiar} className="flex-1">

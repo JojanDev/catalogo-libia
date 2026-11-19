@@ -56,6 +56,7 @@ export default async function ColeccionPage({ params }: Props) {
         </p>
         <GrillaProductos
           productos={productos}
+          mostrarColeccion={false}
           vacio={{
             mensaje: "Pronto llegan prendas nuevas a esta colección.",
             etiqueta: "Ver todo el catálogo",
