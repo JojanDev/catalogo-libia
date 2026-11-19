@@ -15,7 +15,7 @@ export default async function TiendaLayout({ children }: { children: React.React
       <BarraAnuncio texto={configuracion.textoAnuncio} />
       <Encabezado colecciones={colecciones} whatsapp={configuracion.whatsapp} />
       <main>{children}</main>
-      <PiePagina whatsapp={configuracion.whatsapp} />
+      <PiePagina whatsapp={configuracion.whatsapp} colecciones={colecciones} />
       <BotonWhatsApp numero={configuracion.whatsapp} />
     </>
   );
