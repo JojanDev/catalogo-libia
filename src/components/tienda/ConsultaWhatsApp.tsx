@@ -49,7 +49,7 @@ export default function ConsultaWhatsApp({ producto, whatsapp }: ConsultaWhatsAp
                     t.agotado
                       ? "cursor-not-allowed border-dashed border-borde text-tenue line-through"
                       : elegida
-                        ? "border-rosa-accion bg-rosa-accion text-white"
+                        ? "border-rosa-boton bg-rosa-boton text-cafe-oscuro"
                         : "border-borde bg-surface text-cafe hover:border-rosa-accion"
                   }`}
                 >

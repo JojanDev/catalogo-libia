@@ -31,7 +31,7 @@ const conMiles = (d: string) => (d ? miles.format(Number(d)) : "");
 const chip =
   "inline-flex h-11 shrink-0 items-center rounded-full px-4 text-sm font-semibold transition-colors";
 const chipOff = "bg-rosa-medio text-cafe hover:bg-rosa-deco/40";
-const chipOn = "bg-rosa-accion text-white";
+const chipOn = "bg-rosa-boton text-cafe-oscuro";
 const etiquetaFila =
   "mb-1.5 text-xs font-bold uppercase tracking-[0.08em] text-tenue sm:mb-0 sm:w-28 sm:shrink-0";
 const filaChips =
@@ -170,7 +170,7 @@ export default function FiltrosCatalogo({
               key={c}
               href={construirUrl({ ...actuales, categoria: actuales.categoria === c ? "" : c })}
               aria-current={actuales.categoria === c ? "true" : undefined}
-              className={`${chip} border ${actuales.categoria === c ? "border-rosa-accion bg-rosa-accion text-white" : "border-borde bg-surface text-cafe hover:bg-rosa-suave"}`}
+              className={`${chip} border ${actuales.categoria === c ? "border-rosa-boton bg-rosa-boton text-cafe-oscuro" : "border-borde bg-surface text-cafe hover:bg-rosa-suave"}`}
             >
               {c}
             </Link>
