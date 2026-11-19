@@ -46,10 +46,11 @@ export default async function InicioPage() {
         </div>
       ) : (
         <section className="relative overflow-hidden bg-rosa-suave py-12 lg:py-20">
-          <Decor variant="flor" className="absolute -left-6 bottom-4 size-24 sm:left-4 sm:size-32 lg:size-44" />
-          <Decor variant="flor" className="absolute -right-6 bottom-8 size-24 sm:right-4 sm:size-32 lg:size-44" />
-          <Decor variant="mariposa" className="absolute right-6 top-6 size-12 sm:right-24 lg:size-16" />
-          <Contenedor className="relative flex flex-col items-center text-center">
+          <Decor variant="rama-izquierda" className="absolute -left-4 bottom-0 z-0 w-36 sm:w-48 lg:w-64" />
+          <Decor variant="rama-derecha" className="absolute -right-4 top-2 z-0 w-32 sm:w-44 lg:w-56" />
+          <Decor variant="petalo-1" className="absolute left-1/3 top-4 z-0 w-6 rotate-12 sm:w-8" />
+          <Decor variant="petalo-3" className="absolute bottom-6 right-1/4 z-0 w-6 -rotate-12 sm:w-8" />
+          <Contenedor className="relative z-10 flex flex-col items-center text-center">
             <Logo alto={120} prioridad />
             <h1 className="mt-6 font-script text-[40px] font-semibold leading-tight text-taupe lg:text-[64px]">
               Un jardín de emociones
@@ -61,11 +62,9 @@ export default async function InicioPage() {
       <Beneficios />
 
       <section className="relative overflow-hidden py-8 lg:py-16">
-        <Decor variant="rama" className="absolute -left-6 bottom-0 hidden h-40 w-24 sm:block lg:left-4 lg:h-56 lg:w-36" />
-        <Decor variant="flor" className="absolute bottom-4 left-10 hidden size-16 lg:block" />
-        <Decor variant="rama" className="absolute -right-6 bottom-0 hidden h-40 w-24 -scale-x-100 sm:block lg:right-4 lg:h-56 lg:w-36" />
-        <Decor variant="flor" className="absolute bottom-4 right-10 hidden size-16 lg:block" />
-        <Contenedor className="relative flex flex-col items-center text-center">
+        <Decor variant="rama-izquierda" className="absolute -left-6 bottom-0 z-0 hidden w-32 sm:block lg:w-48" />
+        <Decor variant="rama-izquierda" className="absolute -right-6 bottom-0 z-0 hidden w-32 -scale-x-100 sm:block lg:w-48" />
+        <Contenedor className="relative z-10 flex flex-col items-center text-center">
           <h2 className="flex flex-col items-center">
             <span className="text-xl text-cafe lg:text-2xl">Bienvenidas a</span>
             <span className="font-script text-[56px] font-semibold leading-tight text-rosa-accion lg:text-[72px]">

@@ -1,25 +1,36 @@
-import { Corazon } from "@/components/decor/Corazon";
-import { Flor } from "@/components/decor/Flor";
-import { Mariposa } from "@/components/decor/Mariposa";
+import Image from "next/image";
 import { Ola } from "@/components/decor/Ola";
-import { Rama } from "@/components/decor/Rama";
+
+const IMAGENES = {
+  "rama-izquierda": [543, 558],
+  "rama-derecha": [448, 317],
+  "flor-1": [218, 206],
+  "flor-2": [213, 203],
+  botones: [148, 169],
+  hojas: [185, 235],
+  "petalo-1": [104, 86],
+  "petalo-2": [97, 94],
+  "petalo-3": [79, 108],
+  "petalo-4": [98, 78],
+} as const;
 
 type DecorProps = {
-  variant: "flor" | "rama" | "corazon" | "mariposa" | "ola";
+  variant: keyof typeof IMAGENES | "ola";
   className?: string;
 };
 
 export function Decor({ variant, className }: DecorProps) {
-  switch (variant) {
-    case "flor":
-      return <Flor className={className} />;
-    case "rama":
-      return <Rama className={className} />;
-    case "corazon":
-      return <Corazon className={className} />;
-    case "mariposa":
-      return <Mariposa className={className} />;
-    case "ola":
-      return <Ola className={className} />;
-  }
+  if (variant === "ola") return <Ola className={className} />;
+  const [width, height] = IMAGENES[variant];
+  return (
+    <Image
+      src={`/decor/${variant}.png`}
+      width={width}
+      height={height}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      className={`pointer-events-none h-auto select-none ${className ?? ""}`}
+    />
+  );
 }

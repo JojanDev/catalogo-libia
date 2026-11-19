@@ -10,9 +10,9 @@ export function PiePagina({ whatsapp }: { whatsapp: string }) {
     <footer className="mt-12 bg-canvas lg:mt-20">
       <Decor variant="ola" className="h-8 lg:h-14" />
       <div className="relative overflow-hidden bg-rosa-suave pb-8 pt-4">
-        <Decor variant="rama" className="absolute -left-4 bottom-0 hidden h-40 w-24 sm:block" />
-        <Decor variant="rama" className="absolute -right-4 bottom-0 hidden h-40 w-24 -scale-x-100 sm:block" />
-        <Contenedor className="relative flex flex-col items-center gap-6 text-center">
+        <Decor variant="rama-izquierda" className="absolute -left-4 bottom-0 z-0 hidden w-28 sm:block lg:w-40" />
+        <Decor variant="rama-izquierda" className="absolute -right-4 bottom-0 z-0 hidden w-28 -scale-x-100 sm:block lg:w-40" />
+        <Contenedor className="relative z-10 flex flex-col items-center gap-6 text-center">
           <Logo alto={80} />
           <nav aria-label="Pie de página" className="flex flex-wrap justify-center gap-x-6 gap-y-1">
             {ENLACES_TIENDA.map((enlace) => (

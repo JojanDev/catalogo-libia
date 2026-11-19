@@ -12,7 +12,7 @@ export default function NotFound() {
         </Link>
       </header>
       <main className="flex min-h-[70dvh] flex-col items-center justify-center px-4 py-16 text-center">
-        <Decor variant="flor" className="size-28 lg:size-36" />
+        <Decor variant="flor-1" className="w-28 lg:w-36" />
         <h1 className="mt-6 font-display text-[32px] leading-tight text-cafe md:text-5xl">
           Esta página se perdió en el jardín
         </h1>
