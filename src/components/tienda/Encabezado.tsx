@@ -4,7 +4,7 @@ import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
-import { Menu, MessageCircle, Search } from "lucide-react";
+import { Menu, MessageCircle, Search, X } from "lucide-react";
 import { Entrada } from "@/components/ui/Campo";
 import { Logo } from "@/components/ui/Logo";
 import { MenuLateral } from "@/components/tienda/MenuLateral";
@@ -35,7 +35,7 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-borde bg-canvas">
       <div className="mx-auto max-w-[1200px] px-2 sm:px-4 lg:px-8">
-        <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:h-20">
+        <div className="grid h-[66px] grid-cols-[1fr_auto_1fr] items-center lg:h-[84px]">
           <div className="flex justify-start">
             <button
               type="button"
@@ -63,8 +63,8 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
             </nav>
           </div>
           <Link href="/" aria-label="Tonorosa by Leyar, ir al inicio" className="col-start-2 justify-self-center">
-            <Logo alto={44} prioridad className="lg:hidden" />
-            <Logo alto={56} prioridad className="hidden lg:block" />
+            <Logo alto={52} prioridad className="lg:hidden" />
+            <Logo alto={72} prioridad className="hidden lg:block" />
           </Link>
           <div className="col-start-3 flex items-center justify-end gap-1 lg:gap-3">
             <button
@@ -93,7 +93,7 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
       {buscando && (
         <div
           id="buscador-tienda"
-          className="absolute inset-x-0 top-full z-30 border-b border-borde bg-canvas px-4 pb-3 pt-2 shadow-card"
+          className="absolute inset-x-0 top-full z-30 border-b border-borde bg-canvas px-4 pb-3 pt-2 shadow-lg"
         >
           <Form
             action="/catalogo"
@@ -110,7 +110,7 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
               type="search"
               autoFocus
               placeholder="Buscar vestidos, conjuntos…"
-              className="pr-12"
+              className="pr-24"
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
                   setBuscando(false);
@@ -118,13 +118,26 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
                 }
               }}
             />
-            <button
-              type="submit"
-              aria-label="Buscar"
-              className="absolute right-1 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-rosa-accion hover:bg-rosa-suave"
-            >
-              <Search className="size-5" aria-hidden="true" />
-            </button>
+            <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center">
+              <button
+                type="submit"
+                aria-label="Buscar"
+                className="flex size-11 items-center justify-center rounded-full text-rosa-accion hover:bg-rosa-suave"
+              >
+                <Search className="size-5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                aria-label="Cerrar buscador"
+                onClick={() => {
+                  setBuscando(false);
+                  botonLupa.current?.focus();
+                }}
+                className="flex size-11 items-center justify-center rounded-full text-cafe hover:bg-rosa-suave"
+              >
+                <X className="size-5" aria-hidden="true" />
+              </button>
+            </div>
           </Form>
         </div>
       )}
