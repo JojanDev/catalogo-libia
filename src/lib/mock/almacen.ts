@@ -12,7 +12,3 @@ export function almacen(): Semilla {
 export function copia<T>(valor: T): T {
   return structuredClone(valor);
 }
-
-export function siguienteId(lista: { id: number }[]): number {
-  return lista.reduce((m, x) => Math.max(m, x.id), 0) + 1;
-}

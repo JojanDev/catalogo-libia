@@ -1,12 +1,9 @@
 import "server-only";
 import { connection } from "next/server";
 import { almacen, copia } from "@/lib/mock/almacen";
-import { aVista } from "@/lib/pricing";
 import type {
   Coleccion,
   Configuracion,
-  GuiaTallas,
-  Pedido,
   ProductoVista,
   SlideCarrusel,
 } from "@/types";
@@ -28,7 +25,7 @@ function vistasPublicas(): ProductoVista[] {
   const activas = new Set(a.colecciones.filter((c) => c.activa).map((c) => c.id));
   return a.productos
     .filter((p) => p.activo && (p.coleccionId === null || activas.has(p.coleccionId)))
-    .map((p) => aVista(p, a.descuentos, a.colecciones))
+    .map((p) => ({ ...p, coleccion: a.colecciones.find((c) => c.id === p.coleccionId) ?? null }))
     .sort((x, y) => x.orden - y.orden);
 }
 
@@ -65,8 +62,8 @@ export async function obtenerProductos(filtro: FiltroProductos = {}): Promise<Pr
   const resultado = vistasPublicas().filter((p) => {
     if (filtro.coleccion && p.coleccion?.slug !== filtro.coleccion) return false;
     if (filtro.categoria && p.categoria !== filtro.categoria) return false;
-    if (filtro.min !== undefined && p.precioFinal < filtro.min) return false;
-    if (filtro.max !== undefined && p.precioFinal > filtro.max) return false;
+    if (filtro.min !== undefined && p.precio < filtro.min) return false;
+    if (filtro.max !== undefined && p.precio > filtro.max) return false;
     if (q && !normalizar(`${p.nombre} ${p.categoria} ${p.descripcion}`).includes(q)) return false;
     return true;
   });
@@ -107,20 +104,9 @@ export async function obtenerCategorias(): Promise<string[]> {
   );
 }
 
-export async function obtenerGuiaTallas(): Promise<GuiaTallas> {
-  await connection();
-  return copia(almacen().guiaTallas);
-}
-
 export async function obtenerRangoPrecios(): Promise<{ min: number; max: number }> {
   await connection();
-  const precios = vistasPublicas().map((p) => p.precioFinal);
+  const precios = vistasPublicas().map((p) => p.precio);
   if (precios.length === 0) return { min: 0, max: 0 };
   return { min: Math.min(...precios), max: Math.max(...precios) };
-}
-
-export async function obtenerPedidoPublico(referencia: string): Promise<Pedido | null> {
-  await connection();
-  const p = almacen().pedidos.find((x) => x.referencia === referencia);
-  return p ? copia(p) : null;
 }

@@ -1,27 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ChevronDown,
-  ChevronRight,
-  MessageCircle,
-  RefreshCw,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
-import CompraProducto from "@/components/tienda/CompraProducto";
+import { ChevronDown, ChevronRight, MessageCircle, Truck } from "lucide-react";
+import ConsultaWhatsApp from "@/components/tienda/ConsultaWhatsApp";
 import GaleriaProducto from "@/components/tienda/GaleriaProducto";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { Contenedor } from "@/components/ui/Contenedor";
-import { Insignia } from "@/components/ui/Insignia";
 import { TituloSeccion } from "@/components/ui/TituloSeccion";
-import { estilosBoton } from "@/components/ui/estilosBoton";
 import {
   obtenerConfiguracion,
   obtenerProductoPorSlug,
   obtenerRelacionados,
 } from "@/lib/datos/tienda";
-import { formatearDia, formatearPrecio } from "@/lib/formato";
+import { formatearPrecio } from "@/lib/formato";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -72,7 +63,6 @@ export default async function ProductoPage({ params }: Props) {
     obtenerConfiguracion(),
     obtenerRelacionados(producto),
   ]);
-  const conDescuento = producto.descuentoPorcentaje !== null;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -81,7 +71,7 @@ export default async function ProductoPage({ params }: Props) {
     description: descripcionDe(producto),
     offers: {
       "@type": "Offer",
-      price: producto.precioFinal,
+      price: producto.precio,
       priceCurrency: "COP",
       availability: producto.agotado
         ? "https://schema.org/OutOfStock"
@@ -126,63 +116,21 @@ export default async function ProductoPage({ params }: Props) {
           <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">
             {producto.nombre}
           </h1>
-          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span
-              className={`text-2xl font-bold ${conDescuento ? "text-rosa-accion" : "text-cafe"}`}
-            >
-              {formatearPrecio(producto.precioFinal)}
-            </span>
-            {conDescuento && (
-              <>
-                <span className="text-base text-tenue line-through">
-                  {formatearPrecio(producto.precio)}
-                </span>
-                <Insignia>-{producto.descuentoPorcentaje}%</Insignia>
-              </>
-            )}
-          </p>
-          {conDescuento && producto.descuentoHasta && (
-            <p className="mt-1 text-sm font-semibold text-rosa-accion">
-              Oferta hasta el {formatearDia(producto.descuentoHasta)}
-            </p>
-          )}
+          <p className="mt-4 text-2xl font-bold text-cafe">{formatearPrecio(producto.precio)}</p>
           <p className="mt-4 text-base leading-relaxed text-cafe lg:text-[17px]">
             {producto.descripcion}
           </p>
 
           <div className="mt-8">
-            <CompraProducto producto={producto} />
-            <a
-              href={`https://wa.me/${config.whatsapp}?text=${encodeURIComponent(`Hola Tonorosa, me interesa la prenda "${producto.nombre}".`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={estilosBoton(producto.agotado ? "primario" : "secundario", "normal", "mt-3 w-full")}
-            >
-              <MessageCircle
-                className={`size-5 ${producto.agotado ? "" : "text-[#25D366]"}`}
-                aria-hidden="true"
-              />
-              {producto.agotado ? "Consultar disponibilidad por WhatsApp" : "Preguntar por WhatsApp"}
-            </a>
+            <ConsultaWhatsApp producto={producto} whatsapp={config.whatsapp} />
             <ul className="mt-4 space-y-2 text-sm text-cafe">
               <li className="flex items-center gap-2">
                 <Truck className="size-4 text-salvia-oscuro" aria-hidden="true" />
                 Envíos a toda Colombia
               </li>
-              {config.pagosEnLinea && (
-                <li className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-salvia-oscuro" aria-hidden="true" />
-                  Pago seguro en línea con Wompi
-                </li>
-              )}
               <li className="flex items-center gap-2">
-                <RefreshCw className="size-4 text-salvia-oscuro" aria-hidden="true" />
-                <Link
-                  href="/politicas/envios-y-devoluciones"
-                  className="inline-flex min-h-11 items-center font-semibold text-rosa-accion underline"
-                >
-                  Cambios y devoluciones
-                </Link>
+                <MessageCircle className="size-4 text-salvia-oscuro" aria-hidden="true" />
+                Te atendemos por WhatsApp
               </li>
             </ul>
           </div>
@@ -197,11 +145,7 @@ export default async function ProductoPage({ params }: Props) {
               temperatura baja para que dure mucho más.
             </Acordeon>
             <Acordeon titulo="Envíos">
-              Enviamos a todo el país. El costo de envío es de {formatearPrecio(config.costoEnvio)}
-              {config.envioGratisDesde !== null
-                ? ` y es gratis en compras desde ${formatearPrecio(config.envioGratisDesde)}.`
-                : "."}{" "}
-              Te avisamos por WhatsApp cuando tu pedido salga.
+              Enviamos a todo el país. Escríbenos por WhatsApp y coordinamos el envío contigo.
             </Acordeon>
           </div>
         </div>

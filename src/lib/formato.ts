@@ -8,20 +8,3 @@ const monedaCO = new Intl.NumberFormat("es-CO", {
 export function formatearPrecio(n: number): string {
   return monedaCO.format(n).replace(/ /g, " ").replace(/^\$\s?/, "$ ");
 }
-
-export function formatearFecha(iso: string): string {
-  return new Intl.DateTimeFormat("es-CO", {
-    timeZone: "America/Bogota",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(iso));
-}
-
-export function formatearDia(fecha: string): string {
-  return new Intl.DateTimeFormat("es-CO", {
-    timeZone: "UTC",
-    day: "numeric",
-    month: "long",
-  }).format(new Date(`${fecha}T00:00:00Z`));
-}

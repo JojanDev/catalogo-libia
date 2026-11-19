@@ -10,14 +10,10 @@ import { Logo } from "@/components/ui/Logo";
 import { MenuLateral } from "@/components/tienda/MenuLateral";
 import { ENLACES_TIENDA, esActivo } from "@/components/tienda/enlaces";
 
-type EncabezadoProps = {
-  carrito?: React.ReactNode;
-};
-
 const botonIcono =
   "flex size-11 items-center justify-center rounded-full text-cafe hover:bg-rosa-suave";
 
-export function Encabezado({ carrito }: EncabezadoProps) {
+export function Encabezado() {
   const pathname = usePathname();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [buscando, setBuscando] = useState(false);
@@ -53,7 +49,6 @@ export function Encabezado({ carrito }: EncabezadoProps) {
             >
               <Search className="size-6" aria-hidden="true" />
             </button>
-            {carrito}
           </div>
         </div>
         {buscando && (

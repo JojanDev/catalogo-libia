@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AtSign, MessageCircle } from "lucide-react";
 import { Decor } from "@/components/decor/Decor";
-import { ENLACES_POLITICAS, ENLACES_TIENDA } from "@/components/tienda/enlaces";
+import { ENLACES_TIENDA } from "@/components/tienda/enlaces";
 import { Contenedor } from "@/components/ui/Contenedor";
 import { Logo } from "@/components/ui/Logo";
 
@@ -40,18 +40,7 @@ export function PiePagina({ whatsapp }: { whatsapp: string }) {
               @tonorosa
             </span>
           </div>
-          <nav aria-label="Políticas" className="flex flex-wrap justify-center gap-x-5">
-            {ENLACES_POLITICAS.map((enlace) => (
-              <Link
-                key={enlace.href}
-                href={enlace.href}
-                className="flex min-h-11 items-center text-sm text-cafe underline-offset-4 hover:text-rosa-accion hover:underline"
-              >
-                {enlace.etiqueta}
-              </Link>
-            ))}
-          </nav>
-          <p className="text-sm text-cafe">Envíos a toda Colombia. Pago seguro en línea con Wompi.</p>
+          <p className="text-sm text-cafe">Envíos a toda Colombia.</p>
           <p className="text-sm text-cafe">© Tonorosa by Leyar</p>
         </Contenedor>
       </div>

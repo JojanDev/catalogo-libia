@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Ruler } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Decor } from "@/components/decor/Decor";
 import { Beneficios } from "@/components/tienda/Beneficios";
 import { CarruselInicio } from "@/components/tienda/CarruselInicio";
@@ -22,7 +22,7 @@ import {
 export const metadata: Metadata = {
   title: { absolute: "Tonorosa by Leyar | Ropa infantil con ternura y estilo" },
   description:
-    "Ropa para las más pequeñas con diseños únicos, calidad y confort. Envíos a toda Colombia. Compra en línea o por WhatsApp.",
+    "Ropa para las más pequeñas con diseños únicos, calidad y confort. Envíos a toda Colombia. Te atendemos por WhatsApp.",
 };
 
 export default async function InicioPage() {
@@ -144,24 +144,6 @@ export default async function InicioPage() {
           </Contenedor>
         </section>
       )}
-
-      <section className="pb-4">
-        <Contenedor>
-          <Link
-            href="/guia-de-tallas"
-            className="flex items-center gap-4 rounded-lg border border-borde bg-surface p-5 shadow-card transition-colors hover:bg-rosa-suave lg:p-8"
-          >
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-rosa-medio">
-              <Ruler className="size-7 text-rosa-accion" aria-hidden="true" />
-            </span>
-            <span className="flex-1">
-              <span className="block font-display text-xl text-cafe lg:text-2xl">¿Cuál es su talla?</span>
-              <span className="block text-base text-tenue">Consulta nuestra guía de tallas y acierta a la primera.</span>
-            </span>
-            <ArrowRight className="size-6 shrink-0 text-rosa-accion" aria-hidden="true" />
-          </Link>
-        </Contenedor>
-      </section>
     </>
   );
 }

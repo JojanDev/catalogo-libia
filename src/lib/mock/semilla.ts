@@ -1,12 +1,7 @@
 import "server-only";
 import type {
-  CodigoPromo,
   Coleccion,
   Configuracion,
-  Descuento,
-  GuiaTallas,
-  Pedido,
-  PedidoItem,
   Producto,
   SlideCarrusel,
   Talla,
@@ -17,17 +12,9 @@ export type Semilla = {
   tallas: Talla[];
   colecciones: Coleccion[];
   productos: Producto[];
-  descuentos: Descuento[];
-  codigos: CodigoPromo[];
   slides: SlideCarrusel[];
-  guiaTallas: GuiaTallas;
   configuracion: Configuracion;
-  pedidos: Pedido[];
 };
-
-function fechaRelativa(dias: number): string {
-  return new Date(Date.now() + dias * 86400000).toISOString().slice(0, 10);
-}
 
 function isoRelativo(dias: number): string {
   return new Date(Date.now() + dias * 86400000).toISOString();
@@ -133,7 +120,6 @@ export function crearSemilla(): Semilla {
         nombre: t.nombre,
         orden: t.orden,
         agotado: agotado || tallasAgotadas.includes(t.id),
-        stock: agotado || tallasAgotadas.includes(t.id) ? 0 : 10,
       })),
       agotado,
       activo,
@@ -142,96 +128,16 @@ export function crearSemilla(): Semilla {
     };
   });
 
-  const descuentos: Descuento[] = [
-    { id: 1, nombre: "Vestido Margarita 20%", porcentaje: 20, fechaVencimiento: fechaRelativa(30), activo: true, productoIds: [2], coleccionIds: [] },
-    { id: 2, nombre: "Dulce Primavera 15%", porcentaje: 15, fechaVencimiento: fechaRelativa(30), activo: true, productoIds: [], coleccionIds: [3] },
-    { id: 3, nombre: "Liquidación de verano", porcentaje: 30, fechaVencimiento: fechaRelativa(-15), activo: true, productoIds: [], coleccionIds: [4] },
-  ];
-
-  const codigos: CodigoPromo[] = [
-    { id: 1, codigo: "BIENVENIDA10", porcentaje: 10, fechaVencimiento: null, usosMaximos: null, usos: 3, montoMinimo: null, activo: true },
-    { id: 2, codigo: "TONOROSA15", porcentaje: 15, fechaVencimiento: null, usosMaximos: 100, usos: 12, montoMinimo: 200000, activo: true },
-    { id: 3, codigo: "VENCIDO5", porcentaje: 5, fechaVencimiento: fechaRelativa(-20), usosMaximos: null, usos: 8, montoMinimo: null, activo: true },
-  ];
-
   const slides: SlideCarrusel[] = [
     { id: 1, tipo: "imagen", url: "/mock/slide-1.svg", urlMovil: null, titulo: "Un jardín de emociones", subtitulo: "Prendas que florecen con cada sonrisa", textoBoton: "Ver colección", enlace: "/colecciones/jardin-de-emociones", orden: 1, activo: true },
     { id: 2, tipo: "imagen", url: "/mock/slide-2.svg", urlMovil: null, titulo: "Nueva colección", subtitulo: "Descubre lo último para tu pequeña", textoBoton: "Ver catálogo", enlace: "/catalogo", orden: 2, activo: true },
     { id: 3, tipo: "imagen", url: "/mock/slide-3.svg", urlMovil: null, titulo: "Hecho con amor", subtitulo: "Telas suaves y detalles pensados para ellas", textoBoton: "Explorar", enlace: "/catalogo", orden: 3, activo: true },
   ];
 
-  const edades = ["2 años", "4 años", "6 años", "8 años", "10 años", "12 años", "14 años", "16 años"];
-  const medidas = [
-    ["54", "52", "42"], ["58", "54", "48"], ["62", "56", "54"], ["66", "58", "60"],
-    ["70", "60", "66"], ["74", "62", "72"], ["78", "64", "78"], ["82", "66", "84"],
-  ];
-  const guiaTallas: GuiaTallas = {
-    titulo: "Guía de tallas",
-    columnas: ["Talla", "Edad", "Pecho (cm)", "Cintura (cm)", "Largo (cm)"],
-    filas: tallas.map((t, i) => [t.nombre, edades[i], ...medidas[i]]),
-    notas: "Las medidas son aproximadas. Si tu pequeña está entre dos tallas, te recomendamos la mayor.",
-  };
-
   const configuracion: Configuracion = {
-    costoEnvio: 12000,
-    envioGratisDesde: 250000,
     whatsapp: "573006569633",
-    correoNotificaciones: "pedidos@tonorosa.com",
-    modoInventario: "sobre_pedido",
     textoAnuncio: "Moda infantil que hace florecer sonrisas",
-    pagosEnLinea: true,
   };
 
-  function item(productoId: number, talla: string, cantidad: number): PedidoItem {
-    const p = productos[productoId - 1];
-    return {
-      productoId,
-      slug: p.slug,
-      nombre: p.nombre,
-      imagen: p.imagen,
-      talla,
-      cantidad,
-      precioUnitario: p.precio,
-      descuentoPorcentaje: 0,
-      subtotal: p.precio * cantidad,
-    };
-  }
-
-  type Ej = [string, Pedido["estado"], Pedido["metodoPago"], string, string, string, string, PedidoItem[], number];
-  const ejemplos: Ej[] = [
-    ["TNR-A1B2C3D4", "pendiente_pago", "wompi", "María Fernanda Gómez", "Bogotá", "Cundinamarca", "Calle 120 # 15-30", [item(1, "6", 1), item(4, "6", 1)], -1],
-    ["TNR-E5F6G7H8", "pagado", "wompi", "Laura Camila Rojas", "Medellín", "Antioquia", "Carrera 43A # 14-20", [item(3, "8", 2)], -3],
-    ["TNR-J9K1L2M3", "enviado", "whatsapp", "Ana Sofía Pérez", "Cali", "Valle del Cauca", "Avenida 6N # 25-10", [item(6, "4", 1), item(7, "4", 1)], -6],
-    ["TNR-N4P5Q6R7", "entregado", "wompi", "Diana Marcela Torres", "Barranquilla", "Atlántico", "Calle 84 # 50-12", [item(10, "10", 1)], -12],
-    ["TNR-S8T9U1V2", "cancelado", "whatsapp", "Paola Andrea Ruiz", "Bucaramanga", "Santander", "Carrera 27 # 45-33", [item(9, "2", 1)], -9],
-  ];
-
-  const pedidos: Pedido[] = ejemplos.map((e, i) => {
-    const [referencia, estado, metodoPago, nombre, ciudad, departamento, direccion, items, dias] = e;
-    const subtotal = items.reduce((s, it) => s + it.subtotal, 0);
-    const costoEnvio = subtotal >= 250000 ? 0 : 12000;
-    const pagado = estado === "pagado" || estado === "enviado" || estado === "entregado";
-    return {
-      id: i + 1,
-      referencia,
-      estado,
-      metodoPago,
-      cliente: {
-        nombre,
-        telefono: `31${i}5550${i}${i}0`,
-        email: `${crearSlug(nombre).replace(/-/g, ".")}@correo.com`,
-      },
-      envio: { departamento, ciudad, direccion, barrio: "Centro", notas: "" },
-      items,
-      subtotal,
-      descuentoTotal: 0,
-      codigoPromo: null,
-      costoEnvio,
-      total: subtotal + costoEnvio,
-      creadoEn: isoRelativo(dias),
-      pagadoEn: pagado ? isoRelativo(dias) : null,
-    };
-  });
-
-  return { tallas, colecciones, productos, descuentos, codigos, slides, guiaTallas, configuracion, pedidos };
+  return { tallas, colecciones, productos, slides, configuracion };
 }
