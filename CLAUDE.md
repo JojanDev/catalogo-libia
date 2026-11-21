@@ -4,16 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Tienda en línea **Tonorosa by Leyar** (ropa infantil, Colombia). Next.js 16 (App Router, Turbopack) + React 19 + TypeScript 5.9 + Tailwind 4, con Supabase (datos y login de un solo administrador), Cloudinary (fotos/videos), Wompi (pagos) y Resend (correos). Hosting en Netlify. Textos, identificadores y columnas en español.
+Catálogo en línea **Tonorosa by Leyar** (ropa infantil, Colombia), **opción 1 de la cotización**: inicio con carrusel de fotos y videos, catálogo con buscador y filtros, colecciones (una destacada y filtro por colección), detalle de cada prenda con tallas y **consulta por WhatsApp**, y SEO básico. Johan carga y actualiza los productos (hasta 20 por mes); no hay panel de administración, carrito, pagos, pedidos, descuentos, Nosotros, Contacto, guía de tallas ni políticas. Next.js 16 (App Router, Turbopack) + React 19 + TypeScript 5.9 + Tailwind 4. Hosting previsto en Netlify; dominio `tonorosabyleyar.com` (Cloudflare). Textos, identificadores y columnas en español.
 
-Estado actual: rama `migracion-nextjs`. **Etapa A (mockup funcional)**: todas las pantallas definitivas funcionan con datos falsos en memoria; la **Etapa B** conecta Supabase, Cloudinary, Wompi y Resend sin cambiar las pantallas. Plan completo: `docs/plan-migracion-nextjs.md`. Diseño: `docs/diseno-tonorosa.md`. Decisiones de negocio: `docs/cotizacion/decisiones.md`.
+Estado actual: rama `opcion-1-catalogo`. Las pantallas funcionan con **datos de prueba en memoria** (`src/lib/mock/`). El siguiente paso es conectar Supabase (datos cargados con SQL y fotos en Supabase Storage por carpeta, `productos/<slug>/1.jpg…`) sin cambiar las pantallas. Diseño: `docs/diseno-tonorosa.md` y el rediseño aplicado en `docs/rediseno-tienda.md`. Versiones y cómo volver a cada una: `VERSIONES.md`.
 
-`_referencia/` contiene el prototipo anterior (Vite, rutas con `#`). Es **solo de lectura** para reutilizar lógica; está excluido de tsconfig y eslint y se borra al terminar la migración. No importar nada desde ahí.
+La tienda completa (opción 4: panel, carrito, Wompi, pedidos) quedó guardada en la rama `opcion-4-tienda-completa`.
 
 ## Commands
 
-- `npm run dev` — servidor de desarrollo (`npm run dev -- -H 0.0.0.0` para verlo desde el celular en la misma red)
-- `npm run build` — build de producción con chequeo de tipos; es la verificación obligatoria
+- `npm run dev` — servidor de desarrollo (`npm run dev -- -H 0.0.0.0 -p 3001` para verlo desde el celular en la misma red; el puerto 3000 lo usa otro proyecto)
+- `npm run build` — build de producción con chequeo de tipos; es la verificación obligatoria. Con el servidor de desarrollo encendido el chequeo de tipos puede fallar por archivos de `.next/dev/types`: detener el servidor antes del build.
 - `npm run lint` — ESLint
 - `npm run start` — sirve el build
 
@@ -21,37 +21,36 @@ No hay framework de pruebas ni CI.
 
 ## Environment
 
-Ver `.env.example`. Públicas: `NEXT_PUBLIC_*`. Secretas (solo servidor, nunca `NEXT_PUBLIC_`): service role de Supabase, llaves de Cloudinary, Wompi y Resend. En la etapa A solo se usa `MOCK_ADMIN_PASSWORD`.
+Ver `.env.example`. Públicas: `NEXT_PUBLIC_*` (`NEXT_PUBLIC_SITE_URL`, número de WhatsApp, Supabase). Secretas (solo servidor, nunca `NEXT_PUBLIC_`): service role de Supabase, si se llega a necesitar.
 
 ## TypeScript constraints (tsconfig.json)
 
 - `verbatimModuleSyntax` — imports de tipos con `import type`.
 - `noUnusedLocals` / `noUnusedParameters` — código sin usar rompe el build.
 - Sin `enum` ni `namespace`: usar objetos `const` y uniones.
-- Imports con el alias `@/` (`@/lib/pricing`) y **sin extensión**.
+- Imports con el alias `@/` (`@/lib/formato`) y **sin extensión**.
 
 ## Architecture
 
 ```
 src/app/
-  (tienda)/   inicio, catalogo, colecciones/[slug], producto/[slug], guia-de-tallas, nosotros, contacto, checkout, pago-simulado/[referencia], pedido/[referencia]
-  admin/      login y (panel)/ con guardia: productos, colecciones, tallas, carrusel, guia-tallas, descuentos, codigos, pedidos, configuracion
-  api/        checkout, promo/validar (luego wompi/webhook, cloudinary/*)
-src/lib/      datos/* (capa de datos), mock/ (almacén en memoria de la etapa A), auth/requerirAdmin, pricing, formato, slug, pedidos/cotizar
-src/components/ tienda/ · carrito/ · admin/ · decor/ · ui/
-src/context/CartContext.tsx · src/types/index.ts
+  (tienda)/   inicio, catalogo, colecciones/[slug], producto/[slug]
+  layout.tsx · not-found.tsx · opengraph-image.tsx
+src/lib/      datos/tienda.ts (capa de datos), mock/ (datos de prueba en memoria), formato, slug
+src/components/ tienda/ · decor/ · ui/
+src/types/index.ts
+public/decor/ (flores en acuarela) · public/mock/ (imágenes de prueba)
 ```
 
-- **Capa de datos**: las pantallas leen y escriben **solo** mediante funciones de `src/lib/datos/*`. Nunca llaman a Supabase ni al almacén mock directamente. En la etapa B se cambia la implementación conservando las firmas.
+- **Capa de datos**: las pantallas leen **solo** mediante funciones de `src/lib/datos/tienda.ts`. Nunca llaman a Supabase ni al almacén mock directamente. Al conectar Supabase se cambia la implementación conservando las firmas.
 - **Server Components por defecto**; `"use client"` solo en componentes con estado, eventos o APIs del navegador.
-- **Panel**: server actions en `acciones.ts` junto a cada página; cada acción llama `requerirAdmin()` y luego `revalidatePath`.
-- **Navegación** con `<Link>` / `useRouter` y URLs reales; filtros del catálogo en query params.
-- **Dinero** en pesos enteros (COP). El servidor recalcula precios, descuentos y totales (`src/lib/pedidos/cotizar.ts`); el cliente solo muestra.
-- **Descuentos**: se aplica el mayor porcentaje vigente entre producto y colección; vigente hasta el final del día de `fecha_vencimiento` en hora de Bogotá.
-- **Inventario**: por defecto sobre pedido (marca `agotado` por prenda y por talla). Productos y colecciones se inactivan, no se borran.
-- `next.config.ts` tiene `cacheComponents: true` (Next 16): el acceso a datos es dinámico salvo que se marque con `"use cache"`.
+- **Navegación** con `<Link>` / `useRouter` y URLs reales; filtros del catálogo en query params (`q`, `coleccion`, `categoria`, `min`, `max`).
+- **Consulta por WhatsApp** (`src/components/tienda/ConsultaWhatsApp.tsx`): mensaje con prenda, talla opcional, precio y URL del producto; las prendas agotadas preguntan por disponibilidad.
+- **Dinero** en pesos enteros (COP); `formatearPrecio` deja un espacio de no separación entre `$` y el número.
+- **Inventario**: sobre pedido, marca `agotado` por prenda y por talla. Productos y colecciones se inactivan, no se borran.
+- `next.config.ts` tiene `cacheComponents: true` (Next 16): el acceso a datos es dinámico salvo que se marque con `"use cache"`; evitar `new Date()` en Server Components.
 
-**Styling**: Tailwind 4 con tokens en `@theme` de `src/app/globals.css` (`canvas`, `surface`, `rosa-suave`, `rosa-medio`, `rosa-deco`, `rosa-accion`, `rosa-hover`, `taupe`, `cafe`, `tenue`, `salvia`, `borde`, estados). Fuentes con `next/font/google`: `font-display` Marcellus, `font-script` Dancing Script (solo frases decorativas grandes), `font-body` Nunito. Íconos de `lucide-react`. Detalle y reglas de contraste en `docs/diseno-tonorosa.md`. Mobile-first.
+**Styling**: Tailwind 4 con tokens en `@theme` de `src/app/globals.css` (`canvas`, `surface`, `rosa-suave`, `rosa-medio`, `rosa-deco`, `rosa-boton`/`rosa-boton-hover` con texto `cafe-oscuro` para botones, `rosa-accion`/`rosa-hover` para enlaces y estados activos, `taupe`, `cafe`, `tenue`, `salvia`, `borde`, estados). Fuentes con `next/font/google`: `font-display` Marcellus, `font-script` Dancing Script (solo frases decorativas grandes), `font-body` Nunito. Íconos de `lucide-react`. Detalle y reglas de contraste en `docs/diseno-tonorosa.md`. Mobile-first.
 
 ## Flujo de trabajo obligatorio (Orquestador → subagentes → QA)
 
@@ -67,17 +66,18 @@ Todo requerimiento de código sigue este ciclo. Las definiciones de los subagent
 6. Si el mismo defecto llega a la tercera iteración, detén la delegación, reevalúa y reinicia con alcance reformulado.
 7. Con `APROBADO`, entrega al usuario un informe final corto.
 
-Reglas de costo: ningún subagente escanea el repo (nada de `Glob '**/*'` ni `Grep` sin `path`); localizar con `Grep -n` antes de abrir; no leer completos archivos grandes (p. ej. `_referencia/features/prototipo-3/Prototipo3Page.tsx`) — usar `offset`/`limit`; razonamiento bajo en tareas mecánicas; reportes = confirmación + lista de archivos.
+Reglas de costo: ningún subagente escanea el repo (nada de `Glob '**/*'` ni `Grep` sin `path`); localizar con `Grep -n` antes de abrir; no leer completos archivos grandes — usar `offset`/`limit`; razonamiento bajo en tareas mecánicas; reportes = confirmación + lista de archivos.
 
 ### Particularidades de este proyecto
 
 Los agentes de `.claude/agents/` están adaptados a este proyecto; en caso de conflicto, prevalece este archivo:
 
-- **"Backend"** = `src/lib/**` (capa de datos, almacén mock, pricing, cotización, auth), `src/types`, `src/context/CartContext.tsx`, server actions (`acciones.ts`), route handlers (`src/app/api/**`) y archivos SQL nuevos en la raíz. Nunca ejecutar SQL contra la base real; solo escribir el `.sql`.
-- **"Frontend"** = páginas y layouts de `src/app/**` (excepto `api/` y `acciones.ts`) y componentes de `src/components/**`. Colores y fuentes solo con los tokens de `globals.css`; nada de hex sueltos ni `bg-[#...]` (excepción: el verde de WhatsApp #25D366).
+- **"Backend"** = `src/lib/**` (capa de datos, datos de prueba, formato, slug), `src/types` y archivos SQL nuevos en la raíz. Nunca ejecutar SQL contra la base real; solo escribir el `.sql`.
+- **"Frontend"** = páginas y layouts de `src/app/**` y componentes de `src/components/**`. Colores y fuentes solo con los tokens de `globals.css`; nada de hex sueltos ni `bg-[#...]` (excepción: el verde de WhatsApp #25D366).
 - **QA**: la verificación es `npm run build` (y `npm run lint`) más revisión de los archivos listados con `git diff` / `git status` acotados.
 - Sin comentarios en el código nuevo, mínimo código, sin refactors fuera de alcance.
+- Commits firmados por el usuario (ver memoria), sin coautoría de Claude.
 
 ## Database
 
-El esquema se maneja a mano ejecutando los `supabase-*.sql` de la raíz en el editor SQL de Supabase (sin herramienta de migraciones). Orden: `supabase-schema.sql` → `supabase-migration-relational.sql` → `supabase-migration-descuentos.sql` → `supabase-update-tallas-colombia.sql` → (etapa B) `supabase-migration-nextjs.sql`. Al cambiar la forma de los datos, agregar un SQL nuevo y actualizar los mappers de `src/lib`.
+Todavía no hay esquema para la opción 1 (los SQL de la tienda completa se eliminaron; siguen en la rama `opcion-4-tienda-completa`). Plan: un proyecto Supabase nuevo; el esquema y la carga de productos se manejan a mano con archivos `supabase-*.sql` en la raíz, ejecutados en el editor SQL de Supabase (sin herramienta de migraciones). Al cambiar la forma de los datos, agregar un SQL nuevo y actualizar los mappers de `src/lib`.

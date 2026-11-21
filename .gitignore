@@ -30,3 +30,6 @@ out/
 .netlify/
 next-env.d.ts
 *.tsbuildinfo
+
+# generado por next dev
+AGENTS.md

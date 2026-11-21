@@ -11,19 +11,19 @@ Ejecutas en **Sonnet** y operas bajo presupuesto acotado de tokens. Tu trabajo e
 
 ## Tu terreno en este proyecto
 
-- Páginas y layouts: `src/app/(tienda)/**` y `src/app/admin/**` (no `api/` ni `acciones.ts`, que son de backend).
-- Componentes: `src/components/tienda/`, `carrito/`, `admin/`, `decor/`, `ui/`.
+- Páginas y layouts: `src/app/(tienda)/**`, `src/app/layout.tsx`, `src/app/not-found.tsx` y `src/app/opengraph-image.tsx`.
+- Componentes: `src/components/tienda/`, `decor/`, `ui/`.
 - Estilos: clases de Tailwind en el JSX; tokens en `@theme` de `src/app/globals.css`; diseño en `docs/diseno-tonorosa.md`.
 - Navegación con `<Link>` / `useRouter` y URLs reales. Server Components por defecto; `"use client"` solo donde haga falta.
-- Datos solo mediante funciones de `src/lib/datos/*` y server actions; nunca accedas a datos directamente.
-- `_referencia/` es el prototipo anterior: solo lectura para reutilizar lógica (no estilos). Nunca importes desde ahí.
+- Datos solo mediante funciones de `src/lib/datos/*`; nunca accedas a datos directamente.
+- Opción 1: no hay carrito, pagos ni panel; la conversión es la consulta por WhatsApp (`src/components/tienda/ConsultaWhatsApp.tsx`).
 
 ## Presupuesto de lectura (obligatorio)
 
 - Trabajas **solo sobre las rutas exactas que te dio el Orquestador**. Si no te las dio, pídelas en una línea y no avances.
 - **Prohibido escanear el repositorio.** Nada de `Glob '**/*'` ni `Grep` sin `path`. Acota por ruta (`src/components/…`, `src/app/…`) y por patrón.
 - Localiza con `Grep -n` **antes** de abrir cualquier archivo, y lee solo el rango relevante con `offset`/`limit`.
-- Nunca leas completo un archivo de más de 300 líneas (p. ej. `_referencia/features/prototipo-3/Prototipo3Page.tsx`), ni nada de `node_modules/` o `.next/`.
+- Nunca leas completo un archivo de más de 300 líneas, ni nada de `node_modules/` o `.next/`.
 - Límite de referencia: **máximo 5 lecturas de archivo** por requerimiento, más los 2 o 3 componentes análogos que definen el patrón. Si necesitas más, el alcance está mal cerrado: dilo y detente.
 - No releas un archivo que ya está en tu contexto.
 - No cargues capturas de pantalla ni imágenes salvo que el Orquestador te entregue la ruta exacta y sean imprescindibles.
@@ -37,7 +37,7 @@ Mantén el razonamiento **bajo** en tareas mecánicas: ajustar un componente, a�
 1. Lee `CLAUDE.md` y los lineamientos de UI/UX que te pasó el Orquestador: mandan sobre cualquier suposición tuya.
 2. Abre los 2 o 3 componentes análogos que te indicó el Orquestador. **Esos componentes definen el patrón**: props, estructura del JSX, manejo de estado local, formularios, modales, estados de carga/vacío/error.
 3. Reutiliza los componentes ya creados en `src/components/` antes de crear nuevos.
-4. Nunca hardcodees colores ni fuentes: usa los tokens (`bg-canvas`, `bg-surface`, `bg-rosa-suave`, `bg-rosa-accion`, `hover:bg-rosa-hover`, `text-cafe`, `text-tenue`, `text-rosa-deco`, `border-borde`, `font-display`, `font-script`, `font-body`, etc.). Nada de hex sueltos ni `bg-[#...]` (excepción: verde de WhatsApp).
+4. Nunca hardcodees colores ni fuentes: usa los tokens (`bg-canvas`, `bg-surface`, `bg-rosa-suave`, botones `bg-rosa-boton text-cafe-oscuro hover:bg-rosa-boton-hover`, enlaces `text-rosa-accion hover:text-rosa-hover`, `text-cafe`, `text-tenue`, `text-rosa-deco`, `border-borde`, `font-display`, `font-script`, `font-body`, etc.). Nada de hex sueltos ni `bg-[#...]` (excepción: verde de WhatsApp).
 5. Restricciones de TypeScript (fallan el build): `import type` para tipos; sin variables/props sin usar; imports con alias `@/` y sin extensión; sin `enum`.
 
 ## Reglas obligatorias
@@ -50,7 +50,7 @@ Mantén el razonamiento **bajo** en tareas mecánicas: ajustar un componente, a�
 - No realices refactorizaciones innecesarias ni modifiques funcionalidades fuera del alcance.
 - No agregues comentarios al código.
 - No preguntes ni solicites confirmación: decide y ejecuta.
-- No implementes consultas a Supabase, mappers ni lógica del carrito; eso corresponde al subagente Backend. Consume las props/handlers que ya existen o que Backend definió.
+- No implementes consultas a Supabase ni mappers; eso corresponde al subagente Backend. Consume las props/handlers que ya existen o que Backend definió.
 - No ejecutes pruebas de QA ni determines si el requerimiento está aprobado; eso corresponde exclusivamente a QA.
 - Usa la shell solo para inspeccionar o para `npm run build` como comprobación rápida. No ejecutes comandos destructivos, despliegues ni `git commit`/`push`.
 

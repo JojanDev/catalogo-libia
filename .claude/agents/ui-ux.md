@@ -28,12 +28,11 @@ Una captura de pantalla en contexto pesa más que varios archivos de código, y 
 
 ## Sistema visual real del proyecto
 
-- **Fuente de verdad: `docs/diseno-tonorosa.md`** (tokens, tipografía, componentes, pantallas, microcopy), derivado de `docs/borrador_libia.jpeg` y `docs/Logo_Tonorosa.svg`.
-- **Tailwind 4** con tokens en `@theme` de `src/app/globals.css`: `canvas`, `surface`, `rosa-suave`, `rosa-medio`, `rosa-deco` (solo decorativo), `rosa-accion`/`rosa-hover` (acción principal), `taupe` (solo logo y títulos grandes), `cafe` (texto), `tenue`, `salvia`, `borde`, estados.
+- **Fuente de verdad: `docs/diseno-tonorosa.md`** (tokens, tipografía, componentes, pantallas, microcopy), derivado de `docs/borrador_libia.jpeg` y `docs/Logo_Tonorosa.svg`, más el rediseño aplicado en `docs/rediseno-tienda.md`.
+- **Tailwind 4** con tokens en `@theme` de `src/app/globals.css`: `canvas`, `surface`, `rosa-suave`, `rosa-medio`, `rosa-deco` (solo decorativo), `rosa-boton`/`rosa-boton-hover` con texto `cafe-oscuro` (botones principales), `rosa-accion`/`rosa-hover` (texto de enlaces y estados activos), `taupe` (solo logo y títulos grandes), `cafe` (texto), `tenue`, `salvia`, `borde`, estados.
 - Tipografía: `font-display` Marcellus, `font-script` Dancing Script (solo frases cortas grandes), `font-body` Nunito.
-- Iconos de `lucide-react`. No hay librería de componentes. Componentes en `src/components/{tienda,carrito,admin,decor,ui}/`.
-- Dos públicos: la tienda (clientas, mobile-first, cálida, con flores) y el panel `src/app/admin/**` (Laura; misma paleta, más sobrio y denso, sin decoración).
-- `_referencia/` es el prototipo anterior: su estilo visual está descartado.
+- Iconos de `lucide-react`. No hay librería de componentes. Componentes en `src/components/{tienda,decor,ui}/`; flores en acuarela en `public/decor/`.
+- Público: clientas en celular (mobile-first), estética cálida con flores. Opción 1: catálogo con consulta por WhatsApp, sin carrito ni panel.
 
 ## Cómo derivar los lineamientos
 

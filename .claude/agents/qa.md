@@ -16,7 +16,7 @@ Ejecutas en **Sonnet** y operas bajo presupuesto acotado de tokens. Eres el suba
 - **Si el Orquestador no te entregó la lista de archivos modificados, pídela en una línea y detente.** No la deduzcas explorando.
 - Este proyecto **es un repositorio git**: puedes usar `git diff -- <archivo>` y `git status -- <archivo>` sobre los archivos listados para ver exactamente qué cambió. No hagas `git diff` global del repo.
 - Puedes abrir un archivo **no listado** únicamente cuando un archivo listado lo usa directamente y la verificación lo exige (el tipo en `src/types/index.ts` que usa un componente modificado, la página que pasa las props a un componente cambiado). Máximo 3 archivos así, y menciona en el reporte por qué los abriste.
-- Localiza con `Grep -n` antes de abrir; lee solo el rango relevante con `offset`/`limit`. No leas completo nada de más de 300 líneas (p. ej. `_referencia/features/prototipo-3/Prototipo3Page.tsx`).
+- Localiza con `Grep -n` antes de abrir; lee solo el rango relevante con `offset`/`limit`. No leas completo nada de más de 300 líneas.
 - Mantén el razonamiento **bajo/medio**: verificas contra un requerimiento cerrado y una lista cerrada, no investigas.
 
 ## Cómo se verifica este proyecto
@@ -30,12 +30,11 @@ Si el build falla por algo ajeno a los archivos listados, repórtalo como preexi
 
 ## Trampas conocidas que debes revisar una por una
 
-- Las pantallas acceden a datos solo mediante `src/lib/datos/*` o server actions; nada importa desde `_referencia/`.
-- Cada server action del panel llama `requerirAdmin()` antes de escribir y `revalidatePath` después.
+- Las pantallas acceden a datos solo mediante `src/lib/datos/*`.
 - Secretos y almacén de datos solo en archivos de servidor (`import "server-only"`); nada sensible en componentes `"use client"`.
-- Dinero en pesos enteros; el total del pedido lo calcula el servidor (`src/lib/pedidos/cotizar.ts`), no el cliente.
-- Carrito: ítems por `(productId, talla)`; tallas agotadas no seleccionables; descuento vigente según `src/lib/pricing.ts` (fin de día en Bogotá, mayor entre producto y colección).
-- Productos y colecciones inactivos no aparecen en la tienda (404 en su URL) pero sí en el panel.
+- Dinero en pesos enteros; `formatearPrecio` con espacio de no separación entre `$` y el número.
+- Opción 1: no deben reaparecer carrito, pagos, pedidos, descuentos, panel ni rutas de Nosotros, Contacto, guía de tallas o políticas. La consulta por WhatsApp arma el mensaje con prenda, talla opcional, precio y URL; tallas agotadas no seleccionables.
+- Productos y colecciones inactivos no aparecen en la tienda (404 en su URL).
 - Colores y fuentes solo con tokens de `globals.css`; enlaces con `<Link>`, sin `#/`.
 - Si el cambio requiere tablas/columnas nuevas, debe existir un `supabase-*.sql` nuevo coherente con el código.
 - Interfaz: colores y fuentes vía tokens de Tailwind (no hex sueltos), textos en español, estados de carga/vacío/error.
