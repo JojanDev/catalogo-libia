@@ -82,6 +82,7 @@ export default async function ProductoPage({ params }: Props) {
   const enlaceMiga = "inline-flex min-h-11 items-center hover:text-rosa-accion hover:underline";
 
   return (
+    <div className="overflow-x-clip">
     <Contenedor className="relative pb-32 pt-6 lg:pb-16 lg:pt-10">
       <Decor variant="rama-esquina-izq" className="absolute -right-10 top-40 z-0 hidden w-28 -scale-x-100 xl:block min-[1440px]:-right-28 min-[1440px]:w-28" />
       <script
@@ -174,5 +175,6 @@ export default async function ProductoPage({ params }: Props) {
         </section>
       )}
     </Contenedor>
+    </div>
   );
 }
