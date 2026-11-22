@@ -43,7 +43,7 @@ Fuente visual: `docs/borrador_libia.jpeg`. Logo: `docs/Logo_Tonorosa.svg` (taupe
 - **Anuncio:** rosa-suave, h-9, 13px cafe, "Moda infantil que hace florecer sonrisas" con corazones rosa-deco.
 - **Encabezado** sticky (canvas, borde inferior). Móvil: hamburguesa · logo centrado (h-10) · búsqueda y carrito (badge rosa-accion). Escritorio: logo centrado h-16, nav debajo (Inicio · Colección · Tallas · Nosotros · Contacto, 15px/600, activo con subrayado rosa-deco y `aria-current`). Sin ícono de usuario. Menú lateral móvil desde la izquierda (85%, máx 320), overlay, Esc y foco atrapado.
 - **Pie:** rosa-suave con ola SVG superior, logo, enlaces, WhatsApp y redes, "© Tonorosa by Leyar".
-- **Botones** píldora h-12 px-6 Nunito 700: primario rosa-accion/blanco (hover rosa-hover); secundario borde rosa-accion; texto rosa-accion. Deshabilitado rosa-medio/tenue. Cargando con `Loader2` y `aria-busy`.
+- **Botones** píldora h-12 px-6 Nunito 700: primario rosa-boton #ED95AB (hover #E27F99) con texto blanco Nunito 800 de 17px y sombra de texto `0 1px 2px rgba(90,70,54,.45)` (contraste 2,21:1 en reposo: decisión de diseño de la clienta); secundario borde rosa-accion; texto rosa-accion. Deshabilitado rosa-medio/tenue. Cargando con `Loader2` y `aria-busy`.
 - **Tarjeta de producto:** surface, rounded-md, sombra card; imagen 4:5; nombre 2 líneas; precio 16/700. Descuento: precio rosa-accion + original tachado + badge "-20%" arriba a la izquierda. Agotado: imagen al 60%, badge "Agotado" cafe arriba a la derecha; sigue enlazando.
 - **Selector de talla:** botones ≥44px, seleccionado rosa-accion/blanco; agotada tachada, borde discontinuo, no seleccionable. Enlace "Guía de tallas".
 - **Separador:** línea rosa-deco 160px con corazón centrado.

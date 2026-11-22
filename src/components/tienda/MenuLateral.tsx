@@ -135,7 +135,7 @@ export function MenuLateral({ abierto, onCerrar, colecciones, whatsapp }: MenuLa
             href={ENLACE_ASESORIA(whatsapp)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-rosa-boton px-4 text-base font-bold text-cafe-oscuro hover:bg-rosa-boton-hover"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-rosa-boton px-4 text-[17px] font-extrabold text-white text-shadow-boton hover:bg-rosa-boton-hover"
           >
             <MessageCircle className="size-5" aria-hidden="true" />
             Atención por WhatsApp
@@ -144,7 +144,15 @@ export function MenuLateral({ abierto, onCerrar, colecciones, whatsapp }: MenuLa
             <Truck className="size-4" aria-hidden="true" />
             Envíos a toda Colombia
           </p>
-          <p className="text-center text-sm text-tenue">@tonorosa</p>
+          <a
+            href="https://www.instagram.com/tonorosa_byleyar"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram de Tonorosa"
+            className="flex min-h-11 items-center justify-center text-sm text-tenue hover:text-rosa-accion"
+          >
+            @tonorosa_byleyar
+          </a>
         </div>
       </div>
     </div>

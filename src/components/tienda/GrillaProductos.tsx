@@ -9,6 +9,7 @@ export default function GrillaProductos({
   productos,
   conPrioridad = true,
   mostrarColeccion = true,
+  conLateral = false,
   vacio = {
     mensaje: "No hay prendas con esos filtros",
     detalle: "Prueba con otros o límpialos.",
@@ -19,6 +20,7 @@ export default function GrillaProductos({
   productos: ProductoVista[];
   conPrioridad?: boolean;
   mostrarColeccion?: boolean;
+  conLateral?: boolean;
   vacio?: Vacio;
 }) {
   if (productos.length === 0) {
@@ -36,7 +38,9 @@ export default function GrillaProductos({
     );
   }
   return (
-    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+    <ul
+      className={`grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 ${conLateral ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}
+    >
       {productos.map((p, i) => (
         <li key={p.id}>
           <TarjetaProducto

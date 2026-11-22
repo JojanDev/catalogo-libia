@@ -82,7 +82,7 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
               href={ENLACE_ASESORIA(whatsapp)}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden min-h-11 items-center gap-2 rounded-full bg-rosa-boton px-5 text-sm font-bold text-cafe-oscuro hover:bg-rosa-boton-hover lg:inline-flex"
+              className="hidden min-h-11 items-center gap-2 rounded-full bg-rosa-boton px-5 text-[17px] font-extrabold text-white text-shadow-boton hover:bg-rosa-boton-hover lg:inline-flex"
             >
               <MessageCircle className="size-4" aria-hidden="true" />
               Asesoría

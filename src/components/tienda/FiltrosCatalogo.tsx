@@ -75,6 +75,133 @@ function GrupoRadio({
   );
 }
 
+function CamposPrecio({
+  prefijo,
+  rango,
+  valores,
+  alCambiar,
+}: {
+  prefijo: string;
+  rango: { min: number; max: number };
+  valores: Filtros;
+  alCambiar: (k: "min" | "max", v: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {(["min", "max"] as const).map((k) => (
+        <div key={k}>
+          <Etiqueta htmlFor={`${prefijo}-${k}`}>{k === "min" ? "Precio mínimo" : "Precio máximo"}</Etiqueta>
+          <div className="relative">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tenue"
+            >
+              $
+            </span>
+            <Entrada
+              id={`${prefijo}-${k}`}
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              className="pl-7"
+              placeholder={conMiles(String(rango[k]))}
+              value={conMiles(valores[k])}
+              onChange={(e) => alCambiar(k, e.target.value.replace(/\D/g, ""))}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const itemLateral =
+  "flex min-h-11 items-center rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion";
+
+export function BarraLateralFiltros({
+  actuales,
+  colecciones,
+  categorias,
+  rango,
+}: FiltrosCatalogoProps) {
+  const router = useRouter();
+  const [precio, setPrecio] = useState({ min: actuales.min, max: actuales.max });
+  const hayFiltros = Object.values(actuales).some(Boolean);
+
+  const aplicarPrecio = (e: React.FormEvent) => {
+    e.preventDefault();
+    let { min, max } = precio;
+    if (min && max && Number(min) > Number(max)) [min, max] = [max, min];
+    router.push(construirUrl({ ...actuales, min, max }));
+  };
+
+  return (
+    <aside aria-label="Filtros" className="hidden space-y-6 lg:sticky lg:top-24 lg:block lg:self-start">
+      <div>
+        <p id="lbl-lat-col" className="mb-2 px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
+          Colección
+        </p>
+        <nav aria-labelledby="lbl-lat-col" className="flex flex-col gap-1">
+          <Link
+            href={construirUrl({ ...actuales, coleccion: "" })}
+            aria-current={!actuales.coleccion ? "true" : undefined}
+            className={`${itemLateral} ${!actuales.coleccion ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+          >
+            Todas
+          </Link>
+          {colecciones.map((c) => (
+            <Link
+              key={c.slug}
+              href={construirUrl({ ...actuales, coleccion: actuales.coleccion === c.slug ? "" : c.slug })}
+              aria-current={actuales.coleccion === c.slug ? "true" : undefined}
+              className={`${itemLateral} ${actuales.coleccion === c.slug ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+            >
+              {c.nombre}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <div className="border-t border-borde pt-6">
+        <p id="lbl-lat-tipo" className="mb-2 px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
+          Tipo de prenda
+        </p>
+        <nav aria-labelledby="lbl-lat-tipo" className="flex flex-col gap-1">
+          {categorias.map((c) => (
+            <Link
+              key={c}
+              href={construirUrl({ ...actuales, categoria: actuales.categoria === c ? "" : c })}
+              aria-current={actuales.categoria === c ? "true" : undefined}
+              className={`${itemLateral} ${actuales.categoria === c ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+            >
+              {c}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <form onSubmit={aplicarPrecio} className="space-y-3 border-t border-borde pt-6">
+        <p className="px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">Precio</p>
+        <CamposPrecio
+          prefijo="l"
+          rango={rango}
+          valores={{ ...actuales, ...precio }}
+          alCambiar={(k, v) => setPrecio({ ...precio, [k]: v })}
+        />
+        <Boton type="submit" variante="secundario" className="w-full">
+          Aplicar precio
+        </Boton>
+      </form>
+      {hayFiltros && (
+        <Link
+          href="/catalogo"
+          className="inline-flex min-h-11 items-center px-1 text-sm font-semibold text-rosa-accion underline underline-offset-2 hover:text-rosa-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion"
+        >
+          Limpiar filtros
+        </Link>
+      )}
+    </aside>
+  );
+}
+
 export default function FiltrosCatalogo({
   actuales,
   colecciones,
@@ -173,13 +300,13 @@ export default function FiltrosCatalogo({
             <Search className="size-5" aria-hidden="true" />
           </button>
         </form>
-        <Boton variante="secundario" onClick={abrir} className="shrink-0">
+        <Boton variante="secundario" onClick={abrir} className="shrink-0 lg:hidden">
           <SlidersHorizontal className="size-5" aria-hidden="true" />
           Filtros{cantidadActivos > 0 ? ` (${cantidadActivos})` : ""}
         </Boton>
       </div>
 
-      <div className="hidden md:flex md:items-center md:gap-3">
+      <div className="hidden md:flex md:items-center md:gap-3 lg:hidden">
         <p id="lbl-coleccion" className={etiquetaFila}>Colección</p>
         <nav aria-labelledby="lbl-coleccion" className={filaChips}>
           <Link
@@ -202,7 +329,7 @@ export default function FiltrosCatalogo({
         </nav>
       </div>
 
-      <div className="hidden md:flex md:items-center md:gap-3">
+      <div className="hidden md:flex md:items-center md:gap-3 lg:hidden">
         <p id="lbl-tipo" className={etiquetaFila}>Tipo de prenda</p>
         <nav aria-labelledby="lbl-tipo" className={filaChips}>
           {categorias.map((c) => (
@@ -240,31 +367,12 @@ export default function FiltrosCatalogo({
               </button>
             </div>
             <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-3">
-                {(["min", "max"] as const).map((k) => (
-                  <div key={k}>
-                    <Etiqueta htmlFor={`f-${k}`}>{k === "min" ? "Precio mínimo" : "Precio máximo"}</Etiqueta>
-                    <div className="relative">
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tenue"
-                      >
-                        $
-                      </span>
-                      <Entrada
-                        id={`f-${k}`}
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="off"
-                        className="pl-7"
-                        placeholder={conMiles(String(rango[k]))}
-                        value={conMiles(borrador[k])}
-                        onChange={(e) => setBorrador({ ...borrador, [k]: e.target.value.replace(/\D/g, "") })}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <CamposPrecio
+                prefijo="f"
+                rango={rango}
+                valores={borrador}
+                alCambiar={(k, v) => setBorrador({ ...borrador, [k]: v })}
+              />
               <GrupoRadio
                 id="lbl-f-col"
                 titulo="Colección"

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { X } from "lucide-react";
-import FiltrosCatalogo from "@/components/tienda/FiltrosCatalogo";
+import FiltrosCatalogo, { BarraLateralFiltros } from "@/components/tienda/FiltrosCatalogo";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { Contenedor } from "@/components/ui/Contenedor";
 import {
@@ -130,32 +130,44 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
           rango={rango}
         />
       </div>
-      <FiltrosActivos actuales={actuales} colecciones={colecciones} />
-      <div className="mb-4 mt-6 flex items-center justify-between gap-3">
-        <p className="text-sm text-tenue" aria-live="polite">
-          {productos.length} {productos.length === 1 ? "prenda" : "prendas"}
-        </p>
-        {hayFiltros && (
-          <Link
-            href="/catalogo"
-            className="-mr-2 inline-flex min-h-11 items-center px-2 text-sm font-semibold text-rosa-accion underline underline-offset-2 hover:text-rosa-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion"
-          >
-            Limpiar filtros
-          </Link>
-        )}
+      <div className="lg:mt-6 lg:grid lg:grid-cols-[15rem_1fr] lg:gap-8">
+        <BarraLateralFiltros
+          key={`${actuales.min}-${actuales.max}`}
+          actuales={actuales}
+          colecciones={colecciones.map((c) => ({ slug: c.slug, nombre: c.nombre }))}
+          categorias={categorias}
+          rango={rango}
+        />
+        <div className="min-w-0">
+          <FiltrosActivos actuales={actuales} colecciones={colecciones} />
+          <div className="mb-4 mt-6 flex items-center justify-between gap-3 lg:mt-0">
+            <p className="text-sm text-tenue" aria-live="polite">
+              {productos.length} {productos.length === 1 ? "prenda" : "prendas"}
+            </p>
+            {hayFiltros && (
+              <Link
+                href="/catalogo"
+                className="-mr-2 inline-flex min-h-11 items-center px-2 text-sm font-semibold text-rosa-accion underline underline-offset-2 hover:text-rosa-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion lg:hidden"
+              >
+                Limpiar filtros
+              </Link>
+            )}
+          </div>
+          <GrillaProductos
+            conLateral
+            productos={productos}
+            vacio={
+              actuales.q
+                ? {
+                    mensaje: `No encontramos “${actuales.q}”. Revisa la ortografía o prueba con otra palabra.`,
+                    etiqueta: "Ver todo el catálogo",
+                    href: "/catalogo",
+                  }
+                : undefined
+            }
+          />
+        </div>
       </div>
-      <GrillaProductos
-        productos={productos}
-        vacio={
-          actuales.q
-            ? {
-                mensaje: `No encontramos “${actuales.q}”. Revisa la ortografía o prueba con otra palabra.`,
-                etiqueta: "Ver todo el catálogo",
-                href: "/catalogo",
-              }
-            : undefined
-        }
-      />
     </Contenedor>
   );
 }
