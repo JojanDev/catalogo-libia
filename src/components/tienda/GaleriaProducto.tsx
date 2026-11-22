@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import type { Medio } from "@/types";
+
+const flecha =
+  "absolute top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface/90 text-cafe-oscuro shadow-card hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion lg:size-12";
 
 export default function GaleriaProducto({
   medios,
@@ -68,6 +71,16 @@ export default function GaleriaProducto({
             </div>
           ))}
         </div>
+        {lista.length > 1 && (
+          <>
+            <button type="button" onClick={() => ir((activo - 1 + lista.length) % lista.length)} aria-label="Imagen anterior" className={`${flecha} left-2 sm:left-3`}>
+              <ChevronLeft className="size-6" aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => ir((activo + 1) % lista.length)} aria-label="Imagen siguiente" className={`${flecha} right-2 sm:right-3`}>
+              <ChevronRight className="size-6" aria-hidden="true" />
+            </button>
+          </>
+        )}
         {lista.length > 1 && (
           <span
             className="absolute bottom-3 right-3 rounded-full bg-cafe-oscuro/70 px-3 py-1 text-sm font-semibold text-surface lg:hidden"
