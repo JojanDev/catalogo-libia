@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronDown, ChevronRight, MessageCircle, Truck } from "lucide-react";
+import { ChevronDown, ChevronRight, Truck } from "lucide-react";
 import { Decor } from "@/components/decor/Decor";
 import ConsultaWhatsApp from "@/components/tienda/ConsultaWhatsApp";
 import GaleriaProducto from "@/components/tienda/GaleriaProducto";
@@ -134,20 +134,15 @@ export default async function ProductoPage({ params }: Props) {
 
           <div className="mt-8">
             <ConsultaWhatsApp producto={producto} whatsapp={config.whatsapp} />
-            <ul className="mt-6 grid gap-3 text-sm text-cafe sm:grid-cols-2">
-              <li className="flex items-center gap-3 rounded-md bg-surface px-3 py-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rosa-suave">
-                  <Truck className="size-5 text-salvia-oscuro" aria-hidden="true" />
-                </span>
-                Envíos a toda Colombia
-              </li>
-              <li className="flex items-center gap-3 rounded-md bg-surface px-3 py-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rosa-suave">
-                  <MessageCircle className="size-5 text-salvia-oscuro" aria-hidden="true" />
-                </span>
-                Atención por WhatsApp
-              </li>
-            </ul>
+            <div className="mt-6 flex items-center gap-4 rounded-md border border-rosa-deco bg-rosa-suave px-4 py-4">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface">
+                <Truck className="size-6 text-salvia-oscuro" aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-base font-semibold text-cafe">Envíos a toda Colombia</p>
+                <p className="text-sm text-tenue">Recibe tu pedido en cualquier ciudad del país</p>
+              </div>
+            </div>
           </div>
 
           <div className="mt-10 border-t border-borde">
@@ -158,9 +153,6 @@ export default async function ProductoPage({ params }: Props) {
             <Acordeon titulo="Cuidados">
               Lava con agua fría y colores similares, sin blanqueador. Seca a la sombra y plancha a
               temperatura baja para que dure mucho más.
-            </Acordeon>
-            <Acordeon titulo="Envíos">
-              Enviamos a todo el país. Escríbenos por WhatsApp y coordinamos el envío contigo.
             </Acordeon>
           </div>
         </div>
