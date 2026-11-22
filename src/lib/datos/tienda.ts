@@ -1,7 +1,20 @@
 import "server-only";
 import { connection } from "next/server";
-import { almacen, copia } from "@/lib/mock/almacen";
+import {
+  SELECT_DESCUENTO,
+  SELECT_PEDIDO,
+  SELECT_PRODUCTO,
+  aColeccion,
+  aConfiguracion,
+  aDescuento,
+  aPedido,
+  aProducto,
+  aSlide,
+  exito,
+} from "@/lib/datos/mapeo";
 import { aVista } from "@/lib/pricing";
+import { clienteAdmin } from "@/lib/supabase/admin";
+import { clienteServidor } from "@/lib/supabase/servidor";
 import type {
   Coleccion,
   Configuracion,
@@ -23,46 +36,69 @@ function normalizar(t: string): string {
   return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
-function vistasPublicas(): ProductoVista[] {
-  const a = almacen();
-  const activas = new Set(a.colecciones.filter((c) => c.activa).map((c) => c.id));
-  return a.productos
-    .filter((p) => p.activo && (p.coleccionId === null || activas.has(p.coleccionId)))
-    .map((p) => aVista(p, a.descuentos, a.colecciones))
-    .sort((x, y) => x.orden - y.orden);
+async function coleccionesActivas(): Promise<Coleccion[]> {
+  const r = await clienteServidor()
+    .from("colecciones")
+    .select("*")
+    .eq("activa", true)
+    .order("orden", { ascending: true });
+  return exito(r, "No se pudieron cargar las colecciones").map(aColeccion);
+}
+
+async function vistasPublicas(): Promise<ProductoVista[]> {
+  const db = clienteServidor();
+  const [rp, colecciones, rd] = await Promise.all([
+    db
+      .from("productos")
+      .select(SELECT_PRODUCTO)
+      .eq("activo", true)
+      .order("orden", { ascending: true }),
+    coleccionesActivas(),
+    db.from("descuentos").select(SELECT_DESCUENTO).eq("activo", true),
+  ]);
+  const descuentos = exito(rd, "No se pudieron cargar los descuentos").map(aDescuento);
+  const activas = new Set(colecciones.map((c) => c.id));
+  return exito(rp, "No se pudieron cargar los productos")
+    .map(aProducto)
+    .filter((p) => p.coleccionId === null || activas.has(p.coleccionId))
+    .map((p) => aVista(p, descuentos, colecciones));
 }
 
 export async function obtenerConfiguracion(): Promise<Configuracion> {
   await connection();
-  return copia(almacen().configuracion);
+  const r = await clienteAdmin().from("configuracion").select("*").limit(1).single();
+  return aConfiguracion(exito(r, "No se pudo cargar la configuración"));
 }
 
 export async function obtenerCarrusel(): Promise<SlideCarrusel[]> {
   await connection();
-  return copia(almacen().slides.filter((s) => s.activo).sort((a, b) => a.orden - b.orden));
+  const r = await clienteServidor()
+    .from("carrusel_slides")
+    .select("*")
+    .eq("activo", true)
+    .order("orden", { ascending: true });
+  return exito(r, "No se pudo cargar el carrusel").map(aSlide);
 }
 
 export async function obtenerColecciones(): Promise<Coleccion[]> {
   await connection();
-  return copia(almacen().colecciones.filter((c) => c.activa).sort((a, b) => a.orden - b.orden));
+  return coleccionesActivas();
 }
 
 export async function obtenerColeccionDestacada(): Promise<Coleccion | null> {
   await connection();
-  const c = almacen().colecciones.find((x) => x.activa && x.destacada);
-  return c ? copia(c) : null;
+  return (await coleccionesActivas()).find((c) => c.destacada) ?? null;
 }
 
 export async function obtenerColeccionPorSlug(slug: string): Promise<Coleccion | null> {
   await connection();
-  const c = almacen().colecciones.find((x) => x.slug === slug && x.activa);
-  return c ? copia(c) : null;
+  return (await coleccionesActivas()).find((c) => c.slug === slug) ?? null;
 }
 
 export async function obtenerProductos(filtro: FiltroProductos = {}): Promise<ProductoVista[]> {
   await connection();
   const q = filtro.q ? normalizar(filtro.q.trim()) : "";
-  const resultado = vistasPublicas().filter((p) => {
+  return (await vistasPublicas()).filter((p) => {
     if (filtro.coleccion && p.coleccion?.slug !== filtro.coleccion) return false;
     if (filtro.categoria && p.categoria !== filtro.categoria) return false;
     if (filtro.min !== undefined && p.precioFinal < filtro.min) return false;
@@ -70,13 +106,11 @@ export async function obtenerProductos(filtro: FiltroProductos = {}): Promise<Pr
     if (q && !normalizar(`${p.nombre} ${p.categoria} ${p.descripcion}`).includes(q)) return false;
     return true;
   });
-  return copia(resultado);
 }
 
 export async function obtenerProductoPorSlug(slug: string): Promise<ProductoVista | null> {
   await connection();
-  const p = vistasPublicas().find((x) => x.slug === slug);
-  return p ? copia(p) : null;
+  return (await vistasPublicas()).find((x) => x.slug === slug) ?? null;
 }
 
 export async function obtenerRelacionados(
@@ -84,43 +118,50 @@ export async function obtenerRelacionados(
   n: number = 4,
 ): Promise<ProductoVista[]> {
   await connection();
-  const otros = vistasPublicas().filter((p) => p.id !== producto.id);
+  const otros = (await vistasPublicas()).filter((p) => p.id !== producto.id);
   const afines = otros.filter(
     (p) =>
       p.categoria === producto.categoria ||
       (producto.coleccionId !== null && p.coleccionId === producto.coleccionId),
   );
   const resto = otros.filter((p) => !afines.includes(p));
-  return copia([...afines, ...resto].slice(0, n));
+  return [...afines, ...resto].slice(0, n);
 }
 
 export async function obtenerNovedades(n: number = 6): Promise<ProductoVista[]> {
   await connection();
-  const orden = vistasPublicas().sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
-  return copia(orden.slice(0, n));
+  const orden = (await vistasPublicas()).sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
+  return orden.slice(0, n);
 }
 
 export async function obtenerCategorias(): Promise<string[]> {
   await connection();
-  return [...new Set(vistasPublicas().map((p) => p.categoria))].sort((a, b) =>
+  return [...new Set((await vistasPublicas()).map((p) => p.categoria))].sort((a, b) =>
     a.localeCompare(b, "es"),
   );
 }
 
 export async function obtenerGuiaTallas(): Promise<GuiaTallas> {
   await connection();
-  return copia(almacen().guiaTallas);
+  const r = await clienteServidor().from("guia_tallas").select("*").limit(1).single();
+  const g = exito(r, "No se pudo cargar la guía de tallas");
+  return { titulo: g.titulo, columnas: g.columnas, filas: g.filas, notas: g.notas };
 }
 
 export async function obtenerRangoPrecios(): Promise<{ min: number; max: number }> {
   await connection();
-  const precios = vistasPublicas().map((p) => p.precioFinal);
+  const precios = (await vistasPublicas()).map((p) => p.precioFinal);
   if (precios.length === 0) return { min: 0, max: 0 };
   return { min: Math.min(...precios), max: Math.max(...precios) };
 }
 
 export async function obtenerPedidoPublico(referencia: string): Promise<Pedido | null> {
   await connection();
-  const p = almacen().pedidos.find((x) => x.referencia === referencia);
-  return p ? copia(p) : null;
+  const r = await clienteAdmin()
+    .from("pedidos")
+    .select(SELECT_PEDIDO)
+    .eq("referencia", referencia)
+    .maybeSingle();
+  if (r.error) throw new Error(`No se pudo cargar el pedido: ${r.error.message}`);
+  return r.data ? aPedido(r.data) : null;
 }
