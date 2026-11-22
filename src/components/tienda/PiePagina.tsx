@@ -20,7 +20,7 @@ export function PiePagina({ whatsapp, colecciones }: { whatsapp: string; colecci
           <div>
             <div className="grid gap-8 text-center sm:gap-6 md:grid-cols-12 md:gap-8 md:text-left">
               <div className="flex flex-col items-center gap-3 md:col-span-5 md:items-start">
-                <Logo alto={64} />
+                <Logo alto={112} />
                 <p className="max-w-xs text-sm leading-relaxed text-cafe md:max-w-sm">
                   Moda infantil creada con ternura, telas suaves y detalles que acompañan cada momento especial.
                 </p>
