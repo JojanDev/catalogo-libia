@@ -3,7 +3,7 @@
 import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 import { Entrada } from "@/components/ui/Campo";
 import { Logo } from "@/components/ui/Logo";
@@ -26,6 +26,14 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
   const botonLupa = useRef<HTMLButtonElement>(null);
   const cerrarMenu = useCallback(() => setMenuAbierto(false), []);
 
+  const [compacto, setCompacto] = useState(false);
+  useEffect(() => {
+    const alScroll = () => setCompacto(window.scrollY > 40);
+    alScroll();
+    window.addEventListener("scroll", alScroll, { passive: true });
+    return () => window.removeEventListener("scroll", alScroll);
+  }, []);
+
   const [rutaPrevia, setRutaPrevia] = useState(pathname);
   if (rutaPrevia !== pathname) {
     setRutaPrevia(pathname);
@@ -33,9 +41,9 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b lg:relative border-borde bg-canvas">
+    <header className="sticky top-0 z-40 border-b border-borde bg-canvas">
       <div className="mx-auto max-w-[1200px] px-2 sm:px-4 lg:px-8">
-        <div className="grid h-[66px] grid-cols-[1fr_auto_1fr] items-center lg:h-auto lg:py-3">
+        <div className={`grid h-[66px] grid-cols-[1fr_auto_1fr] items-center motion-safe:transition-[padding] motion-safe:duration-200 lg:h-auto ${compacto ? "lg:py-1.5" : "lg:py-3"}`}>
           <div className="flex justify-start lg:hidden">
             <button
               type="button"
@@ -49,7 +57,9 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
           </div>
           <Link href="/" aria-label="Tonorosa by Leyar, ir al inicio" className="col-start-2 justify-self-center lg:col-start-1 lg:row-start-1 lg:justify-self-start">
             <Logo alto={52} prioridad className="lg:hidden" />
-            <Logo alto={96} prioridad className="hidden lg:block" />
+            <span className={`hidden motion-safe:transition-[height] motion-safe:duration-200 lg:block ${compacto ? "h-14" : "h-24"}`}>
+              <Logo alto={96} prioridad className="h-full!" />
+            </span>
           </Link>
           <div className="col-start-3 flex items-center justify-end gap-1 lg:row-start-1 lg:gap-3 lg:justify-self-end">
             <button
