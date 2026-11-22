@@ -4,11 +4,11 @@ import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
-import { Menu, MessageCircle, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { Entrada } from "@/components/ui/Campo";
 import { Logo } from "@/components/ui/Logo";
 import { MenuLateral } from "@/components/tienda/MenuLateral";
-import { ENLACE_ASESORIA, ENLACES_TIENDA, esActivo } from "@/components/tienda/enlaces";
+import { ENLACES_TIENDA, esActivo } from "@/components/tienda/enlaces";
 import type { Coleccion } from "@/types";
 
 const botonIcono =
@@ -78,15 +78,6 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
             >
               <Search className="size-6" aria-hidden="true" />
             </button>
-            <a
-              href={ENLACE_ASESORIA(whatsapp)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden min-h-11 items-center gap-2 rounded-full bg-rosa-boton px-5 text-[17px] font-extrabold text-white text-shadow-boton hover:bg-rosa-boton-hover lg:inline-flex"
-            >
-              <MessageCircle className="size-4" aria-hidden="true" />
-              Asesoría
-            </a>
           </div>
         </div>
       </div>

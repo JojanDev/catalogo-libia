@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Heart } from "lucide-react";
 import { Decor } from "@/components/decor/Decor";
+import { Ola } from "@/components/decor/Ola";
 import { Beneficios } from "@/components/tienda/Beneficios";
 import { CarruselInicio } from "@/components/tienda/CarruselInicio";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
@@ -61,14 +62,17 @@ export default async function InicioPage() {
 
       <Beneficios />
 
-      <section className="relative overflow-hidden py-8 lg:py-16">
+      <section className="relative overflow-hidden pb-16 pt-8 lg:pb-28 lg:pt-16">
         <Decor variant="rama-izquierda" className="absolute -left-6 bottom-0 z-0 hidden w-32 sm:block lg:w-48" />
         <Decor variant="rama-izquierda" className="absolute -right-6 bottom-0 z-0 hidden w-32 -scale-x-100 sm:block lg:w-48" />
+        <Ola className="absolute inset-x-0 bottom-0 z-0 h-8 lg:h-14" />
         <Contenedor className="relative z-10 flex flex-col items-center text-center">
           <h2 className="flex flex-col items-center">
             <span className="text-xl text-cafe lg:text-2xl">Bienvenidas a</span>
-            <span className="font-script text-[56px] font-semibold leading-tight text-rosa-accion lg:text-[72px]">
+            <span className="flex items-center gap-3 font-script text-[56px] font-semibold leading-tight tracking-wider text-rosa-accion lg:gap-5 lg:text-[72px]">
+              <Heart className="hidden size-7 -rotate-12 stroke-1 sm:block lg:size-9" aria-hidden="true" />
               Tonorosa
+              <Heart className="hidden size-7 rotate-12 stroke-1 sm:block lg:size-9" aria-hidden="true" />
             </span>
           </h2>
           <Separador className="mt-2" />
@@ -76,7 +80,7 @@ export default async function InicioPage() {
             Aquí encontrarás mucho más que ropa, encontrarás un mundo de ternura, estilo y felicidad
             para las más pequeñas.
           </p>
-          <BotonEnlace href="/catalogo" className="mt-8">
+          <BotonEnlace href="/catalogo" className="mt-8 px-10 lg:px-12">
             Descubrir colección
             <ArrowRight className="size-5" aria-hidden="true" />
           </BotonEnlace>
