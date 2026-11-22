@@ -11,8 +11,8 @@ import type {
 
 export type FiltroProductos = {
   q?: string;
-  coleccion?: string;
-  categoria?: string;
+  coleccion?: string[];
+  categoria?: string[];
   min?: number;
   max?: number;
 };
@@ -175,8 +175,8 @@ export async function obtenerProductos(filtro: FiltroProductos = {}): Promise<Pr
   await connection();
   const q = filtro.q ? normalizar(filtro.q.trim()) : "";
   return (await vistasPublicas()).filter((p) => {
-    if (filtro.coleccion && p.coleccion?.slug !== filtro.coleccion) return false;
-    if (filtro.categoria && p.categoria !== filtro.categoria) return false;
+    if (filtro.coleccion?.length && !(p.coleccion && filtro.coleccion.includes(p.coleccion.slug))) return false;
+    if (filtro.categoria?.length && !filtro.categoria.includes(p.categoria)) return false;
     if (filtro.min !== undefined && p.precio < filtro.min) return false;
     if (filtro.max !== undefined && p.precio > filtro.max) return false;
     if (q && !normalizar(`${p.nombre} ${p.categoria} ${p.descripcion}`).includes(q)) return false;
