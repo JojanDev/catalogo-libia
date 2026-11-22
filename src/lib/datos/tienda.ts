@@ -1,9 +1,10 @@
 import "server-only";
 import { connection } from "next/server";
-import { almacen, copia } from "@/lib/mock/almacen";
+import { clienteServidor } from "@/lib/supabase/servidor";
 import type {
   Coleccion,
   Configuracion,
+  Medio,
   ProductoVista,
   SlideCarrusel,
 } from "@/types";
@@ -16,50 +17,164 @@ export type FiltroProductos = {
   max?: number;
 };
 
+type FilaColeccion = {
+  id: number;
+  slug: string;
+  nombre: string;
+  descripcion: string;
+  temporada: string;
+  imagen_url: string;
+  activa: boolean;
+  destacada: boolean;
+  orden: number;
+};
+
+type FilaProducto = {
+  id: number;
+  slug: string;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  categoria: string;
+  coleccion_id: number | null;
+  imagen_url: string;
+  agotado: boolean;
+  activo: boolean;
+  orden: number;
+  creado_en: string;
+  colecciones: FilaColeccion | null;
+  producto_tallas: {
+    agotado: boolean;
+    tallas: { id: number; nombre: string; orden: number };
+  }[];
+  producto_medios: {
+    id: number;
+    tipo: "imagen" | "video";
+    url: string;
+    alt: string;
+    orden: number;
+  }[];
+};
+
 function normalizar(t: string): string {
   return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
-function vistasPublicas(): ProductoVista[] {
-  const a = almacen();
-  const activas = new Set(a.colecciones.filter((c) => c.activa).map((c) => c.id));
-  return a.productos
-    .filter((p) => p.activo && (p.coleccionId === null || activas.has(p.coleccionId)))
-    .map((p) => ({ ...p, coleccion: a.colecciones.find((c) => c.id === p.coleccionId) ?? null }))
-    .sort((x, y) => x.orden - y.orden);
+function aColeccion(f: FilaColeccion): Coleccion {
+  return {
+    id: f.id,
+    slug: f.slug,
+    nombre: f.nombre,
+    descripcion: f.descripcion,
+    temporada: f.temporada,
+    imagen: f.imagen_url,
+    activa: f.activa,
+    destacada: f.destacada,
+    orden: f.orden,
+  };
+}
+
+async function vistasPublicas(): Promise<ProductoVista[]> {
+  const { data, error } = await clienteServidor()
+    .from("productos")
+    .select(
+      "*, colecciones(*), producto_tallas(agotado, tallas(id, nombre, orden)), producto_medios(id, tipo, url, alt, orden)",
+    )
+    .eq("activo", true)
+    .order("orden", { ascending: true });
+  if (error) throw new Error(`No se pudieron cargar los productos: ${error.message}`);
+  return (data as unknown as FilaProducto[])
+    .filter((p) => p.coleccion_id === null || (p.colecciones !== null && p.colecciones.activa))
+    .map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      nombre: p.nombre,
+      descripcion: p.descripcion,
+      precio: p.precio,
+      categoria: p.categoria,
+      coleccionId: p.coleccion_id,
+      imagen: p.imagen_url,
+      medios: p.producto_medios
+        .map((m): Medio => ({ id: m.id, tipo: m.tipo, url: m.url, alt: m.alt, orden: m.orden }))
+        .sort((a, b) => a.orden - b.orden),
+      tallas: p.producto_tallas
+        .map((t) => ({
+          tallaId: t.tallas.id,
+          nombre: t.tallas.nombre,
+          orden: t.tallas.orden,
+          agotado: t.agotado,
+        }))
+        .sort((a, b) => a.orden - b.orden),
+      agotado: p.agotado,
+      activo: p.activo,
+      orden: p.orden,
+      creadoEn: p.creado_en,
+      coleccion: p.colecciones ? aColeccion(p.colecciones) : null,
+    }));
+}
+
+async function coleccionesActivas(): Promise<Coleccion[]> {
+  const { data, error } = await clienteServidor()
+    .from("colecciones")
+    .select("*")
+    .eq("activa", true)
+    .order("orden", { ascending: true });
+  if (error) throw new Error(`No se pudieron cargar las colecciones: ${error.message}`);
+  return (data as FilaColeccion[]).map(aColeccion);
 }
 
 export async function obtenerConfiguracion(): Promise<Configuracion> {
   await connection();
-  return copia(almacen().configuracion);
+  const { data, error } = await clienteServidor()
+    .from("configuracion")
+    .select("whatsapp, texto_anuncio")
+    .limit(1)
+    .single();
+  if (error) throw new Error(`No se pudo cargar la configuración: ${error.message}`);
+  return { whatsapp: data.whatsapp, textoAnuncio: data.texto_anuncio };
 }
 
 export async function obtenerCarrusel(): Promise<SlideCarrusel[]> {
   await connection();
-  return copia(almacen().slides.filter((s) => s.activo).sort((a, b) => a.orden - b.orden));
+  const { data, error } = await clienteServidor()
+    .from("carrusel_slides")
+    .select("*")
+    .eq("activo", true)
+    .order("orden", { ascending: true });
+  if (error) throw new Error(`No se pudo cargar el carrusel: ${error.message}`);
+  return data.map((s) => ({
+    id: s.id,
+    tipo: s.tipo,
+    url: s.url,
+    urlMovil: s.url_movil,
+    titulo: s.titulo,
+    subtitulo: s.subtitulo,
+    textoBoton: s.texto_boton,
+    enlace: s.enlace,
+    orden: s.orden,
+    activo: s.activo,
+  }));
 }
 
 export async function obtenerColecciones(): Promise<Coleccion[]> {
   await connection();
-  return copia(almacen().colecciones.filter((c) => c.activa).sort((a, b) => a.orden - b.orden));
+  return coleccionesActivas();
 }
 
 export async function obtenerColeccionDestacada(): Promise<Coleccion | null> {
   await connection();
-  const c = almacen().colecciones.find((x) => x.activa && x.destacada);
-  return c ? copia(c) : null;
+  return (await coleccionesActivas()).find((c) => c.destacada) ?? null;
 }
 
 export async function obtenerColeccionPorSlug(slug: string): Promise<Coleccion | null> {
   await connection();
-  const c = almacen().colecciones.find((x) => x.slug === slug && x.activa);
-  return c ? copia(c) : null;
+  return (await coleccionesActivas()).find((c) => c.slug === slug) ?? null;
 }
 
 export async function obtenerProductos(filtro: FiltroProductos = {}): Promise<ProductoVista[]> {
   await connection();
   const q = filtro.q ? normalizar(filtro.q.trim()) : "";
-  const resultado = vistasPublicas().filter((p) => {
+  return (await vistasPublicas()).filter((p) => {
     if (filtro.coleccion && p.coleccion?.slug !== filtro.coleccion) return false;
     if (filtro.categoria && p.categoria !== filtro.categoria) return false;
     if (filtro.min !== undefined && p.precio < filtro.min) return false;
@@ -67,13 +182,11 @@ export async function obtenerProductos(filtro: FiltroProductos = {}): Promise<Pr
     if (q && !normalizar(`${p.nombre} ${p.categoria} ${p.descripcion}`).includes(q)) return false;
     return true;
   });
-  return copia(resultado);
 }
 
 export async function obtenerProductoPorSlug(slug: string): Promise<ProductoVista | null> {
   await connection();
-  const p = vistasPublicas().find((x) => x.slug === slug);
-  return p ? copia(p) : null;
+  return (await vistasPublicas()).find((x) => x.slug === slug) ?? null;
 }
 
 export async function obtenerRelacionados(
@@ -81,32 +194,32 @@ export async function obtenerRelacionados(
   n: number = 4,
 ): Promise<ProductoVista[]> {
   await connection();
-  const otros = vistasPublicas().filter((p) => p.id !== producto.id);
+  const otros = (await vistasPublicas()).filter((p) => p.id !== producto.id);
   const afines = otros.filter(
     (p) =>
       p.categoria === producto.categoria ||
       (producto.coleccionId !== null && p.coleccionId === producto.coleccionId),
   );
   const resto = otros.filter((p) => !afines.includes(p));
-  return copia([...afines, ...resto].slice(0, n));
+  return [...afines, ...resto].slice(0, n);
 }
 
 export async function obtenerNovedades(n: number = 6): Promise<ProductoVista[]> {
   await connection();
-  const orden = vistasPublicas().sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
-  return copia(orden.slice(0, n));
+  const orden = (await vistasPublicas()).sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
+  return orden.slice(0, n);
 }
 
 export async function obtenerCategorias(): Promise<string[]> {
   await connection();
-  return [...new Set(vistasPublicas().map((p) => p.categoria))].sort((a, b) =>
+  return [...new Set((await vistasPublicas()).map((p) => p.categoria))].sort((a, b) =>
     a.localeCompare(b, "es"),
   );
 }
 
 export async function obtenerRangoPrecios(): Promise<{ min: number; max: number }> {
   await connection();
-  const precios = vistasPublicas().map((p) => p.precio);
+  const precios = (await vistasPublicas()).map((p) => p.precio);
   if (precios.length === 0) return { min: 0, max: 0 };
   return { min: Math.min(...precios), max: Math.max(...precios) };
 }
