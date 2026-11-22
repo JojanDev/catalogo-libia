@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Truck,
 } from "lucide-react";
+import { Decor } from "@/components/decor/Decor";
 import CompraProducto from "@/components/tienda/CompraProducto";
 import GaleriaProducto from "@/components/tienda/GaleriaProducto";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
@@ -51,15 +52,15 @@ function descripcionDe(producto: { nombre: string; descripcion: string }) {
 
 function Acordeon({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
-    <details className="group border-b border-borde py-4">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-display text-xl text-cafe [&::-webkit-details-marker]:hidden">
+    <details className="group border-b border-borde">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 font-display text-xl text-cafe focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion [&::-webkit-details-marker]:hidden">
         {titulo}
         <ChevronDown
-          className="size-5 text-rosa-deco transition-transform group-open:rotate-180"
+          className="size-5 shrink-0 text-rosa-accion transition-transform duration-200 group-open:rotate-180"
           aria-hidden="true"
         />
       </summary>
-      <div className="pt-2 text-base leading-relaxed text-tenue">{children}</div>
+      <div className="pb-5 text-base leading-relaxed text-cafe">{children}</div>
     </details>
   );
 }
@@ -91,7 +92,9 @@ export default async function ProductoPage({ params }: Props) {
   const enlaceMiga = "inline-flex min-h-11 items-center hover:text-rosa-accion hover:underline";
 
   return (
-    <Contenedor className="pb-32 pt-6 lg:pb-16 lg:pt-10">
+    <div className="overflow-x-clip">
+    <Contenedor className="relative pb-32 pt-6 lg:pb-16 lg:pt-10">
+      <Decor variant="rama-esquina-izq" className="absolute -right-10 top-40 z-0 hidden w-28 -scale-x-100 xl:block min-[1440px]:-right-28 min-[1440px]:w-28" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
@@ -120,7 +123,15 @@ export default async function ProductoPage({ params }: Props) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <GaleriaProducto medios={producto.medios} agotado={producto.agotado} />
+        <div className="relative">
+          <GaleriaProducto medios={producto.medios}
+            imagen={producto.imagen}
+            nombre={producto.nombre}
+            agotado={producto.agotado} />
+          <Decor variant="ramo" className="absolute bottom-0 left-12 z-0 hidden w-36 lg:block xl:w-44" />
+          <Decor variant="petalo-1" className="absolute bottom-24 left-56 z-0 hidden w-6 rotate-12 xl:block" />
+          <Decor variant="petalo-6" className="absolute bottom-6 left-80 z-0 hidden w-7 -rotate-12 xl:block" />
+        </div>
 
         <div>
           <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">
@@ -164,11 +175,16 @@ export default async function ProductoPage({ params }: Props) {
               />
               {producto.agotado ? "Consultar disponibilidad por WhatsApp" : "Preguntar por WhatsApp"}
             </a>
+            <div className="mt-6 flex items-center gap-4 rounded-md border border-rosa-deco bg-rosa-suave px-4 py-4">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface">
+                <Truck className="size-6 text-salvia-oscuro" aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-base font-semibold text-cafe">Envíos a toda Colombia</p>
+                <p className="text-sm text-tenue">Recibe tu pedido en cualquier ciudad del país</p>
+              </div>
+            </div>
             <ul className="mt-4 space-y-2 text-sm text-cafe">
-              <li className="flex items-center gap-2">
-                <Truck className="size-4 text-salvia-oscuro" aria-hidden="true" />
-                Envíos a toda Colombia
-              </li>
               {config.pagosEnLinea && (
                 <li className="flex items-center gap-2">
                   <ShieldCheck className="size-4 text-salvia-oscuro" aria-hidden="true" />
@@ -208,11 +224,14 @@ export default async function ProductoPage({ params }: Props) {
       </div>
 
       {relacionados.length > 0 && (
-        <section className="mt-16 lg:mt-20">
+        <section className="relative mt-16 lg:mt-20">
+          <Decor variant="capullo" className="absolute right-0 top-0 hidden w-12 rotate-12 md:block lg:w-16" />
+          <Decor variant="hoja-2" className="absolute left-0 top-0 hidden w-12 -rotate-12 md:block lg:w-14" />
           <TituloSeccion titulo="También te puede gustar" className="mb-8" />
           <GrillaProductos productos={relacionados} />
         </section>
       )}
     </Contenedor>
+    </div>
   );
 }

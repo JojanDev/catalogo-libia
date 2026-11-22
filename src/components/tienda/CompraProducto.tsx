@@ -74,7 +74,7 @@ export default function CompraProducto({ producto }: { producto: ProductoVista }
                   t.agotado
                     ? "cursor-not-allowed border-dashed border-borde text-tenue line-through"
                     : elegida
-                      ? "border-rosa-accion bg-rosa-accion text-white"
+                      ? "border-rosa-boton bg-rosa-boton text-cafe-oscuro ring-2 ring-rosa-accion ring-offset-2"
                       : "border-borde bg-surface text-cafe hover:border-rosa-accion"
                 }`}
               >

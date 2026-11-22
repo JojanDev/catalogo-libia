@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Decor } from "@/components/decor/Decor";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { Contenedor } from "@/components/ui/Contenedor";
 import { Separador } from "@/components/ui/Separador";
@@ -34,8 +35,10 @@ export default async function ColeccionPage({ params }: Props) {
 
   return (
     <>
-      <section className="bg-rosa-suave py-12 text-center lg:py-16">
-        <Contenedor>
+      <section className="relative overflow-hidden bg-rosa-suave py-12 text-center lg:py-16">
+        <Decor variant="flor-frente" className="absolute -right-12 -top-10 z-0 hidden w-40 sm:block lg:-right-16 lg:w-56" />
+        <Decor variant="petalo-5" className="absolute bottom-6 left-[8%] z-0 hidden w-8 -rotate-12 md:block" />
+        <Contenedor className="relative z-10">
           {coleccion.temporada && (
             <p className="text-xs font-bold uppercase tracking-[0.08em] text-tenue">
               {coleccion.temporada}
@@ -56,6 +59,7 @@ export default async function ColeccionPage({ params }: Props) {
         </p>
         <GrillaProductos
           productos={productos}
+          mostrarColeccion={false}
           vacio={{
             mensaje: "Pronto llegan prendas nuevas a esta colección.",
             etiqueta: "Ver todo el catálogo",

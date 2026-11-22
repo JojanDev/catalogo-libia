@@ -5,7 +5,7 @@ import { MessageCircle } from "lucide-react";
 
 export function BotonWhatsApp({ numero }: { numero: string }) {
   const pathname = usePathname();
-  if (pathname.startsWith("/producto/") || pathname === "/checkout") return null;
+  if (pathname.startsWith("/producto/")) return null;
   return (
     <a
       href={`https://wa.me/${numero}`}

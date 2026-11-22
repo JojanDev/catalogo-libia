@@ -23,7 +23,7 @@ const nunito = Nunito({
 });
 
 const descripcion =
-  "Ropa infantil con ternura y estilo: vestidos, conjuntos y más para las más pequeñas. Envíos a toda Colombia.";
+  "Ropa infantil con ternura y estilo: vestidos, conjuntos y más para las más pequeñas. Envíos a toda Colombia, atención por WhatsApp.";
 
 export const metadata: Metadata = {
   title: {

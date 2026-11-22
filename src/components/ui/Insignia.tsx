@@ -9,7 +9,7 @@ const estilos = {
   error: "bg-error-fondo text-error",
   aviso: "bg-aviso-fondo text-aviso",
   info: "bg-info-fondo text-info",
-  rosa: "bg-rosa-accion text-white",
+  rosa: "bg-rosa-boton text-cafe-oscuro",
   cafe: "bg-cafe text-white",
 };
 

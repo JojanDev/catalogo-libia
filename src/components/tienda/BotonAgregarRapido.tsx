@@ -71,7 +71,7 @@ export default function BotonAgregarRapido({ producto }: { producto: ProductoVis
         onClick={() => (disponibles.length === 1 ? agregarTalla(disponibles[0].nombre) : setAbierta(true))}
         className="group/boton flex size-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion"
       >
-        <span className="relative flex size-10 items-center justify-center rounded-full bg-rosa-accion text-white group-hover/boton:bg-rosa-hover">
+        <span className="relative flex size-10 items-center justify-center rounded-full bg-rosa-boton text-white group-hover/boton:bg-rosa-boton-hover">
           <ShoppingBag className="size-5" aria-hidden="true" />
           <Plus className="absolute left-1/2 top-[55%] size-3 -translate-x-1/2 -translate-y-1/2" strokeWidth={3} aria-hidden="true" />
         </span>

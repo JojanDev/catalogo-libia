@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+import { MessageCircle, Truck, X } from "lucide-react";
+import { Decor } from "@/components/decor/Decor";
 import { Logo } from "@/components/ui/Logo";
-import { ENLACES_TIENDA, esActivo } from "@/components/tienda/enlaces";
+import { ENLACE_ASESORIA, ENLACES_POLITICAS, ENLACES_TIENDA, esActivo } from "@/components/tienda/enlaces";
+import type { Coleccion } from "@/types";
 
 type MenuLateralProps = {
   abierto: boolean;
   onCerrar: () => void;
+  colecciones: Coleccion[];
+  whatsapp: string;
 };
 
-export function MenuLateral({ abierto, onCerrar }: MenuLateralProps) {
+export function MenuLateral({ abierto, onCerrar, colecciones, whatsapp }: MenuLateralProps) {
   const pathname = usePathname();
   const panel = useRef<HTMLDivElement>(null);
 
@@ -76,22 +80,94 @@ export function MenuLateral({ abierto, onCerrar }: MenuLateralProps) {
             <X className="size-6" aria-hidden="true" />
           </button>
         </div>
-        <nav aria-label="Principal" className="flex flex-col p-4">
-          {ENLACES_TIENDA.map((enlace) => {
-            const activo = esActivo(pathname, enlace.href);
-            return (
+        <div className="flex-1 overflow-y-auto">
+          <nav aria-label="Principal" className="flex flex-col p-4">
+            {ENLACES_TIENDA.map((enlace) => {
+              const activo = esActivo(pathname, enlace.href);
+              return (
+                <Link
+                  key={enlace.href}
+                  href={enlace.href}
+                  onClick={onCerrar}
+                  aria-current={activo ? "page" : undefined}
+                  className={`flex min-h-12 items-center rounded-sm border-l-4 px-3 text-base text-cafe ${activo ? "border-rosa-deco bg-rosa-suave font-bold" : "border-transparent font-semibold hover:bg-rosa-suave"}`}
+                >
+                  {enlace.etiqueta}
+                </Link>
+              );
+            })}
+          </nav>
+          {colecciones.length > 0 && (
+            <nav aria-labelledby="menu-colecciones" className="mt-2 border-t border-borde pb-4">
+              <h2
+                id="menu-colecciones"
+                className="px-7 pb-1 pt-4 font-display text-sm uppercase tracking-wide text-tenue"
+              >
+                Nuestras colecciones
+              </h2>
+              <ul className="flex flex-col px-4">
+                {colecciones.map((coleccion) => {
+                  const href = `/colecciones/${coleccion.slug}`;
+                  const activo = esActivo(pathname, href);
+                  return (
+                    <li key={coleccion.id}>
+                      <Link
+                        href={href}
+                        onClick={onCerrar}
+                        aria-current={activo ? "page" : undefined}
+                        className={`flex min-h-12 items-center rounded-sm border-l-4 px-3 text-base text-cafe ${activo ? "border-rosa-deco bg-rosa-suave font-bold" : "border-transparent font-semibold hover:bg-rosa-suave"}`}
+                      >
+                        {coleccion.nombre}
+                        {coleccion.destacada && (
+                          <span className="ml-auto rounded-full bg-rosa-medio px-2 py-0.5 text-xs font-bold text-cafe-oscuro">
+                            Destacada
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          )}
+          <nav aria-label="Políticas" className="border-t border-borde px-4 py-3">
+            {ENLACES_POLITICAS.map((enlace) => (
               <Link
                 key={enlace.href}
                 href={enlace.href}
                 onClick={onCerrar}
-                aria-current={activo ? "page" : undefined}
-                className={`flex min-h-12 items-center rounded-sm border-l-4 px-3 text-base text-cafe ${activo ? "border-rosa-deco bg-rosa-suave font-bold" : "border-transparent font-semibold hover:bg-rosa-suave"}`}
+                className="flex min-h-11 items-center px-3 text-sm font-semibold text-tenue hover:text-rosa-accion"
               >
                 {enlace.etiqueta}
               </Link>
-            );
-          })}
-        </nav>
+            ))}
+          </nav>
+          <Decor variant="rama-esquina-der" className="mb-3 ml-auto mr-3 mt-4 w-24" />
+        </div>
+        <div className="shrink-0 space-y-3 border-t border-borde bg-surface p-4">
+          <a
+            href={ENLACE_ASESORIA(whatsapp)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-rosa-boton px-4 text-[17px] font-extrabold text-white text-shadow-boton hover:bg-rosa-boton-hover"
+          >
+            <MessageCircle className="size-5" aria-hidden="true" />
+            Atención por WhatsApp
+          </a>
+          <p className="flex items-center justify-center gap-2 text-sm text-tenue">
+            <Truck className="size-4" aria-hidden="true" />
+            Envíos a toda Colombia
+          </p>
+          <a
+            href="https://www.instagram.com/tonorosa_byleyar"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram de Tonorosa"
+            className="flex min-h-11 items-center justify-center text-sm text-tenue hover:text-rosa-accion"
+          >
+            @tonorosa_byleyar
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Boton } from "@/components/ui/Boton";
-import { Entrada, Etiqueta, Selector } from "@/components/ui/Campo";
+import { Entrada, Etiqueta } from "@/components/ui/Campo";
 
 type Filtros = { q: string; coleccion: string; categoria: string; min: string; max: string };
 
@@ -31,11 +31,176 @@ const conMiles = (d: string) => (d ? miles.format(Number(d)) : "");
 const chip =
   "inline-flex h-11 shrink-0 items-center rounded-full px-4 text-sm font-semibold transition-colors";
 const chipOff = "bg-rosa-medio text-cafe hover:bg-rosa-deco/40";
-const chipOn = "bg-rosa-accion text-white";
+const chipOn = "bg-rosa-boton text-cafe-oscuro";
 const etiquetaFila =
-  "mb-1.5 text-xs font-bold uppercase tracking-[0.08em] text-tenue sm:mb-0 sm:w-28 sm:shrink-0";
-const filaChips =
-  "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:min-w-0 sm:flex-1 sm:flex-wrap sm:px-0";
+  "w-28 shrink-0 text-xs font-bold uppercase tracking-[0.08em] text-tenue";
+const filaChips = "flex min-w-0 flex-1 flex-wrap gap-2 pb-1";
+const opcion =
+  "inline-flex min-h-11 items-center rounded-full border border-borde bg-surface px-4 text-sm font-semibold text-cafe transition-colors hover:bg-rosa-suave peer-checked:border-rosa-boton peer-checked:bg-rosa-boton peer-checked:text-cafe-oscuro peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-rosa-accion";
+
+function GrupoRadio({
+  id,
+  titulo,
+  nombre,
+  valor,
+  opciones,
+  alCambiar,
+}: {
+  id: string;
+  titulo: string;
+  nombre: string;
+  valor: string;
+  opciones: { valor: string; texto: string }[];
+  alCambiar: (v: string) => void;
+}) {
+  return (
+    <div>
+      <p id={id} className="mb-2 text-sm font-semibold text-cafe">{titulo}</p>
+      <div role="radiogroup" aria-labelledby={id} className="flex flex-wrap gap-2">
+        {opciones.map((o) => (
+          <label key={o.valor}>
+            <input
+              type="radio"
+              name={nombre}
+              value={o.valor}
+              checked={valor === o.valor}
+              onChange={() => alCambiar(o.valor)}
+              className="peer sr-only"
+            />
+            <span className={opcion}>{o.texto}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CamposPrecio({
+  prefijo,
+  rango,
+  valores,
+  alCambiar,
+}: {
+  prefijo: string;
+  rango: { min: number; max: number };
+  valores: Filtros;
+  alCambiar: (k: "min" | "max", v: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {(["min", "max"] as const).map((k) => (
+        <div key={k}>
+          <Etiqueta htmlFor={`${prefijo}-${k}`}>{k === "min" ? "Precio mínimo" : "Precio máximo"}</Etiqueta>
+          <div className="relative">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tenue"
+            >
+              $
+            </span>
+            <Entrada
+              id={`${prefijo}-${k}`}
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              className="pl-7"
+              placeholder={conMiles(String(rango[k]))}
+              value={conMiles(valores[k])}
+              onChange={(e) => alCambiar(k, e.target.value.replace(/\D/g, ""))}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const itemLateral =
+  "flex min-h-11 items-center rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion";
+
+export function BarraLateralFiltros({
+  actuales,
+  colecciones,
+  categorias,
+  rango,
+}: FiltrosCatalogoProps) {
+  const router = useRouter();
+  const [precio, setPrecio] = useState({ min: actuales.min, max: actuales.max });
+  const hayFiltros = Object.values(actuales).some(Boolean);
+
+  const aplicarPrecio = (e: React.FormEvent) => {
+    e.preventDefault();
+    let { min, max } = precio;
+    if (min && max && Number(min) > Number(max)) [min, max] = [max, min];
+    router.push(construirUrl({ ...actuales, min, max }));
+  };
+
+  return (
+    <aside aria-label="Filtros" className="hidden space-y-6 lg:sticky lg:top-24 lg:block lg:self-start">
+      <div>
+        <p id="lbl-lat-col" className="mb-2 px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
+          Colección
+        </p>
+        <nav aria-labelledby="lbl-lat-col" className="flex flex-col gap-1">
+          <Link
+            href={construirUrl({ ...actuales, coleccion: "" })}
+            aria-current={!actuales.coleccion ? "true" : undefined}
+            className={`${itemLateral} ${!actuales.coleccion ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+          >
+            Todas
+          </Link>
+          {colecciones.map((c) => (
+            <Link
+              key={c.slug}
+              href={construirUrl({ ...actuales, coleccion: actuales.coleccion === c.slug ? "" : c.slug })}
+              aria-current={actuales.coleccion === c.slug ? "true" : undefined}
+              className={`${itemLateral} ${actuales.coleccion === c.slug ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+            >
+              {c.nombre}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <div className="border-t border-borde pt-6">
+        <p id="lbl-lat-tipo" className="mb-2 px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
+          Tipo de prenda
+        </p>
+        <nav aria-labelledby="lbl-lat-tipo" className="flex flex-col gap-1">
+          {categorias.map((c) => (
+            <Link
+              key={c}
+              href={construirUrl({ ...actuales, categoria: actuales.categoria === c ? "" : c })}
+              aria-current={actuales.categoria === c ? "true" : undefined}
+              className={`${itemLateral} ${actuales.categoria === c ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+            >
+              {c}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <form onSubmit={aplicarPrecio} className="space-y-3 border-t border-borde pt-6">
+        <p className="px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">Precio</p>
+        <CamposPrecio
+          prefijo="l"
+          rango={rango}
+          valores={{ ...actuales, ...precio }}
+          alCambiar={(k, v) => setPrecio({ ...precio, [k]: v })}
+        />
+        <Boton type="submit" variante="secundario" className="w-full">
+          Aplicar precio
+        </Boton>
+      </form>
+      {hayFiltros && (
+        <Link
+          href="/catalogo"
+          className="inline-flex min-h-11 items-center px-1 text-sm font-semibold text-rosa-accion underline underline-offset-2 hover:text-rosa-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion"
+        >
+          Limpiar filtros
+        </Link>
+      )}
+    </aside>
+  );
+}
 
 export default function FiltrosCatalogo({
   actuales,
@@ -54,7 +219,7 @@ export default function FiltrosCatalogo({
     const previo = document.activeElement as HTMLElement | null;
     const enfocables = () =>
       Array.from(
-        panel.current?.querySelectorAll<HTMLElement>("a, button:not(:disabled), input, select") ??
+        panel.current?.querySelectorAll<HTMLElement>("a, button:not(:disabled), input") ??
           [],
       );
     enfocables()[0]?.focus();
@@ -84,7 +249,7 @@ export default function FiltrosCatalogo({
     };
   }, [abierta]);
 
-  const cantidadActivos = [actuales.coleccion, actuales.categoria, actuales.min, actuales.max].filter(
+  const cantidadActivos = [actuales.coleccion, actuales.categoria, actuales.min || actuales.max].filter(
     Boolean,
   ).length;
 
@@ -95,7 +260,9 @@ export default function FiltrosCatalogo({
 
   const aplicar = () => {
     setAbierta(false);
-    router.push(construirUrl({ ...borrador, q: actuales.q }));
+    let { min, max } = borrador;
+    if (min && max && Number(min) > Number(max)) [min, max] = [max, min];
+    router.push(construirUrl({ ...borrador, min, max, q: actuales.q }));
   };
 
   const limpiar = () => {
@@ -133,13 +300,13 @@ export default function FiltrosCatalogo({
             <Search className="size-5" aria-hidden="true" />
           </button>
         </form>
-        <Boton variante="secundario" onClick={abrir} className="shrink-0">
+        <Boton variante="secundario" onClick={abrir} className="shrink-0 lg:hidden">
           <SlidersHorizontal className="size-5" aria-hidden="true" />
           Filtros{cantidadActivos > 0 ? ` (${cantidadActivos})` : ""}
         </Boton>
       </div>
 
-      <div className="sm:flex sm:items-center sm:gap-3">
+      <div className="hidden md:flex md:items-center md:gap-3 lg:hidden">
         <p id="lbl-coleccion" className={etiquetaFila}>Colección</p>
         <nav aria-labelledby="lbl-coleccion" className={filaChips}>
           <Link
@@ -152,7 +319,7 @@ export default function FiltrosCatalogo({
           {colecciones.map((c) => (
             <Link
               key={c.slug}
-              href={construirUrl({ ...actuales, coleccion: c.slug })}
+              href={construirUrl({ ...actuales, coleccion: actuales.coleccion === c.slug ? "" : c.slug })}
               aria-current={actuales.coleccion === c.slug ? "true" : undefined}
               className={`${chip} ${actuales.coleccion === c.slug ? chipOn : chipOff}`}
             >
@@ -162,7 +329,7 @@ export default function FiltrosCatalogo({
         </nav>
       </div>
 
-      <div className="sm:flex sm:items-center sm:gap-3">
+      <div className="hidden md:flex md:items-center md:gap-3 lg:hidden">
         <p id="lbl-tipo" className={etiquetaFila}>Tipo de prenda</p>
         <nav aria-labelledby="lbl-tipo" className={filaChips}>
           {categorias.map((c) => (
@@ -170,7 +337,7 @@ export default function FiltrosCatalogo({
               key={c}
               href={construirUrl({ ...actuales, categoria: actuales.categoria === c ? "" : c })}
               aria-current={actuales.categoria === c ? "true" : undefined}
-              className={`${chip} border ${actuales.categoria === c ? "border-rosa-accion bg-rosa-accion text-white" : "border-borde bg-surface text-cafe hover:bg-rosa-suave"}`}
+              className={`${chip} border ${actuales.categoria === c ? "border-rosa-boton bg-rosa-boton text-cafe-oscuro" : "border-borde bg-surface text-cafe hover:bg-rosa-suave"}`}
             >
               {c}
             </Link>
@@ -200,61 +367,28 @@ export default function FiltrosCatalogo({
               </button>
             </div>
             <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-3">
-                {(["min", "max"] as const).map((k) => (
-                  <div key={k}>
-                    <Etiqueta htmlFor={`f-${k}`}>{k === "min" ? "Precio mínimo" : "Precio máximo"}</Etiqueta>
-                    <div className="relative">
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tenue"
-                      >
-                        $
-                      </span>
-                      <Entrada
-                        id={`f-${k}`}
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="off"
-                        className="pl-7"
-                        placeholder={conMiles(String(rango[k]))}
-                        value={conMiles(borrador[k])}
-                        onChange={(e) => setBorrador({ ...borrador, [k]: e.target.value.replace(/\D/g, "") })}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <Etiqueta htmlFor="f-coleccion">Colección</Etiqueta>
-                <Selector
-                  id="f-coleccion"
-                  value={borrador.coleccion}
-                  onChange={(e) => setBorrador({ ...borrador, coleccion: e.target.value })}
-                >
-                  <option value="">Todas</option>
-                  {colecciones.map((c) => (
-                    <option key={c.slug} value={c.slug}>
-                      {c.nombre}
-                    </option>
-                  ))}
-                </Selector>
-              </div>
-              <div>
-                <Etiqueta htmlFor="f-categoria">Tipo de prenda</Etiqueta>
-                <Selector
-                  id="f-categoria"
-                  value={borrador.categoria}
-                  onChange={(e) => setBorrador({ ...borrador, categoria: e.target.value })}
-                >
-                  <option value="">Todas</option>
-                  {categorias.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </Selector>
-              </div>
+              <CamposPrecio
+                prefijo="f"
+                rango={rango}
+                valores={borrador}
+                alCambiar={(k, v) => setBorrador({ ...borrador, [k]: v })}
+              />
+              <GrupoRadio
+                id="lbl-f-col"
+                titulo="Colección"
+                nombre="f-coleccion"
+                valor={borrador.coleccion}
+                opciones={[{ valor: "", texto: "Todas" }, ...colecciones.map((c) => ({ valor: c.slug, texto: c.nombre }))]}
+                alCambiar={(v) => setBorrador({ ...borrador, coleccion: v })}
+              />
+              <GrupoRadio
+                id="lbl-f-tipo"
+                titulo="Tipo de prenda"
+                nombre="f-categoria"
+                valor={borrador.categoria}
+                opciones={[{ valor: "", texto: "Todas" }, ...categorias.map((c) => ({ valor: c, texto: c }))]}
+                alCambiar={(v) => setBorrador({ ...borrador, categoria: v })}
+              />
             </div>
             <div className="mt-6 flex gap-3">
               <Boton variante="secundario" onClick={limpiar} className="flex-1">

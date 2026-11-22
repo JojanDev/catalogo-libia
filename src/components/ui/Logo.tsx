@@ -7,7 +7,7 @@ type LogoProps = {
 };
 
 export function Logo({ alto = 64, className, prioridad = false }: LogoProps) {
-  const ancho = Math.round((alto * 186) / 174);
+  const ancho = Math.round((alto * 191) / 174);
   return (
     <Image
       src="/logo-tonorosa.svg"

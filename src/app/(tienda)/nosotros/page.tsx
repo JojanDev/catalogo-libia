@@ -32,8 +32,8 @@ export default function NosotrosPage() {
   return (
     <>
       <section className="relative overflow-hidden bg-rosa-suave py-14 text-center lg:py-20">
-        <Decor variant="flor" className="absolute -left-6 top-6 hidden size-28 sm:block lg:left-12 lg:size-36" />
-        <Decor variant="rama" className="absolute -right-4 bottom-0 hidden size-28 sm:block lg:right-12 lg:size-36" />
+        <Decor variant="flor-frente" className="absolute -left-6 top-6 hidden w-24 sm:block lg:left-12 lg:w-32" />
+        <Decor variant="rama-esquina-der" className="absolute -right-4 bottom-0 hidden w-24 sm:block lg:right-12 lg:w-32" />
         <Contenedor className="relative">
           <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">Nosotros</h1>
           <Separador className="mt-4" />

@@ -8,6 +8,9 @@
   --color-rosa-deco: #e8849f;
   --color-rosa-accion: #b84a6e;
   --color-rosa-hover: #a33d60;
+  --color-rosa-boton: #ed95ab;
+  --color-rosa-boton-hover: #e27f99;
+  --color-cafe-oscuro: #3f2f24;
   --color-taupe: #a99883;
   --color-cafe: #5a4636;
   --color-tenue: #7a6657;
@@ -33,6 +36,7 @@
   --radius-lg: 24px;
 
   --shadow-card: 0 2px 12px rgba(184, 74, 110, 0.08);
+  --text-shadow-boton: 0 1px 2px rgba(90, 70, 54, 0.45);
   --shadow-elevada: 0 8px 32px rgba(90, 70, 54, 0.14);
 }
 
@@ -40,6 +44,23 @@ body {
   background-color: var(--color-canvas);
   color: var(--color-cafe);
   font-family: var(--font-body);
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  label[for] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
 }
 
 :focus-visible {

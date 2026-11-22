@@ -81,3 +81,5 @@ Los agentes de `.claude/agents/` están adaptados a este proyecto; en caso de co
 ## Database
 
 El esquema se maneja a mano ejecutando los `supabase-*.sql` de la raíz en el editor SQL de Supabase (sin herramienta de migraciones). Orden: `supabase-schema.sql` → `supabase-migration-relational.sql` → `supabase-migration-descuentos.sql` → `supabase-update-tallas-colombia.sql` → (etapa B) `supabase-migration-nextjs.sql`. Al cambiar la forma de los datos, agregar un SQL nuevo y actualizar los mappers de `src/lib`.
+
+Nota: el diseño visual de la tienda pública (encabezado, inicio, catálogo, ficha, pie, decoración y tokens de globals.css) proviene de la rama main (opción 1) y se reincorporó aquí con carrito, descuentos y páginas informativas.
