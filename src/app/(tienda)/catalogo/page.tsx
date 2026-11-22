@@ -116,11 +116,10 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
   ]);
 
   return (
-    <div className="relative overflow-x-clip">
-    <Decor variant="rama-esquina-der" className="absolute -right-6 top-8 z-0 hidden w-40 xl:block 2xl:w-44" />
-    <Contenedor className="relative z-10 py-10 lg:py-16">
-      <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">Catálogo</h1>
-      <p className="mt-2 text-base text-tenue">Elige lo que más le guste a tu peque.</p>
+    <Contenedor className="relative py-10 lg:py-16">
+      <Decor variant="rama-esquina-der" className="absolute right-0 top-4 z-0 hidden w-36 lg:block lg:w-40" />
+      <h1 className="relative z-10 font-display text-[32px] leading-tight text-cafe md:text-5xl">Catálogo</h1>
+      <p className="relative z-10 mt-2 text-base text-tenue">Elige lo que más le guste a tu peque.</p>
       <div className="mt-6">
         <FiltrosCatalogo
           key={actuales.q}
@@ -169,6 +168,5 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
         </div>
       </div>
     </Contenedor>
-    </div>
   );
 }
