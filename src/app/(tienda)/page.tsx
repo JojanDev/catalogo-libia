@@ -62,7 +62,7 @@ export default async function InicioPage() {
 
       <Beneficios />
 
-      <section className="relative overflow-hidden pb-16 pt-8 lg:pb-28 lg:pt-16">
+      <section className="relative overflow-hidden pb-24 pt-8 lg:pb-40 lg:pt-16">
         <Decor variant="rama-izquierda" className="absolute -left-6 bottom-0 z-0 hidden w-32 sm:block lg:w-48" />
         <Decor variant="rama-izquierda" className="absolute -right-6 bottom-0 z-0 hidden w-32 -scale-x-100 sm:block lg:w-48" />
         <Ola className="absolute inset-x-0 bottom-0 z-0 h-8 lg:h-14" />
@@ -80,7 +80,7 @@ export default async function InicioPage() {
             Aquí encontrarás mucho más que ropa, encontrarás un mundo de ternura, estilo y felicidad
             para las más pequeñas.
           </p>
-          <BotonEnlace href="/catalogo" className="mt-8 px-10 lg:px-12">
+          <BotonEnlace href="/catalogo" className="mt-8 px-10 sm:px-14 lg:px-20">
             Descubrir colección
             <ArrowRight className="size-5" aria-hidden="true" />
           </BotonEnlace>
