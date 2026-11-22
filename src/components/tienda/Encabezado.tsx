@@ -36,7 +36,7 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
     <header className="sticky top-0 z-40 border-b lg:relative border-borde bg-canvas">
       <div className="mx-auto max-w-[1200px] px-2 sm:px-4 lg:px-8">
         <div className="grid h-[66px] grid-cols-[1fr_auto_1fr] items-center lg:h-auto lg:py-3">
-          <div className="flex justify-start">
+          <div className="flex justify-start lg:hidden">
             <button
               type="button"
               onClick={() => setMenuAbierto(true)}
@@ -47,11 +47,11 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
               <Menu className="size-6" aria-hidden="true" />
             </button>
           </div>
-          <Link href="/" aria-label="Tonorosa by Leyar, ir al inicio" className="col-start-2 justify-self-center">
+          <Link href="/" aria-label="Tonorosa by Leyar, ir al inicio" className="col-start-2 justify-self-center lg:col-start-1 lg:row-start-1 lg:justify-self-start">
             <Logo alto={52} prioridad className="lg:hidden" />
             <Logo alto={96} prioridad className="hidden lg:block" />
           </Link>
-          <div className="col-start-3 flex items-center justify-end gap-1 lg:gap-3">
+          <div className="col-start-3 flex items-center justify-end gap-1 lg:row-start-1 lg:gap-3 lg:justify-self-end">
             <button
               ref={botonLupa}
               type="button"
@@ -64,22 +64,22 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
               <Search className="size-6" aria-hidden="true" />
             </button>
           </div>
+          <nav aria-label="Principal" className="hidden gap-10 lg:col-start-2 lg:row-start-1 lg:flex">
+            {ENLACES_TIENDA.map((enlace) => {
+              const activo = esActivo(pathname, enlace.href);
+              return (
+                <Link
+                  key={enlace.href}
+                  href={enlace.href}
+                  aria-current={activo ? "page" : undefined}
+                  className={`border-b-2 pb-1 text-[15px] font-semibold text-cafe transition-colors hover:text-rosa-accion ${activo ? "border-rosa-deco" : "border-transparent"}`}
+                >
+                  {enlace.etiqueta}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
-        <nav aria-label="Principal" className="hidden justify-center gap-10 pb-3 lg:flex">
-          {ENLACES_TIENDA.map((enlace) => {
-            const activo = esActivo(pathname, enlace.href);
-            return (
-              <Link
-                key={enlace.href}
-                href={enlace.href}
-                aria-current={activo ? "page" : undefined}
-                className={`border-b-2 pb-1 text-[15px] font-semibold text-cafe transition-colors hover:text-rosa-accion ${activo ? "border-rosa-deco" : "border-transparent"}`}
-              >
-                {enlace.etiqueta}
-              </Link>
-            );
-          })}
-        </nav>
       </div>
       {buscando && (
         <div
