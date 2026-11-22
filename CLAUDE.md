@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Catálogo en línea **Tonorosa by Leyar** (ropa infantil, Colombia), **opción 1 de la cotización**: inicio con carrusel de fotos y videos, catálogo con buscador y filtros, colecciones (una destacada y filtro por colección), detalle de cada prenda con tallas y **consulta por WhatsApp**, y SEO básico. Johan carga y actualiza los productos (hasta 20 por mes); no hay panel de administración, carrito, pagos, pedidos, descuentos, Nosotros, Contacto, guía de tallas ni políticas. Next.js 16 (App Router, Turbopack) + React 19 + TypeScript 5.9 + Tailwind 4. Hosting previsto en Netlify; dominio `tonorosabyleyar.com` (Cloudflare). Textos, identificadores y columnas en español.
 
-Estado actual: rama `opcion-1-catalogo`. Las pantallas funcionan con **datos de prueba en memoria** (`src/lib/mock/`). El siguiente paso es conectar Supabase (datos cargados con SQL y fotos en Supabase Storage por carpeta, `productos/<slug>/1.jpg…`) sin cambiar las pantallas. Diseño: `docs/diseno-tonorosa.md` y el rediseño aplicado en `docs/rediseno-tienda.md`. Alcance y precio acordados: `docs/cotizacion-opcion-1.md` (PDF completo en `docs/Cotizacion-Tonorosa.pdf`). Versiones y cómo volver a cada una: `VERSIONES.md`.
+Estado actual: rama `main`, conectada a **Supabase** (esquema en `supabase-opcion-1.sql`; fotos en Supabase Storage, bucket `productos`, por carpeta `productos/<slug>/1.jpg…`). Diseño: `docs/diseno-tonorosa.md` y el rediseño aplicado en `docs/rediseno-tienda.md`. Alcance y precio acordados: `docs/cotizacion-opcion-1.md` (PDF completo en `docs/Cotizacion-Tonorosa.pdf`). Versiones y cómo volver a cada una: `VERSIONES.md`.
 
 La tienda completa (opción 4: panel, carrito, Wompi, pedidos) quedó guardada en la rama `opcion-4-tienda-completa`.
 
@@ -36,13 +36,13 @@ Ver `.env.example`. Públicas: `NEXT_PUBLIC_*` (`NEXT_PUBLIC_SITE_URL`, número 
 src/app/
   (tienda)/   inicio, catalogo, colecciones/[slug], producto/[slug]
   layout.tsx · not-found.tsx · opengraph-image.tsx
-src/lib/      datos/tienda.ts (capa de datos), mock/ (datos de prueba en memoria), formato, slug
+src/lib/      datos/tienda.ts (capa de datos), supabase/ (cliente), filtros-url, formato, slug
 src/components/ tienda/ · decor/ · ui/
 src/types/index.ts
 public/decor/ (flores en acuarela) · public/mock/ (imágenes de prueba)
 ```
 
-- **Capa de datos**: las pantallas leen **solo** mediante funciones de `src/lib/datos/tienda.ts`. Nunca llaman a Supabase ni al almacén mock directamente. Al conectar Supabase se cambia la implementación conservando las firmas.
+- **Capa de datos**: las pantallas leen **solo** mediante funciones de `src/lib/datos/tienda.ts`. Nunca llaman a Supabase directamente.
 - **Server Components por defecto**; `"use client"` solo en componentes con estado, eventos o APIs del navegador.
 - **Navegación** con `<Link>` / `useRouter` y URLs reales; filtros del catálogo en query params (`q`, `coleccion`, `categoria`, `min`, `max`).
 - **Consulta por WhatsApp** (`src/components/tienda/ConsultaWhatsApp.tsx`): mensaje con prenda, talla opcional, precio y URL del producto; las prendas agotadas preguntan por disponibilidad.
@@ -80,4 +80,4 @@ Los agentes de `.claude/agents/` están adaptados a este proyecto; en caso de co
 
 ## Database
 
-Todavía no hay esquema para la opción 1 (los SQL de la tienda completa se eliminaron; siguen en la rama `opcion-4-tienda-completa`). Plan: un proyecto Supabase nuevo; el esquema y la carga de productos se manejan a mano con archivos `supabase-*.sql` en la raíz, ejecutados en el editor SQL de Supabase (sin herramienta de migraciones). Al cambiar la forma de los datos, agregar un SQL nuevo y actualizar los mappers de `src/lib`.
+El esquema de la opción 1 está en `supabase-opcion-1.sql`, que se ejecuta a mano en el editor SQL de Supabase (sin herramienta de migraciones). Si la base ya tiene aplicado el esquema de la tienda completa (`supabase-opcion-4.sql`, en la rama `opcion-4-tienda-completa`), ejecutar también `supabase-configuracion-publica.sql` para que la clave pública pueda leer `whatsapp` y `texto_anuncio`. Al cambiar la forma de los datos, agregar un SQL nuevo y actualizar los mappers de `src/lib`.

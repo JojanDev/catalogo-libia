@@ -1,6 +1,6 @@
 # Versiones del diseño — Tonorosa (opción 1)
 
-Guía para revisar el rediseño de la tienda y comparar con cómo estaba antes. Todo está en la rama `opcion-1-catalogo`.
+Guía para revisar el rediseño de la tienda y comparar con cómo estaba antes. Todo está en la rama `main`.
 
 ## Qué revisar
 
@@ -22,11 +22,11 @@ En la carpeta del proyecto, desde la terminal:
 |---|---|
 | Cómo estaba **antes** del rediseño | `git switch --detach antes-del-rediseno` |
 | El **rediseño completo** | `git switch --detach rediseno-completo` |
-| Lo **más actual** de la rama | `git switch opcion-1-catalogo` |
+| Lo **más actual** de la rama | `git switch main` |
 
 Con el servidor de desarrollo encendido (`npm run dev -- -H 0.0.0.0 -p 3001`), la página se actualiza sola al cambiar de versión. Se abre en el computador en http://localhost:3001 y en un celular de la misma red Wi-Fi en http://192.168.1.4:3001.
 
-Para dejar de comparar, siempre se vuelve con `git switch opcion-1-catalogo`. Cambiar de versión no borra nada.
+Para dejar de comparar, siempre se vuelve con `git switch main`. Cambiar de versión no borra nada.
 
 ## Capturas
 
