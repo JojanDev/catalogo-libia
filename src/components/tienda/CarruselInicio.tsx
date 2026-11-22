@@ -39,10 +39,10 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
     <section
       aria-roledescription="carrusel"
       aria-label="Destacados"
-      className="relative bg-rosa-suave px-4 pt-4 sm:px-6 lg:px-8 lg:pt-6"
+      className="relative"
     >
       <div
-        className="relative mx-auto aspect-[4/5] max-w-[1200px] touch-pan-y overflow-hidden rounded-2xl bg-rosa-medio shadow-card sm:aspect-[16/10] lg:aspect-[16/7]"
+        className="relative aspect-[4/5] touch-pan-y overflow-hidden bg-rosa-suave sm:aspect-[16/10] lg:aspect-[21/8]"
         onTouchStart={(e) => {
           setPausado(true);
           inicioX.current = e.touches[0].clientX;
@@ -74,6 +74,7 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
               inert={!activo}
               className={`absolute inset-0 transition-opacity duration-500 motion-reduce:transition-none ${activo ? "opacity-100" : "opacity-0"}`}
             >
+              <div className="absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] lg:[mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)]">
               {slide.tipo === "video" ? (
                 <video
                   src={slide.url}
@@ -102,15 +103,17 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
                     src={slide.url}
                     alt=""
                     fill
-                    sizes="(min-width: 1200px) 1200px, 100vw"
+                    sizes="100vw"
                     priority={i === 0}
                     unoptimized
                     className="hidden object-cover sm:block"
                   />
                 </>
               )}
+              </div>
               {(slide.titulo || slide.subtitulo || (slide.textoBoton && slide.enlace)) && (
-                <div className="absolute inset-x-4 bottom-14 flex flex-col items-start gap-2 rounded-xl bg-canvas/90 p-4 shadow-card backdrop-blur-md sm:inset-x-auto sm:left-16 sm:max-w-md sm:bg-canvas/85 sm:p-5 sm:backdrop-blur-sm lg:bottom-16 lg:left-16 lg:max-w-lg lg:p-8">
+                <div className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-[1200px] -translate-x-1/2">
+                <div className="pointer-events-auto absolute inset-x-4 bottom-14 flex flex-col items-start gap-2 rounded-xl bg-canvas/90 p-4 shadow-card backdrop-blur-md sm:inset-x-auto sm:left-6 sm:max-w-md sm:bg-canvas/85 sm:p-5 sm:backdrop-blur-sm lg:bottom-16 lg:left-8 lg:max-w-lg lg:p-8">
                   {slide.titulo && (
                     <h2 className="font-display text-2xl leading-tight text-cafe-oscuro lg:text-4xl">{slide.titulo}</h2>
                   )}
@@ -120,6 +123,7 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
                       {slide.textoBoton}
                     </BotonEnlace>
                   )}
+                </div>
                 </div>
               )}
             </div>
@@ -131,7 +135,7 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
             type="button"
             onClick={() => setPausadoManual((p) => !p)}
             aria-label={pausadoManual ? "Reanudar carrusel" : "Pausar carrusel"}
-            className="absolute right-3 top-3 z-10 flex size-11 items-center justify-center rounded-full bg-surface/90 text-cafe-oscuro shadow-card hover:bg-surface"
+            className="absolute right-3 top-3 z-10 lg:right-4 lg:top-4 flex size-11 items-center justify-center rounded-full bg-surface/90 text-cafe-oscuro shadow-card hover:bg-surface"
           >
             {pausadoManual ? <Play className="size-5" aria-hidden="true" /> : <Pause className="size-5" aria-hidden="true" />}
           </button>
@@ -139,10 +143,10 @@ export function CarruselInicio({ slides }: { slides: SlideCarrusel[] }) {
 
         {total > 1 && (
           <>
-            <button type="button" onClick={() => ir(indice - 1)} aria-label="Anterior" className={`${flecha} left-2 sm:left-3`}>
+            <button type="button" onClick={() => ir(indice - 1)} aria-label="Anterior" className={`${flecha} left-2 sm:left-3 lg:left-4`}>
               <ChevronLeft className="size-6" aria-hidden="true" />
             </button>
-            <button type="button" onClick={() => ir(indice + 1)} aria-label="Siguiente" className={`${flecha} right-2 sm:right-3`}>
+            <button type="button" onClick={() => ir(indice + 1)} aria-label="Siguiente" className={`${flecha} right-2 sm:right-3 lg:right-4`}>
               <ChevronRight className="size-6" aria-hidden="true" />
             </button>
             <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 rounded-full bg-surface/95 px-1">
