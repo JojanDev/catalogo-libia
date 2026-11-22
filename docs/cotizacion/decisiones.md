@@ -13,30 +13,29 @@ Resumen de lo acordado al preparar la cotización (octubre de 2026). Sirve como 
 
 ## Cotización entregada
 
-`docs/cotizacion/Cotizacion-Tonorosa.pdf`, generado desde `cotizacion-tonorosa.html` con Chrome sin interfaz (páginas de 108 × 228 mm, formato celular).
+`docs/cotizacion/Cotizacion-Tonorosa.pdf`, generado desde `cotizacion-tonorosa.html` con Chrome o Edge sin interfaz (páginas de 108 × 228 mm, formato celular; 12 páginas, una por sección).
 
-Para regenerarlo:
+Para regenerarlo (con Edge, cambiar la ruta por `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`):
 
 ```
 & "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --disable-gpu --no-pdf-header-footer --virtual-time-budget=8000 "--print-to-pdf=<ruta>\Cotizacion-Tonorosa.pdf" "file:///<ruta>/cotizacion-tonorosa.html"
 ```
 
-| # en el PDF | Opción | Valor | Mensualidad |
-|---|---|---|---|
-| 1 | Tienda completa (lo que pidió): panel, descuentos y códigos, carrito con pago Wompi, pedidos con estados, correos automáticos | 4.300.000 | 100.000 |
-| 2 | Catálogo con carrito por WhatsApp: panel, descuentos en prendas, carrito que envía el pedido a WhatsApp, códigos de descuento | 2.500.000 | 70.000 |
-| 3 | Catálogo autogestionable: panel (productos, colecciones, tallas, carrusel, guía de tallas, ocultar y mostrar), descuentos en prendas | 1.800.000 | 60.000 |
-| 4 | Catálogo de la primera propuesta: Johan sube los cambios | 500.000 | 80.000 solo en meses con cambios (hasta 20 productos; adicionales a 4.000 c/u) |
+Las opciones van de menor a mayor, en tarjetas con el precio grande. Cada una dice "Todo lo de la opción N, más:" y lista solo lo que agrega.
 
-**Todas incluyen:**
-- Diseño del borrador, pensado primero para celular.
-- Carrusel, catálogo con buscador y colecciones (destacada y filtro).
-- Guía de tallas, Nosotros y Contacto.
-- SEO básico, vista previa al compartir el enlace y contador de visitas.
+| # en el PDF | Opción | Agrega | Valor | Mensualidad |
+|---|---|---|---|---|
+| 1 | Catálogo (primera propuesta) | Diseño del borrador para celular, catálogo con buscador y detalle, colecciones (destacada y filtro), carrusel, WhatsApp por prenda, SEO básico con vista previa al compartir, publicación. Johan sube los cambios | 500.000 | 80.000 solo en meses con cambios (hasta 20 productos; adicionales a 4.000 c/u) |
+| 2 | Catálogo con carrito por WhatsApp | Nosotros, Contacto, guía de tallas, contador de visitas, Perfil de Empresa en Google, carrito que envía el pedido a WhatsApp, descuentos con fecha de fin, códigos de descuento. Johan sigue subiendo los cambios | 1.800.000 | 90.000 solo en meses con cambios |
+| 3 | Catálogo autogestionable | Panel: productos, colecciones, tallas y agotados, ocultar y mostrar, carrusel, guía de tallas, descuentos y códigos; subida de fotos; capacitación | 3.500.000 | 80.000 |
+| 4 | Tienda completa (lo que pidió) | Wompi, número de pedido y comprobante por correo, aviso a Libia por pedido, pedidos con estados, cantidades o sobre pedido, plantillas de políticas | 5.000.000 | 120.000 |
+
+La tarjeta 4 lleva el argumento de venta: vende 24 h, la clienta paga apenas se decide, no hay que confirmar transferencias a mano, y una persona atendiendo WhatsApp cuesta más de 1 M al mes.
 
 **Solo para Johan (no va en el PDF):**
-- Valor de mercado aproximado: 6–9 M, 3,8–5,5 M, 3–4,5 M y 1,5–2,2 M, en el orden de la tabla.
-- Tarifa de referencia: 40–60 mil COP/h.
+- Valor de mercado aproximado, en el orden de la tabla: 1,5–2,2 M, 2,8–3,8 M, 4–5,8 M y 6–9 M.
+- Estimación de horas por nivel: 35–45 h, +20–25 h, +35–45 h y +35–45 h.
+- Tarifa de referencia: 40–60 mil COP/h. Tope acordado: 5 M.
 
 **Decisiones de redacción del PDF:**
 - Sin tiempos de entrega.
@@ -55,7 +54,8 @@ Para regenerarlo:
 - **Hosting:** Netlify o Cloudflare Pages. El plan gratis de Vercel (Hobby) no permite uso comercial.
 - **SEO:** migrar de rutas `#/` a URLs reales con prerenderizado (Next.js), en la misma carpeta y en una rama.
 - **Productos y colecciones:** se inactivan en lugar de eliminarse, y se pueden reactivar desde el panel.
-- **Inventario:** en las opciones 2–4 no hay cantidades; las prendas se marcan agotadas. En la opción 1 se le pregunta si quiere stock fijo o sobre pedido.
+- **Inventario:** en las opciones 1–3 no hay cantidades; las prendas se marcan agotadas. En la opción 4 se le pregunta si quiere stock fijo o sobre pedido.
+- **Perfil de Empresa en Google:** desde la opción 2. Lo crea Johan y Libia lo verifica (video o código); como negocio con zona de entregas.
 - **Códigos de descuento:** solo con carrito, porque se validan y se calcula el total antes de enviar.
 - **Dominio:** `tonorosa.com`, comprado por Libia a su nombre, con renovación automática. Verificar que esté disponible.
 - **Wompi:** Plan Avanzado (2,65 % + 700 + IVA). La cuenta la abre Libia con su RUT. Confirmar que no cobre afiliación.
