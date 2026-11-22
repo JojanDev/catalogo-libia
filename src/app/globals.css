@@ -46,6 +46,23 @@ body {
   font-family: var(--font-body);
 }
 
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  label[for] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--color-rosa-accion);
   outline-offset: 2px;
