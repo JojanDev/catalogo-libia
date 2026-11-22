@@ -31,7 +31,7 @@ export default async function ColeccionPage({ params }: Props) {
   const { slug } = await params;
   const coleccion = await obtenerColeccionPorSlug(slug);
   if (!coleccion) notFound();
-  const productos = await obtenerProductos({ coleccion: slug });
+  const productos = await obtenerProductos({ coleccion: [slug] });
 
   return (
     <>

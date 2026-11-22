@@ -5,6 +5,7 @@ import { Decor } from "@/components/decor/Decor";
 import FiltrosCatalogo, { BarraLateralFiltros } from "@/components/tienda/FiltrosCatalogo";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { Contenedor } from "@/components/ui/Contenedor";
+import { alternar, construirUrl, lista, type Filtros } from "@/lib/filtros-url";
 import {
   obtenerCategorias,
   obtenerColecciones,
@@ -28,16 +29,7 @@ function numero(v: string) {
   return /^\d+$/.test(v) ? Number(v) : undefined;
 }
 
-type Actuales = { q: string; coleccion: string; categoria: string; min: string; max: string };
-
-function construirUrl(f: Actuales) {
-  const p = new URLSearchParams();
-  (Object.keys(f) as (keyof Actuales)[]).forEach((k) => {
-    if (f[k]) p.set(k, f[k]);
-  });
-  const s = p.toString();
-  return s ? `/catalogo?${s}` : "/catalogo";
-}
+type Actuales = Filtros;
 
 const pesos = (n: string) => `$\u00a0${new Intl.NumberFormat("es-CO", { useGrouping: "always" }).format(Number(n))}`;
 
@@ -48,21 +40,24 @@ function FiltrosActivos({
   actuales: Actuales;
   colecciones: { slug: string; nombre: string }[];
 }) {
-  const nombreColeccion = colecciones.find((c) => c.slug === actuales.coleccion)?.nombre;
   const items: { texto: string; href: string; soloMovil?: boolean }[] = [];
   if (actuales.q) items.push({ texto: `“${actuales.q}”`, href: construirUrl({ ...actuales, q: "" }) });
-  if (nombreColeccion)
+  actuales.coleccion.forEach((slug) => {
+    const nombre = colecciones.find((c) => c.slug === slug)?.nombre;
+    if (nombre)
+      items.push({
+        texto: `Colección: ${nombre}`,
+        href: construirUrl({ ...actuales, coleccion: alternar(actuales.coleccion, slug) }),
+        soloMovil: true,
+      });
+  });
+  actuales.categoria.forEach((cat) =>
     items.push({
-      texto: `Colección: ${nombreColeccion}`,
-      href: construirUrl({ ...actuales, coleccion: "" }),
+      texto: `Tipo: ${cat}`,
+      href: construirUrl({ ...actuales, categoria: alternar(actuales.categoria, cat) }),
       soloMovil: true,
-    });
-  if (actuales.categoria)
-    items.push({
-      texto: `Tipo: ${actuales.categoria}`,
-      href: construirUrl({ ...actuales, categoria: "" }),
-      soloMovil: true,
-    });
+    }),
+  );
   if (actuales.min || actuales.max) {
     const texto =
       actuales.min && actuales.max
@@ -99,17 +94,19 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
   if (min !== undefined && max !== undefined && min > max) [min, max] = [max, min];
   const actuales = {
     q: uno(sp.q),
-    coleccion: uno(sp.coleccion),
-    categoria: uno(sp.categoria),
+    coleccion: lista(sp.coleccion),
+    categoria: lista(sp.categoria),
     min: min === undefined ? "" : String(min),
     max: max === undefined ? "" : String(max),
   };
-  const hayFiltros = Boolean(actuales.q || actuales.coleccion || actuales.categoria || actuales.min || actuales.max);
+  const hayFiltros = Boolean(
+    actuales.q || actuales.coleccion.length || actuales.categoria.length || actuales.min || actuales.max,
+  );
   const [productos, colecciones, categorias, rango] = await Promise.all([
     obtenerProductos({
       q: actuales.q || undefined,
-      coleccion: actuales.coleccion || undefined,
-      categoria: actuales.categoria || undefined,
+      coleccion: actuales.coleccion.length ? actuales.coleccion : undefined,
+      categoria: actuales.categoria.length ? actuales.categoria : undefined,
       min,
       max,
     }),
@@ -119,9 +116,9 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
   ]);
 
   return (
-    <Contenedor className="relative py-10 lg:py-16">
-      <Decor variant="ramito" className="absolute right-6 top-6 z-0 hidden w-16 md:block lg:right-8 lg:w-24" />
-      <Decor variant="petalo-3" className="absolute right-28 top-14 z-0 hidden w-5 rotate-12 lg:block" />
+    <div className="relative overflow-x-clip">
+    <Decor variant="rama-esquina-der" className="absolute -right-6 top-8 z-0 hidden w-40 xl:block 2xl:w-44" />
+    <Contenedor className="relative z-10 py-10 lg:py-16">
       <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">Catálogo</h1>
       <p className="mt-2 text-base text-tenue">Elige lo que más le guste a tu peque.</p>
       <div className="mt-6">
@@ -172,5 +169,6 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
         </div>
       </div>
     </Contenedor>
+    </div>
   );
 }

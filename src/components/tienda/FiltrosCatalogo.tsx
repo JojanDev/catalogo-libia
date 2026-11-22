@@ -6,8 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Boton } from "@/components/ui/Boton";
 import { Entrada, Etiqueta } from "@/components/ui/Campo";
-
-type Filtros = { q: string; coleccion: string; categoria: string; min: string; max: string };
+import { alternar, construirUrl, type Filtros } from "@/lib/filtros-url";
 
 type FiltrosCatalogoProps = {
   actuales: Filtros;
@@ -15,15 +14,6 @@ type FiltrosCatalogoProps = {
   categorias: string[];
   rango: { min: number; max: number };
 };
-
-function construirUrl(f: Filtros) {
-  const p = new URLSearchParams();
-  (Object.keys(f) as (keyof Filtros)[]).forEach((k) => {
-    if (f[k]) p.set(k, f[k]);
-  });
-  const s = p.toString();
-  return s ? `/catalogo?${s}` : "/catalogo";
-}
 
 const miles = new Intl.NumberFormat("es-CO", { useGrouping: "always" });
 const conMiles = (d: string) => (d ? miles.format(Number(d)) : "");
@@ -36,40 +26,40 @@ const etiquetaFila =
   "w-28 shrink-0 text-xs font-bold uppercase tracking-[0.08em] text-tenue";
 const filaChips = "flex min-w-0 flex-1 flex-wrap gap-2 pb-1";
 const opcion =
-  "inline-flex min-h-11 items-center rounded-full border border-borde bg-surface px-4 text-sm font-semibold text-cafe transition-colors hover:bg-rosa-suave peer-checked:border-rosa-boton peer-checked:bg-rosa-boton peer-checked:text-cafe-oscuro peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-rosa-accion";
+  "inline-flex min-h-11 items-center gap-2 rounded-full border border-borde bg-surface px-4 text-sm font-semibold text-cafe transition-colors hover:bg-rosa-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion aria-pressed:border-rosa-boton aria-pressed:bg-rosa-boton aria-pressed:text-cafe-oscuro";
 
-function GrupoRadio({
+function GrupoChips({
   id,
   titulo,
-  nombre,
-  valor,
+  valores,
   opciones,
   alCambiar,
 }: {
   id: string;
   titulo: string;
-  nombre: string;
-  valor: string;
+  valores: string[];
   opciones: { valor: string; texto: string }[];
   alCambiar: (v: string) => void;
 }) {
   return (
     <div>
       <p id={id} className="mb-2 text-sm font-semibold text-cafe">{titulo}</p>
-      <div role="radiogroup" aria-labelledby={id} className="flex flex-wrap gap-2">
-        {opciones.map((o) => (
-          <label key={o.valor}>
-            <input
-              type="radio"
-              name={nombre}
-              value={o.valor}
-              checked={valor === o.valor}
-              onChange={() => alCambiar(o.valor)}
-              className="peer sr-only"
-            />
-            <span className={opcion}>{o.texto}</span>
-          </label>
-        ))}
+      <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
+        {opciones.map((o) => {
+          const activo = valores.includes(o.valor);
+          return (
+            <button
+              key={o.valor}
+              type="button"
+              aria-pressed={activo}
+              onClick={() => alCambiar(o.valor)}
+              className={opcion}
+            >
+              {o.texto}
+              {activo && <X className="size-4 shrink-0" aria-hidden="true" />}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -116,7 +106,8 @@ function CamposPrecio({
 }
 
 const itemLateral =
-  "flex min-h-11 items-center rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion";
+  "flex min-h-11 items-center justify-between gap-2 rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rosa-accion";
+const lateralOff = "text-cafe hover:bg-rosa-suave hover:text-rosa-accion";
 
 export function BarraLateralFiltros({
   actuales,
@@ -126,7 +117,9 @@ export function BarraLateralFiltros({
 }: FiltrosCatalogoProps) {
   const router = useRouter();
   const [precio, setPrecio] = useState({ min: actuales.min, max: actuales.max });
-  const hayFiltros = Object.values(actuales).some(Boolean);
+  const hayFiltros = Boolean(
+    actuales.q || actuales.coleccion.length || actuales.categoria.length || actuales.min || actuales.max,
+  );
 
   const aplicarPrecio = (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,22 +136,27 @@ export function BarraLateralFiltros({
         </p>
         <nav aria-labelledby="lbl-lat-col" className="flex flex-col gap-1">
           <Link
-            href={construirUrl({ ...actuales, coleccion: "" })}
-            aria-current={!actuales.coleccion ? "true" : undefined}
-            className={`${itemLateral} ${!actuales.coleccion ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
+            href={construirUrl({ ...actuales, coleccion: [] })}
+            aria-pressed={!actuales.coleccion.length}
+            className={`${itemLateral} ${!actuales.coleccion.length ? chipOn : lateralOff}`}
           >
             Todas
           </Link>
-          {colecciones.map((c) => (
-            <Link
-              key={c.slug}
-              href={construirUrl({ ...actuales, coleccion: actuales.coleccion === c.slug ? "" : c.slug })}
-              aria-current={actuales.coleccion === c.slug ? "true" : undefined}
-              className={`${itemLateral} ${actuales.coleccion === c.slug ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
-            >
-              {c.nombre}
-            </Link>
-          ))}
+          {colecciones.map((c) => {
+            const activo = actuales.coleccion.includes(c.slug);
+            return (
+              <Link
+                key={c.slug}
+                href={construirUrl({ ...actuales, coleccion: alternar(actuales.coleccion, c.slug) })}
+                aria-pressed={activo}
+                aria-label={activo ? `${c.nombre}, seleccionado. Pulsa para quitar` : undefined}
+                className={`${itemLateral} ${activo ? chipOn : lateralOff}`}
+              >
+                {c.nombre}
+                {activo && <X className="size-5 shrink-0" aria-hidden="true" />}
+              </Link>
+            );
+          })}
         </nav>
       </div>
       <div className="border-t border-borde pt-6">
@@ -166,16 +164,21 @@ export function BarraLateralFiltros({
           Tipo de prenda
         </p>
         <nav aria-labelledby="lbl-lat-tipo" className="flex flex-col gap-1">
-          {categorias.map((c) => (
-            <Link
-              key={c}
-              href={construirUrl({ ...actuales, categoria: actuales.categoria === c ? "" : c })}
-              aria-current={actuales.categoria === c ? "true" : undefined}
-              className={`${itemLateral} ${actuales.categoria === c ? chipOn : "text-cafe hover:bg-rosa-suave hover:text-rosa-accion"}`}
-            >
-              {c}
-            </Link>
-          ))}
+          {categorias.map((c) => {
+            const activo = actuales.categoria.includes(c);
+            return (
+              <Link
+                key={c}
+                href={construirUrl({ ...actuales, categoria: alternar(actuales.categoria, c) })}
+                aria-pressed={activo}
+                aria-label={activo ? `${c}, seleccionado. Pulsa para quitar` : undefined}
+                className={`${itemLateral} ${activo ? chipOn : lateralOff}`}
+              >
+                {c}
+                {activo && <X className="size-5 shrink-0" aria-hidden="true" />}
+              </Link>
+            );
+          })}
         </nav>
       </div>
       <form onSubmit={aplicarPrecio} className="space-y-3 border-t border-borde pt-6">
@@ -249,9 +252,8 @@ export default function FiltrosCatalogo({
     };
   }, [abierta]);
 
-  const cantidadActivos = [actuales.coleccion, actuales.categoria, actuales.min || actuales.max].filter(
-    Boolean,
-  ).length;
+  const cantidadActivos =
+    actuales.coleccion.length + actuales.categoria.length + (actuales.min || actuales.max ? 1 : 0);
 
   const abrir = () => {
     setBorrador(actuales);
@@ -267,7 +269,7 @@ export default function FiltrosCatalogo({
 
   const limpiar = () => {
     setAbierta(false);
-    router.push(construirUrl({ q: actuales.q, coleccion: "", categoria: "", min: "", max: "" }));
+    router.push(construirUrl({ q: actuales.q, coleccion: [], categoria: [], min: "", max: "" }));
   };
 
   return (
@@ -310,38 +312,46 @@ export default function FiltrosCatalogo({
         <p id="lbl-coleccion" className={etiquetaFila}>Colección</p>
         <nav aria-labelledby="lbl-coleccion" className={filaChips}>
           <Link
-            href={construirUrl({ ...actuales, coleccion: "" })}
-            aria-current={!actuales.coleccion ? "true" : undefined}
-            className={`${chip} ${!actuales.coleccion ? chipOn : chipOff}`}
+            href={construirUrl({ ...actuales, coleccion: [] })}
+            aria-pressed={!actuales.coleccion.length}
+            className={`${chip} ${!actuales.coleccion.length ? chipOn : chipOff}`}
           >
             Todas
           </Link>
-          {colecciones.map((c) => (
-            <Link
-              key={c.slug}
-              href={construirUrl({ ...actuales, coleccion: actuales.coleccion === c.slug ? "" : c.slug })}
-              aria-current={actuales.coleccion === c.slug ? "true" : undefined}
-              className={`${chip} ${actuales.coleccion === c.slug ? chipOn : chipOff}`}
-            >
-              {c.nombre}
-            </Link>
-          ))}
+          {colecciones.map((c) => {
+            const activo = actuales.coleccion.includes(c.slug);
+            return (
+              <Link
+                key={c.slug}
+                href={construirUrl({ ...actuales, coleccion: alternar(actuales.coleccion, c.slug) })}
+                aria-pressed={activo}
+                className={`${chip} gap-2 ${activo ? chipOn : chipOff}`}
+              >
+                {c.nombre}
+                {activo && <X className="size-4 shrink-0" aria-hidden="true" />}
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
       <div className="hidden md:flex md:items-center md:gap-3 lg:hidden">
         <p id="lbl-tipo" className={etiquetaFila}>Tipo de prenda</p>
         <nav aria-labelledby="lbl-tipo" className={filaChips}>
-          {categorias.map((c) => (
-            <Link
-              key={c}
-              href={construirUrl({ ...actuales, categoria: actuales.categoria === c ? "" : c })}
-              aria-current={actuales.categoria === c ? "true" : undefined}
-              className={`${chip} border ${actuales.categoria === c ? "border-rosa-boton bg-rosa-boton text-cafe-oscuro" : "border-borde bg-surface text-cafe hover:bg-rosa-suave"}`}
-            >
-              {c}
-            </Link>
-          ))}
+          {categorias.map((c) => {
+            const activo = actuales.categoria.includes(c);
+            return (
+              <Link
+                key={c}
+                href={construirUrl({ ...actuales, categoria: alternar(actuales.categoria, c) })}
+                aria-pressed={activo}
+                className={`${chip} gap-2 border ${activo ? "border-rosa-boton bg-rosa-boton text-cafe-oscuro" : "border-borde bg-surface text-cafe hover:bg-rosa-suave"}`}
+              >
+                {c}
+                {activo && <X className="size-4 shrink-0" aria-hidden="true" />}
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
@@ -373,21 +383,19 @@ export default function FiltrosCatalogo({
                 valores={borrador}
                 alCambiar={(k, v) => setBorrador({ ...borrador, [k]: v })}
               />
-              <GrupoRadio
+              <GrupoChips
                 id="lbl-f-col"
                 titulo="Colección"
-                nombre="f-coleccion"
-                valor={borrador.coleccion}
-                opciones={[{ valor: "", texto: "Todas" }, ...colecciones.map((c) => ({ valor: c.slug, texto: c.nombre }))]}
-                alCambiar={(v) => setBorrador({ ...borrador, coleccion: v })}
+                valores={borrador.coleccion}
+                opciones={colecciones.map((c) => ({ valor: c.slug, texto: c.nombre }))}
+                alCambiar={(v) => setBorrador({ ...borrador, coleccion: alternar(borrador.coleccion, v) })}
               />
-              <GrupoRadio
+              <GrupoChips
                 id="lbl-f-tipo"
                 titulo="Tipo de prenda"
-                nombre="f-categoria"
-                valor={borrador.categoria}
-                opciones={[{ valor: "", texto: "Todas" }, ...categorias.map((c) => ({ valor: c, texto: c }))]}
-                alCambiar={(v) => setBorrador({ ...borrador, categoria: v })}
+                valores={borrador.categoria}
+                opciones={categorias.map((c) => ({ valor: c, texto: c }))}
+                alCambiar={(v) => setBorrador({ ...borrador, categoria: alternar(borrador.categoria, v) })}
               />
             </div>
             <div className="mt-6 flex gap-3">
