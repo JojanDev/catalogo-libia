@@ -136,7 +136,7 @@ export function BarraLateralFiltros({
   };
 
   return (
-    <aside aria-label="Filtros" className="hidden space-y-6 lg:sticky lg:top-24 lg:block lg:self-start">
+    <aside aria-label="Filtros" className="hidden space-y-6 lg:sticky lg:top-6 lg:block lg:self-start">
       <div>
         <p id="lbl-lat-col" className="mb-2 px-1 text-xs font-bold uppercase tracking-[0.08em] text-tenue">
           Colección

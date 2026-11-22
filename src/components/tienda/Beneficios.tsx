@@ -1,26 +1,48 @@
 import { Heart, MessageCircle, Truck } from "lucide-react";
 import { Contenedor } from "@/components/ui/Contenedor";
 
+function Vestido({ className, strokeWidth }: { className?: string; strokeWidth?: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M9 2.5c.4 1.4 1.5 2 3 2s2.6-.6 3-2" />
+      <path d="M9 2.5 8.2 8.5 6 10.5l1.5 1-4 10h17l-4-10 1.5-1-2.2-2L15 2.5" />
+      <path d="M8.2 8.5h7.6" />
+    </svg>
+  );
+}
+
 const BENEFICIOS = [
-  { Icono: Truck, texto: "Envíos a toda Colombia" },
-  { Icono: MessageCircle, texto: "Te atendemos por WhatsApp" },
-  { Icono: Heart, texto: "Diseños únicos, hechos con cariño" },
+  { Icono: Heart, lineas: ["Diseños únicos", "para cada ocasión"] },
+  { Icono: Vestido, lineas: ["Ropa de calidad", "y confort"] },
+  { Icono: Truck, lineas: ["Envíos a todo", "el país"] },
+  { Icono: MessageCircle, lineas: ["Te atendemos", "por WhatsApp"] },
 ];
 
 export function Beneficios() {
   return (
-    <section aria-label="Beneficios" className="border-y border-borde bg-surface py-8 lg:py-10">
+    <section aria-label="Beneficios" className="bg-rosa-suave py-8 lg:py-10">
       <Contenedor>
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-6">
-          {BENEFICIOS.map(({ Icono, texto }) => (
+        <ul className="grid grid-cols-4">
+          {BENEFICIOS.map(({ Icono, lineas }) => (
             <li
-              key={texto}
-              className="flex items-center gap-4 rounded-xl border border-borde bg-canvas p-4 md:flex-col md:gap-3 md:p-6 md:text-center"
+              key={lineas[0]}
+              className="relative flex flex-col items-center gap-2 px-1 text-center text-xs text-cafe not-first:before:absolute not-first:before:left-0 not-first:before:top-[20%] not-first:before:h-[60%] not-first:before:w-px not-first:before:bg-rosa-deco/50 sm:text-sm lg:gap-3 lg:text-base"
             >
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-rosa-suave">
-                <Icono className="size-6 text-rosa-accion" strokeWidth={1.5} aria-hidden="true" />
+              <Icono className="size-9 text-rosa-accion lg:size-12" strokeWidth={1.25} aria-hidden="true" />
+              <span>
+                {lineas[0]}
+                <br />
+                {lineas[1]}
               </span>
-              <span className="text-sm font-semibold leading-snug text-cafe md:text-base">{texto}</span>
             </li>
           ))}
         </ul>

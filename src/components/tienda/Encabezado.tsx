@@ -33,9 +33,9 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-borde bg-canvas">
+    <header className="sticky top-0 z-40 border-b lg:relative border-borde bg-canvas">
       <div className="mx-auto max-w-[1200px] px-2 sm:px-4 lg:px-8">
-        <div className="grid h-[66px] grid-cols-[1fr_auto_1fr] items-center lg:h-[84px]">
+        <div className="grid h-[66px] grid-cols-[1fr_auto_1fr] items-center lg:h-auto lg:py-3">
           <div className="flex justify-start">
             <button
               type="button"
@@ -46,25 +46,10 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
             >
               <Menu className="size-6" aria-hidden="true" />
             </button>
-            <nav aria-label="Principal" className="hidden gap-8 lg:flex">
-              {ENLACES_TIENDA.map((enlace) => {
-                const activo = esActivo(pathname, enlace.href);
-                return (
-                  <Link
-                    key={enlace.href}
-                    href={enlace.href}
-                    aria-current={activo ? "page" : undefined}
-                    className={`border-b-2 pb-1 text-[15px] font-semibold text-cafe transition-colors hover:text-rosa-accion ${activo ? "border-rosa-deco" : "border-transparent"}`}
-                  >
-                    {enlace.etiqueta}
-                  </Link>
-                );
-              })}
-            </nav>
           </div>
           <Link href="/" aria-label="Tonorosa by Leyar, ir al inicio" className="col-start-2 justify-self-center">
             <Logo alto={52} prioridad className="lg:hidden" />
-            <Logo alto={72} prioridad className="hidden lg:block" />
+            <Logo alto={96} prioridad className="hidden lg:block" />
           </Link>
           <div className="col-start-3 flex items-center justify-end gap-1 lg:gap-3">
             <button
@@ -80,6 +65,21 @@ export function Encabezado({ colecciones, whatsapp }: EncabezadoProps) {
             </button>
           </div>
         </div>
+        <nav aria-label="Principal" className="hidden justify-center gap-10 pb-3 lg:flex">
+          {ENLACES_TIENDA.map((enlace) => {
+            const activo = esActivo(pathname, enlace.href);
+            return (
+              <Link
+                key={enlace.href}
+                href={enlace.href}
+                aria-current={activo ? "page" : undefined}
+                className={`border-b-2 pb-1 text-[15px] font-semibold text-cafe transition-colors hover:text-rosa-accion ${activo ? "border-rosa-deco" : "border-transparent"}`}
+              >
+                {enlace.etiqueta}
+              </Link>
+            );
+          })}
+        </nav>
       </div>
       {buscando && (
         <div
