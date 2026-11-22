@@ -35,7 +35,7 @@ export default function NotFound() {
     <Suspense fallback={null}>
       <MarcoTienda>
         <div className="flex min-h-[60dvh] flex-col items-center justify-center px-4 py-16 text-center">
-          <Decor variant="flor-1" className="w-28 lg:w-36" />
+          <Decor variant="ramo" className="w-40 lg:w-56" />
           <h1 className="mt-6 font-display text-[32px] leading-tight text-cafe md:text-5xl">
             Esta página se perdió en el jardín
           </h1>

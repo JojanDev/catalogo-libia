@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { X } from "lucide-react";
+import { Decor } from "@/components/decor/Decor";
 import FiltrosCatalogo, { BarraLateralFiltros } from "@/components/tienda/FiltrosCatalogo";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
 import { Contenedor } from "@/components/ui/Contenedor";
@@ -118,7 +119,9 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Par
   ]);
 
   return (
-    <Contenedor className="py-10 lg:py-16">
+    <Contenedor className="relative py-10 lg:py-16">
+      <Decor variant="ramito" className="absolute right-6 top-6 z-0 hidden w-16 md:block lg:right-8 lg:w-24" />
+      <Decor variant="petalo-3" className="absolute right-28 top-14 z-0 hidden w-5 rotate-12 lg:block" />
       <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">Catálogo</h1>
       <p className="mt-2 text-base text-tenue">Elige lo que más le guste a tu peque.</p>
       <div className="mt-6">

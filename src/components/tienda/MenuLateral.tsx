@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { MessageCircle, Truck, X } from "lucide-react";
+import { Decor } from "@/components/decor/Decor";
 import { Logo } from "@/components/ui/Logo";
 import { ENLACE_ASESORIA, ENLACES_TIENDA, esActivo } from "@/components/tienda/enlaces";
 import type { Coleccion } from "@/types";
@@ -129,6 +130,7 @@ export function MenuLateral({ abierto, onCerrar, colecciones, whatsapp }: MenuLa
               </ul>
             </nav>
           )}
+          <Decor variant="rama-esquina-der" className="mb-3 ml-auto mr-3 mt-4 w-24" />
         </div>
         <div className="shrink-0 space-y-3 border-t border-borde bg-surface p-4">
           <a

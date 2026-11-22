@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronDown, ChevronRight, MessageCircle, Truck } from "lucide-react";
+import { Decor } from "@/components/decor/Decor";
 import ConsultaWhatsApp from "@/components/tienda/ConsultaWhatsApp";
 import GaleriaProducto from "@/components/tienda/GaleriaProducto";
 import GrillaProductos from "@/components/tienda/GrillaProductos";
@@ -81,7 +82,8 @@ export default async function ProductoPage({ params }: Props) {
   const enlaceMiga = "inline-flex min-h-11 items-center hover:text-rosa-accion hover:underline";
 
   return (
-    <Contenedor className="pb-32 pt-6 lg:pb-16 lg:pt-10">
+    <Contenedor className="relative pb-32 pt-6 lg:pb-16 lg:pt-10">
+      <Decor variant="rama-esquina-izq" className="absolute -right-10 top-40 z-0 hidden w-28 -scale-x-100 xl:block min-[1440px]:-right-28 min-[1440px]:w-28" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
@@ -110,10 +112,15 @@ export default async function ProductoPage({ params }: Props) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <GaleriaProducto medios={producto.medios}
-          imagen={producto.imagen}
-          nombre={producto.nombre}
-          agotado={producto.agotado} />
+        <div className="relative">
+          <GaleriaProducto medios={producto.medios}
+            imagen={producto.imagen}
+            nombre={producto.nombre}
+            agotado={producto.agotado} />
+          <Decor variant="ramo" className="absolute bottom-0 left-12 z-0 hidden w-36 lg:block xl:w-44" />
+          <Decor variant="petalo-1" className="absolute bottom-24 left-56 z-0 hidden w-6 rotate-12 xl:block" />
+          <Decor variant="petalo-6" className="absolute bottom-6 left-80 z-0 hidden w-7 -rotate-12 xl:block" />
+        </div>
 
         <div>
           <h1 className="font-display text-[32px] leading-tight text-cafe md:text-5xl">
@@ -159,7 +166,9 @@ export default async function ProductoPage({ params }: Props) {
       </div>
 
       {relacionados.length > 0 && (
-        <section className="mt-16 lg:mt-20">
+        <section className="relative mt-16 lg:mt-20">
+          <Decor variant="capullo" className="absolute right-0 top-0 hidden w-12 rotate-12 md:block lg:w-16" />
+          <Decor variant="hoja-2" className="absolute left-0 top-0 hidden w-12 -rotate-12 md:block lg:w-14" />
           <TituloSeccion titulo="También te puede gustar" className="mb-8" />
           <GrillaProductos productos={relacionados} />
         </section>

@@ -41,14 +41,18 @@ export default async function InicioPage() {
   return (
     <>
       {slides.length > 0 ? (
-        <div className="bg-rosa-suave pb-8 lg:pb-12">
+        <div className="relative">
           <h1 className="sr-only">Tonorosa by Leyar, ropa infantil en Colombia</h1>
           <CarruselInicio slides={slides} />
+          <Decor variant="rama-esquina-izq" className="absolute left-0 top-0 z-20 hidden w-20 md:block lg:w-28" />
+          <Decor variant="rama-esquina-der" className="absolute bottom-0 right-0 z-20 hidden w-24 md:block lg:w-36" />
+          <Decor variant="mariposa" className="absolute bottom-0 left-24 z-20 hidden w-14 md:block lg:left-40 lg:w-16" />
+          <Decor variant="corazon-2" className="absolute bottom-1 left-40 z-20 hidden w-5 md:block lg:left-60" />
         </div>
       ) : (
         <section className="relative overflow-hidden bg-rosa-suave py-12 lg:py-20">
-          <Decor variant="rama-izquierda" className="absolute -left-4 bottom-0 z-0 w-36 sm:w-48 lg:w-64" />
-          <Decor variant="rama-derecha" className="absolute -right-4 top-2 z-0 w-32 sm:w-44 lg:w-56" />
+          <Decor variant="rama-esquina-izq" className="absolute left-0 top-0 z-0 w-24 sm:w-36 lg:w-52" />
+          <Decor variant="rama-esquina-der" className="absolute bottom-0 right-0 z-0 w-32 sm:w-44 lg:w-64" />
           <Decor variant="petalo-1" className="absolute left-1/3 top-4 z-0 w-6 rotate-12 sm:w-8" />
           <Decor variant="petalo-3" className="absolute bottom-6 right-1/4 z-0 w-6 -rotate-12 sm:w-8" />
           <Contenedor className="relative z-10 flex flex-col items-center text-center">
@@ -63,8 +67,8 @@ export default async function InicioPage() {
       <Beneficios />
 
       <section className="relative overflow-hidden pb-24 pt-8 lg:pb-40 lg:pt-16">
-        <Decor variant="rama-izquierda" className="absolute -left-6 bottom-0 z-0 hidden w-32 sm:block lg:w-48" />
-        <Decor variant="rama-izquierda" className="absolute -right-6 bottom-0 z-0 hidden w-32 -scale-x-100 sm:block lg:w-48" />
+        <Decor variant="rama-esquina-izq" className="absolute left-0 top-0 z-0 hidden w-28 md:block lg:w-44" />
+        <Decor variant="rama-esquina-izq" className="absolute right-0 top-0 z-0 hidden w-28 -scale-x-100 md:block lg:w-44" />
         <Ola className="absolute inset-x-0 bottom-0 z-0 h-8 lg:h-14" />
         <Contenedor className="relative z-10 flex flex-col items-center text-center">
           <h2 className="flex flex-col items-center">
@@ -88,11 +92,16 @@ export default async function InicioPage() {
       </section>
 
       {colecciones.length > 0 && (
-        <section className="bg-rosa-suave py-12 lg:py-20">
-          <Contenedor>
+        <section className="relative overflow-hidden bg-rosa-suave py-12 lg:py-20">
+          <Decor variant="guirnalda" className="absolute -left-10 top-4 z-0 hidden w-64 lg:block xl:w-80" />
+          <Decor variant="guirnalda" className="absolute -right-10 top-4 z-0 hidden w-64 -scale-x-100 lg:block xl:w-80" />
+          <Decor variant="petalo-2" className="absolute left-[8%] top-6 z-0 hidden w-8 -rotate-12 md:block" />
+          <Decor variant="petalo-6" className="absolute right-[10%] top-24 z-0 hidden w-7 rotate-45 md:block" />
+          <Decor variant="petalo-4" className="absolute left-[3%] top-40 z-0 hidden w-6 rotate-12 xl:block" />
+          <Contenedor className="relative z-10">
             <TituloSeccion titulo="Nuestras colecciones" />
           </Contenedor>
-          <Contenedor>
+          <Contenedor className="relative z-10">
             <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-12 lg:gap-6">
               {lista.map((c) => {
                 const grande = c.id === destacada?.id;

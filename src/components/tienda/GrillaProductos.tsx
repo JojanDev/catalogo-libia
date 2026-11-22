@@ -1,4 +1,4 @@
-import { PackageSearch } from "lucide-react";
+import { Decor } from "@/components/decor/Decor";
 import TarjetaProducto from "@/components/tienda/TarjetaProducto";
 import { BotonEnlace } from "@/components/ui/BotonEnlace";
 import type { ProductoVista } from "@/types";
@@ -26,7 +26,10 @@ export default function GrillaProductos({
   if (productos.length === 0) {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-5 py-16 text-center">
-        <PackageSearch className="size-10 text-rosa-deco" aria-hidden="true" />
+        <div className="relative">
+          <Decor variant="capullo" className="w-16" />
+          <Decor variant="corazon-1" className="absolute -right-6 top-0 w-6" />
+        </div>
         <div className="space-y-1">
           <p className="text-base text-tenue">{vacio.mensaje}</p>
           {vacio.detalle && <p className="text-sm text-tenue">{vacio.detalle}</p>}
